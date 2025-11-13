@@ -4,16 +4,16 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tex/flutter_tex.dart';
-import 'package:thilop10_3004/common/helper/show_alert_dialog.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/countdown_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/page/homework_all_ques.dart';
-import 'package:thilop10_3004/features/home/presentation/page/result_literature_test_page.dart';
+import 'package:sci_fun/common/helper/show_alert_dialog.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/home/presentation/cubit/countdown_cubit.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/home/presentation/page/homework_all_ques.dart';
+import 'package:sci_fun/features/home/presentation/page/result_literature_test_page.dart';
 
 class TestLiteraturePage extends StatefulWidget {
   const TestLiteraturePage({super.key, required this.quizzId});

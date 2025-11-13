@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/home/domain/entity/news_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/news_entity.dart';
 
 class NewsModel extends NewsEntity {
   NewsModel({

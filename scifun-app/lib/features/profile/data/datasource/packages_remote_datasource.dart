@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:thilop10_3004/common/models/response_model.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/constants/message_constants.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
-import 'package:thilop10_3004/features/profile/data/models/instructions_model.dart';
-import 'package:thilop10_3004/features/profile/data/models/package_history_model.dart';
-import 'package:thilop10_3004/features/profile/data/models/packages_model.dart';
+import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/constants/message_constants.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/features/profile/data/models/instructions_model.dart';
+import 'package:sci_fun/features/profile/data/models/package_history_model.dart';
+import 'package:sci_fun/features/profile/data/models/packages_model.dart';
 
 abstract interface class PackagesRemoteDatasource {
   Future<List<NotificationModel>> getHistoryPackage({

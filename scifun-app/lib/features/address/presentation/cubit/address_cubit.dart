@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/common/entities/address_entity.dart';
-import 'package:thilop10_3004/features/address/domain/usecase/get_provinces.dart';
-import 'package:thilop10_3004/features/address/domain/usecase/get_wards.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
+import 'package:sci_fun/common/entities/address_entity.dart';
+import 'package:sci_fun/features/address/domain/usecase/get_provinces.dart';
+import 'package:sci_fun/features/address/domain/usecase/get_wards.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
 
 /// --- STATE ---
 sealed class AddressState extends Equatable {

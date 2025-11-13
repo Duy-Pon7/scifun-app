@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/notification/domain/entities/notification.dart';
-import 'package:thilop10_3004/features/notification/domain/usecases/delete_notification.dart';
-import 'package:thilop10_3004/features/notification/domain/usecases/get_notification_detail.dart';
-import 'package:thilop10_3004/features/notification/domain/usecases/mark_as_read.dart';
-import 'package:thilop10_3004/features/notification/domain/usecases/mark_as_read_all.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/notification/domain/entities/notification.dart';
+import 'package:sci_fun/features/notification/domain/usecases/delete_notification.dart';
+import 'package:sci_fun/features/notification/domain/usecases/get_notification_detail.dart';
+import 'package:sci_fun/features/notification/domain/usecases/mark_as_read.dart';
+import 'package:sci_fun/features/notification/domain/usecases/mark_as_read_all.dart';
 
 sealed class NotiState extends Equatable {
   @override

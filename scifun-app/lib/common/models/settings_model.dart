@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/common/entities/settings_entity.dart';
+import 'package:sci_fun/common/entities/settings_entity.dart';
 
 class SettingsModel extends SettingsEntity {
   SettingsModel(

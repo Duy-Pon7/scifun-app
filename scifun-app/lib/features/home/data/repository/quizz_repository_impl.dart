@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/home/data/datasource/quizz_remote_datasource.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_entity.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_result_entity.dart';
-import 'package:thilop10_3004/features/home/domain/entity/response_quizz_entity.dart';
-import 'package:thilop10_3004/features/home/domain/repository/quizz_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/home/data/datasource/quizz_remote_datasource.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_result_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/response_quizz_entity.dart';
+import 'package:sci_fun/features/home/domain/repository/quizz_repository.dart';
 
 class QuizzRepositoryImpl implements QuizzRepository {
   final QuizzRemoteDatasource quizzRemoteDatasource;

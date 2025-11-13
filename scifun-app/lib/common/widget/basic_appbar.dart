@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   const BasicAppbar({

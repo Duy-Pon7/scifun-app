@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/analytics/data/datasource/school_remote_datasource.dart';
-import 'package:thilop10_3004/features/analytics/data/model/school_data_model.dart';
-import 'package:thilop10_3004/features/analytics/data/model/school_scores_model.dart';
-import 'package:thilop10_3004/features/analytics/domain/repository/school_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/analytics/data/datasource/school_remote_datasource.dart';
+import 'package:sci_fun/features/analytics/data/model/school_data_model.dart';
+import 'package:sci_fun/features/analytics/data/model/school_scores_model.dart';
+import 'package:sci_fun/features/analytics/domain/repository/school_repository.dart';
 
 class SchoolRepositoryImpl implements SchoolRepository {
   final SchoolRemoteDatasource schoolRemoteDatasource;

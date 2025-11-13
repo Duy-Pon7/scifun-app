@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_category_entity.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_lesson_category.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_lesson_detail.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_category_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_lesson_category.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_lesson_detail.dart';
 
 sealed class LessonState extends Equatable {
   @override

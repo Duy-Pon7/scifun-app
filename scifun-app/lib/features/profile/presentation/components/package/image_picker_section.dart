@@ -2,8 +2,8 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/select_image_cubit.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class ImagePickerSection extends StatelessWidget {
   const ImagePickerSection({super.key});

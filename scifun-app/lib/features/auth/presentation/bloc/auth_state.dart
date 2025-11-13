@@ -20,7 +20,7 @@ final class AuthMessageSuccess extends AuthInitial {
 }
 
 final class AuthUserSuccess extends AuthInitial {
-  final User? user;
+  final UserEntity? user;
 
   AuthUserSuccess({required this.user});
 }
@@ -32,9 +32,9 @@ final class AuthCheckSuccess extends AuthInitial {
 }
 
 final class AuthUserLoginSuccess extends AuthInitial {
-  final Package? package;
+  final UserEntity? user;
 
-  AuthUserLoginSuccess({required this.package});
+  AuthUserLoginSuccess({required this.user});
 }
 
 final class AuthSuccess extends AuthInitial {}

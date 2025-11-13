@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
 
 part 'paginator_state.dart';
 

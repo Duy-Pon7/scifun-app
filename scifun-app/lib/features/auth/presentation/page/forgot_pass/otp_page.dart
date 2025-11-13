@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/auth/presentation/components/forgot_pass/otp_form.dart';
-import 'package:thilop10_3004/features/auth/presentation/cubit/otp_cubit.dart';
-import 'package:thilop10_3004/features/auth/presentation/widget/background_auth.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/auth/presentation/components/forgot_pass/otp_form.dart';
+import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/widget/background_auth.dart';
 
 class OtpPage extends StatefulWidget {
   final String email;

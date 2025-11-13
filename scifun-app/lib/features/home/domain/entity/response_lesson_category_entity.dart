@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/home/domain/entity/lesson_category_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_category_entity.dart';
 
 class ResponseLessonCategoryEntity {
   final List<LessonCategoryEntity> lessonCategories;

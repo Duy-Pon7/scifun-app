@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:thilop10_3004/common/widget/basic_text_button.dart';
-import 'package:thilop10_3004/core/utils/assets/app_vector.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/auth/presentation/cubit/otp_cubit.dart';
-import 'package:thilop10_3004/features/auth/presentation/cubit/otp_state.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/forgot_pass/repass_page.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/signup/add_infomation_page.dart';
+import 'package:sci_fun/common/widget/basic_text_button.dart';
+import 'package:sci_fun/core/utils/assets/app_vector.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
+import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
+import 'package:sci_fun/features/auth/presentation/page/signup/add_infomation_page.dart';
 
 class OtpForm extends StatefulWidget {
   const OtpForm(

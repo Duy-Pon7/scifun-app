@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/common/entities/settings_entity.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_settings.dart';
+import 'package:sci_fun/common/entities/settings_entity.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_settings.dart';
 
 sealed class SettingsState extends Equatable {
   @override

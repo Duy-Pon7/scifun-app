@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/common/models/user_model.dart';
+import 'package:sci_fun/common/models/user_model.dart';
 
 import '../../domain/entities/notification.dart';
 

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/home/domain/entity/news_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_all_news.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_news_detail.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/home/domain/entity/news_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_all_news.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_news_detail.dart';
 
 sealed class NewsState extends Equatable {
   @override
@@ -44,14 +44,13 @@ class NewsCubit extends Cubit<NewsState> {
   final GetAllNews getAllNews;
   final GetNewsDetail getNewsDetail;
 
-  NewsCubit(this.getAllNews, this.getNewsDetail)
-      : super(NewsInitial());
+  NewsCubit(this.getAllNews, this.getNewsDetail) : super(NewsInitial());
 
   Future<void> getNews() async {
     emit(NewsLoading());
     try {
-      final res = await getAllNews
-          .call(PaginationParam<void>(page: 1, param: null));
+      final res =
+          await getAllNews.call(PaginationParam<void>(page: 1, param: null));
       res.fold(
         (failure) => emit(NewsError(failure.message)),
         (data) => emit(NewsLoaded(data)),

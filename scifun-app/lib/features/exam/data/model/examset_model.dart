@@ -1,5 +1,5 @@
-import 'package:thilop10_3004/features/exam/domain/entity/examset_entity.dart';
-import 'package:thilop10_3004/features/home/data/model/quizz_model.dart';
+import 'package:sci_fun/features/exam/domain/entity/examset_entity.dart';
+import 'package:sci_fun/features/home/data/model/quizz_model.dart';
 
 class ExamsetModel extends ExamsetEntity {
   ExamsetModel({

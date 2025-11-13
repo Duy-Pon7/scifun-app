@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/faqs_entity.dart';
-import 'package:thilop10_3004/features/profile/presentation/widget/custom_expansion_tile.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/domain/entities/faqs_entity.dart';
+import 'package:sci_fun/features/profile/presentation/widget/custom_expansion_tile.dart';
 
 class FaqsPage extends StatelessWidget {
   final List<FaqsEntity> faqs; // <-- nhận từ Bloc

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/analytics/domain/entities/school_scores_entity.dart';
-import 'package:thilop10_3004/features/analytics/domain/usecase/get_school.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_scores_entity.dart';
+import 'package:sci_fun/features/analytics/domain/usecase/get_school.dart';
 
 /// --- STATE ---
 sealed class SchoolState extends Equatable {

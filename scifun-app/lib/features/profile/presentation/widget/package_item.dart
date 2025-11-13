@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/package/payment_page.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/presentation/page/package/payment_page.dart';
 
 class PackageItem extends StatelessWidget {
   const PackageItem({

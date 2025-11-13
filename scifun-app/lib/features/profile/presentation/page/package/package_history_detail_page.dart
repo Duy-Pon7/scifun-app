@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/select_image_cubit.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/enums/enum_package.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/package_history_entity.dart';
-import 'package:thilop10_3004/features/profile/presentation/components/package/network_image_section.dart';
-import 'package:thilop10_3004/features/profile/presentation/widget/package_alert_item.dart';
-import 'package:thilop10_3004/features/profile/presentation/widget/package_detail_history_item.dart';
+import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/enums/enum_package.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/domain/entities/package_history_entity.dart';
+import 'package:sci_fun/features/profile/presentation/components/package/network_image_section.dart';
+import 'package:sci_fun/features/profile/presentation/widget/package_alert_item.dart';
+import 'package:sci_fun/features/profile/presentation/widget/package_detail_history_item.dart';
 
 class PackageHistoryDetailPage extends StatelessWidget {
   final NotificationEntity? item;

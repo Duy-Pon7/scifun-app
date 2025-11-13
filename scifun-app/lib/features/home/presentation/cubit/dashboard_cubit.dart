@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/features/analytics/presentation/page/analystic_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/exam_page.dart';
-import 'package:thilop10_3004/features/home/presentation/page/home_page.dart';
-import 'package:thilop10_3004/features/notification/presentation/page/noti_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/profile_page.dart';
+import 'package:sci_fun/features/analytics/presentation/page/analystic_page.dart';
+import 'package:sci_fun/features/exam/presentation/page/exam_page.dart';
+import 'package:sci_fun/features/home/presentation/page/home_page.dart';
+import 'package:sci_fun/features/notification/presentation/page/noti_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/profile_page.dart';
 
 class DashboardCubit extends Cubit<int> {
   DashboardCubit() : super(0);

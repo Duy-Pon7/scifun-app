@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 class AppColor {
   AppColor._();
 
-  static const Color primary50 = Color(0xfffff0f0);
-  static const Color primary100 = Color(0xffffdddd);
-  static const Color primary200 = Color(0xffffc1c0);
-  static const Color primary300 = Color(0xffff9594);
-  static const Color primary400 = Color(0xffff5957);
-  static const Color primary500 = Color(0xffff2623);
-  static const Color primary600 = Color(0xffff0300);
-  static const Color primary700 = Color(0xffd70300);
-  static const Color primary800 = Color(0xffb10503);
-  static const Color primary900 = Color(0xff920c0a);
-  static const Color primary950 = Color(0xff500100);
+  static const Color primary50 = Color(0xFFECFEFF);
+  static const Color primary100 = Color(0xFFCFFAFE);
+  static const Color primary200 = Color(0xFFA5F3FC);
+  static const Color primary300 = Color(0xFF67E8F9);
+  static const Color primary400 = Color(0xFF22D3EE);
+  static const Color primary500 = Color(0xFF06B6D4);
+  static const Color primary600 = Color(0xFF0891B2);
+  static const Color primary700 = Color(0xFF0E7490);
+  static const Color primary800 = Color(0xFF155E75);
+  static const Color primary900 = Color(0xFF164E63);
+  static const Color primary950 = Color(0xFF083344);
 
   static const Color hurricane50 = Color(0xfff3f3f3);
   static const Color hurricane100 = Color(0xffe2dfdf);

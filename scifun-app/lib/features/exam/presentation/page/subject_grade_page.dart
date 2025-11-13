@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/test_detail_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/widget/card_subject_item.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_cubit.dart';
-import 'package:thilop10_3004/features/subject/presentation/cubit/subject_cubit.dart'; // <-- Đảm bảo import Cubit
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/exam/presentation/page/test_detail_page.dart';
+import 'package:sci_fun/features/exam/presentation/widget/card_subject_item.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart'; // <-- Đảm bảo import Cubit
 
 class SubjectGradePage extends StatelessWidget {
   final int examId;

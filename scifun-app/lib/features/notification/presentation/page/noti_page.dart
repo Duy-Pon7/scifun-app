@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/paginator_cubit.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/notification/data/models/noti_model.dart';
-import 'package:thilop10_3004/features/notification/domain/usecases/get_notification.dart';
-import 'package:thilop10_3004/features/notification/presentation/components/noti_of_day.dart';
-import 'package:thilop10_3004/features/notification/presentation/cubit/noti_cubit.dart';
-import 'package:thilop10_3004/features/notification/presentation/cubit/notification_paginator_cubit.dart';
-import 'package:thilop10_3004/features/notification/presentation/widget/noti_item.dart';
+import 'package:sci_fun/common/cubit/paginator_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/notification/data/models/noti_model.dart';
+import 'package:sci_fun/features/notification/domain/usecases/get_notification.dart';
+import 'package:sci_fun/features/notification/presentation/components/noti_of_day.dart';
+import 'package:sci_fun/features/notification/presentation/cubit/noti_cubit.dart';
+import 'package:sci_fun/features/notification/presentation/cubit/notification_paginator_cubit.dart';
+import 'package:sci_fun/features/notification/presentation/widget/noti_item.dart';
 
 class NotiPage extends StatefulWidget {
   const NotiPage({super.key});

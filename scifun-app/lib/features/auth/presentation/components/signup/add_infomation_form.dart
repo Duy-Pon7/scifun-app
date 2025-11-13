@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/common/widget/basic_input_field.dart';
-import 'package:thilop10_3004/common/widget/customize_dropdown.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/address/presentation/cubit/address_cubit.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/common/widget/basic_input_field.dart';
+import 'package:sci_fun/common/widget/customize_dropdown.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 
 class AddInfomationForm extends StatefulWidget {
   final String phone;

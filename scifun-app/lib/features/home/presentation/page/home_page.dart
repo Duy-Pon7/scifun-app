@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/home/presentation/components/home/background_home.dart';
-import 'package:thilop10_3004/features/home/presentation/components/home/header_home.dart';
-import 'package:thilop10_3004/features/home/presentation/components/home/list_news.dart';
-import 'package:thilop10_3004/features/home/presentation/components/home/list_subjects.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/news_cubit.dart';
-import 'package:thilop10_3004/features/subject/presentation/cubit/subject_cubit.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
+import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
+import 'package:sci_fun/features/home/presentation/components/home/list_news.dart';
+import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
+import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
+import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -45,11 +45,11 @@ class _HomePageState extends State<HomePage>
             listener: (context, state) {
               if (state is AuthUserSuccess) {
                 EasyLoading.dismiss();
-                final package = state.user?.package;
+                final package = "state.user?.package";
                 final now = DateTime.now();
 
-                final province = state.user!.province?.id;
-                final ward = state.user!.ward?.id;
+                final province = 0;
+                final ward = 0;
 
                 print("province $province ward $ward");
               } else if (state is AuthFailure) {

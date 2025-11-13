@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thilop10_3004/common/extension/share_prefs_extension.dart';
+import 'package:sci_fun/common/extension/share_prefs_extension.dart';
 
 enum SharePrefsKey { accessToken, searchHistory }
 
@@ -17,8 +17,12 @@ class SharePrefsService {
     return _prefs.getStringList(SharePrefsKey.searchHistory.getKey) ?? [];
   }
 
-  Future<void> saveAuthToken(String token) async {
-    await _prefs.setString(_keyToken, token);
+  Future<void> saveAuthToken(String? token) async {
+    if (token == null) {
+      await _prefs.remove(_keyToken);
+    } else {
+      await _prefs.setString(_keyToken, token);
+    }
   }
 
   Future<void> saveSession(bool isSaveSession) async {

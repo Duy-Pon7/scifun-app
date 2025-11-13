@@ -1,2 +1,2 @@
-C:/Users/Admin/source/repos/thilop10_3004/android/app/.cxx/RelWithDebInfo/5t5a6o6j/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/Admin/source/repos/thilop10_3004/android/app/.cxx/RelWithDebInfo/5t5a6o6j/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+C:/Users/Admin/source/repos/sci_fun/android/app/.cxx/RelWithDebInfo/5t5a6o6j/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Admin/source/repos/sci_fun/android/app/.cxx/RelWithDebInfo/5t5a6o6j/armeabi-v7a/CMakeFiles/rebuild_cache.dir

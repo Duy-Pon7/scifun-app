@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/text_formatter.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/common/widget/basic_input_field.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/forgot_pass/otp_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/change_phone/change_phone_otp.dart';
+import 'package:sci_fun/common/helper/text_formatter.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/common/widget/basic_input_field.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/page/forgot_pass/otp_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/change_phone/change_phone_otp.dart';
 
 class ChangePhone extends StatefulWidget {
   const ChangePhone({super.key});

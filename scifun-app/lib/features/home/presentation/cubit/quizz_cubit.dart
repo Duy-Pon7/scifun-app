@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/exam/domain/usecase/get_quizz_examsets.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/add_quizz.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_quizz_by_lesson.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_quizz_detail.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/exam/domain/usecase/get_quizz_examsets.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/add_quizz.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_quizz_by_lesson.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_quizz_detail.dart';
 
 sealed class QuizzState extends Equatable {
   @override

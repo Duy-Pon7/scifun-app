@@ -67,10 +67,10 @@ Future<void> _profile() async {
         () => UserRemoteDatasourceImpl(dioClient: sl()))
     ..registerFactory<UserRepository>(
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
-    ..registerFactory(() => Changes(userRepository: sl()))
-    ..registerLazySingleton(() => UserBloc(
-          change: sl(),
-        ))
+    // ..registerFactory(() => Changes(userRepository: sl()))
+    // ..registerLazySingleton(() => UserBloc(
+    //       change: sl(),
+    //     ))
 
     //Packages
     ..registerFactory<PackagesRemoteDatasource>(
@@ -198,7 +198,7 @@ Future<void> _authInit() async {
           checkEmailPhone: sl(),
           getAuth: sl(),
           changPass: sl(),
-          change: sl(),
+          // change: sl(),
         ));
 }
 

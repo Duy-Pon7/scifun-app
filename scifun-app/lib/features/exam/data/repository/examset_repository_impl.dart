@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/exam/data/datasource/examset_remote_datasource.dart';
-import 'package:thilop10_3004/features/exam/data/model/examset_model.dart';
-import 'package:thilop10_3004/features/exam/domain/repository/examset_repository.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/exam/data/datasource/examset_remote_datasource.dart';
+import 'package:sci_fun/features/exam/data/model/examset_model.dart';
+import 'package:sci_fun/features/exam/domain/repository/examset_repository.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_entity.dart';
 
 class ExamsetRepositoryImpl implements ExamsetRepository {
   final ExamsetRemoteDatasource examsetRemoteDatasource;

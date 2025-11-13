@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/features/analytics/presentation/components/list_analystics.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/features/analytics/presentation/components/list_analystics.dart';
 
 class AnalysticPage extends StatefulWidget {
   const AnalysticPage({super.key});

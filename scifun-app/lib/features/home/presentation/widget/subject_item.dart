@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/custom_network_asset_image.dart';
+import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 
 class SubjectItem extends StatelessWidget {
   const SubjectItem({

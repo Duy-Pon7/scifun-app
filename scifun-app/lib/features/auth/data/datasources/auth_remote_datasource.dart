@@ -2,19 +2,19 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/common/models/response_model.dart';
-import 'package:thilop10_3004/common/models/user_check_model.dart';
-import 'package:thilop10_3004/common/models/user_model.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/constants/app_errors.dart';
-import 'package:thilop10_3004/core/constants/app_successes.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
-import 'package:thilop10_3004/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/common/models/user_check_model.dart';
+import 'package:sci_fun/common/models/user_model.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/constants/app_errors.dart';
+import 'package:sci_fun/core/constants/app_successes.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/features/auth/data/repositories/auth_repository_impl.dart';
 
 abstract interface class AuthRemoteDatasource {
-  Future<LoginResponseModel?> login({
-    required String phone,
+  Future<UserModel?> login({
+    required String email,
     required String password,
   });
 
@@ -87,34 +87,37 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   }
 
   @override
-  Future<LoginResponseModel?> login({
-    required String phone,
+  Future<UserModel?> login({
+    required String email,
     required String password,
   }) async {
     try {
+      print("🔄 Attempting login for email: $email");
       final res = await dioClient.post(
         url: AuthApiUrls.login,
-        data: {"username": phone, "password": password, "device_token": "z"},
+        data: {"email": email, "password": password, "device_token": "z"},
       );
+      print("✅ Login Response status: ${res.statusCode}");
+      print("✅ Login Response data: ${res.data}");
 
       if (res.statusCode == 200) {
-        final data = res.data;
+        final userModel = UserModel.fromJson(res.data);
+        print("✅ UserModel created: ${userModel.token}");
 
-        final token = data['access_token'];
-        final packageJson = data['package'];
-
-        if (token == null || packageJson == null) {
+        if (userModel.token == null) {
+          print("❌ Token is null");
           throw ServerException(message: AppErrors.failureLogin);
         }
-
-        return LoginResponseModel(
-          token: token,
-          package: PackageModel.fromJson(packageJson),
-        );
+        return userModel;
       }
 
+      print("❌ Unexpected status code: ${res.statusCode}");
       return null;
     } on DioException catch (e) {
+      print("❌ DioException: ${e.message}");
+      print("❌ Response data: ${e.response?.data}");
+      print("❌ Response status: ${e.response?.statusCode}");
+
       String mess = AppErrors.commonError;
       final errors = e.response?.data;
       if (errors != null) {
@@ -123,6 +126,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
             : AppErrors.commonError;
       }
       throw ServerException(message: mess);
+    } catch (e) {
+      print("❌ Unexpected error: $e");
+      throw ServerException(message: AppErrors.commonError);
     }
   }
 

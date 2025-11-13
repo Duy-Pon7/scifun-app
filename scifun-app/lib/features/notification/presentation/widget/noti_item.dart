@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/common/cubit/paginator_cubit.dart';
-import 'package:thilop10_3004/common/helper/show_alert_dialog.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/notification/data/models/noti_model.dart';
-import 'package:thilop10_3004/features/notification/presentation/cubit/noti_cubit.dart';
-import 'package:thilop10_3004/features/notification/presentation/page/noti_detail_page.dart';
+import 'package:sci_fun/common/cubit/paginator_cubit.dart';
+import 'package:sci_fun/common/helper/show_alert_dialog.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/notification/data/models/noti_model.dart';
+import 'package:sci_fun/features/notification/presentation/cubit/noti_cubit.dart';
+import 'package:sci_fun/features/notification/presentation/page/noti_detail_page.dart';
 
 class NotiItem extends StatelessWidget {
   const NotiItem({

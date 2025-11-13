@@ -1,1 +1,1 @@
-C:\Users\Admin\source\repos\thilop10_3004\build\app\intermediates\cxx\RelWithDebInfo\5t5a6o6j\obj\arm64-v8a
+C:\Users\Admin\source\repos\sci_fun\build\app\intermediates\cxx\RelWithDebInfo\5t5a6o6j\obj\arm64-v8a

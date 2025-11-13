@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/paginator_cubit.dart';
+import 'package:sci_fun/common/cubit/paginator_cubit.dart';
 
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/analytics/presentation/widget/custom_expansion_tile_subjects.dart';
-import 'package:thilop10_3004/features/analytics/presentation/widget/subject_item.dart';
-import 'package:thilop10_3004/features/exam/data/model/examset_model.dart';
-import 'package:thilop10_3004/features/exam/domain/usecase/get_examset.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/presentation/widget/custom_expansion_tile_subjects.dart';
+import 'package:sci_fun/features/analytics/presentation/widget/subject_item.dart';
+import 'package:sci_fun/features/exam/data/model/examset_model.dart';
+import 'package:sci_fun/features/exam/domain/usecase/get_examset.dart';
 
 class ScoreAverageOfSubjects extends StatefulWidget {
   const ScoreAverageOfSubjects({super.key});

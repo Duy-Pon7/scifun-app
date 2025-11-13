@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/profile/data/datasource/faqs_remote_datasource.dart';
-import 'package:thilop10_3004/features/profile/data/models/faqs_model.dart';
-import 'package:thilop10_3004/features/profile/domain/repository/faqs_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/profile/data/datasource/faqs_remote_datasource.dart';
+import 'package:sci_fun/features/profile/data/models/faqs_model.dart';
+import 'package:sci_fun/features/profile/domain/repository/faqs_repository.dart';
 
 class FaqsRepositoryImpl implements FaqsRepository {
   final FaqsRemoteDatasource faqsRemoteDatasource;
@@ -21,5 +21,4 @@ class FaqsRepositoryImpl implements FaqsRepository {
       return Left(Failure(message: e.message));
     }
   }
-
 }

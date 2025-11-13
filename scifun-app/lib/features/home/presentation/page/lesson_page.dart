@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/common/widget/topic_item.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/home/presentation/components/lesson/tab_lesson.dart';
-import 'package:thilop10_3004/features/home/presentation/components/lesson/theory_content.dart';
-import 'package:thilop10_3004/features/home/presentation/components/lesson/video_content.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/lesson_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/select_tab_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/page/homework_result_page.dart';
-import 'package:thilop10_3004/features/home/presentation/page/test_history_literature_page.dart';
-import 'package:thilop10_3004/features/home/presentation/page/test_literature_page.dart';
-import 'package:thilop10_3004/features/home/presentation/page/test_page.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/common/widget/topic_item.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/home/presentation/components/lesson/tab_lesson.dart';
+import 'package:sci_fun/features/home/presentation/components/lesson/theory_content.dart';
+import 'package:sci_fun/features/home/presentation/components/lesson/video_content.dart';
+import 'package:sci_fun/features/home/presentation/cubit/lesson_cubit.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/home/presentation/cubit/select_tab_cubit.dart';
+import 'package:sci_fun/features/home/presentation/page/homework_result_page.dart';
+import 'package:sci_fun/features/home/presentation/page/test_history_literature_page.dart';
+import 'package:sci_fun/features/home/presentation/page/test_literature_page.dart';
+import 'package:sci_fun/features/home/presentation/page/test_page.dart';
 
 class LessonPage extends StatefulWidget {
   const LessonPage({super.key, required this.lessonId});

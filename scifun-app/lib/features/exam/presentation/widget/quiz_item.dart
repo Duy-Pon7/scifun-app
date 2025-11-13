@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/core/enums/enum_quiz.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/quiz_detail_page.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/core/enums/enum_quiz.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/exam/presentation/page/quiz_detail_page.dart';
 
 class QuizItem extends StatelessWidget {
   const QuizItem({

@@ -1,9 +1,9 @@
 import 'dart:developer';
 
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/features/notification/data/models/noti_model.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/features/notification/data/models/noti_model.dart';
 
 abstract interface class NotificationRemoteDatasource {
   Future<List<NotiModel>> getNotifications({

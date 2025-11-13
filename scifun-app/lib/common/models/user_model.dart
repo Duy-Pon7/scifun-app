@@ -1,57 +1,134 @@
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/common/models/province_model.dart';
-import 'package:thilop10_3004/common/models/ward_model.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/common/models/province_model.dart';
+import 'package:sci_fun/common/models/ward_model.dart';
 
-class UserModel extends User {
-  UserModel({
-    required super.avatar,
+// NEW
+class UserModel extends UserEntity {
+  const UserModel({
     required super.status,
-    required super.birthday,
-    required super.fullname,
-    required super.email,
-    required super.phone,
-    required super.id,
-    required super.province,
-    required super.ward,
-    required super.gender,
-    required super.package,
+    required super.message,
+    required super.token,
+    required super.data,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json["id"],
-      fullname: json["fullname"] ?? json["name"],
-      phone: json["phone"],
-      gender: json["gender"],
-      //! Lỗi JSON.
-      province: json["province"] == null
-          ? null
-          : ProvinceModel.fromJson(json["province"]),
-      ward: json["ward"] == null ? null : WardModel.fromJson(json["ward"]),
-      email: json["email"],
-      birthday: DateTime.tryParse(json["birthday"] ?? ""),
-      avatar: json["avatar"] ?? json["image"],
       status: json["status"],
-      package: json["package"] == null
-          ? null
-          : PackageModel.fromJson(json["package"]),
+      message: json["message"],
+      token: json["token"],
+      data: json["data"] == null ? null : DataModel.fromJson(json["data"]),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "status": status,
+        "message": message,
+        "token": token,
+        "data": data?.toJson(),
+      };
+
+  @override
+  List<Object?> get props => [
+        status,
+        message,
+        token,
+        data,
+      ];
 }
 
-class PackageModel extends Package {
-  PackageModel({
-    required super.type,
-    required super.endDate,
+class DataModel extends DataEntity {
+  const DataModel({
+    required super.id,
+    required super.email,
+    required super.password,
+    required super.fullname,
+    required super.isVerified,
+    required super.avatar,
+    required super.role,
+    required super.sex,
+    required super.subscription,
+    required super.dob,
+    required super.v,
   });
 
-  factory PackageModel.fromJson(Map<String, dynamic> json) {
-    return PackageModel(
-      type: json["type"],
-      endDate: json["end_date"] != null
-          ? DateFormat('dd-MM-yyyy HH:mm').parse(json["end_date"])
-          : null,
+  factory DataModel.fromJson(Map<String, dynamic> json) {
+    return DataModel(
+      id: json["_id"],
+      email: json["email"],
+      password: json["password"],
+      fullname: json["fullname"],
+      isVerified: json["isVerified"],
+      avatar: json["avatar"],
+      role: json["role"],
+      sex: json["sex"],
+      subscription: json["subscription"] == null
+          ? null
+          : SubscriptionModel.fromJson(json["subscription"]),
+      dob: DateTime.tryParse(json["dob"] ?? ""),
+      v: json["__v"],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "_id": id,
+        "email": email,
+        "password": password,
+        "fullname": fullname,
+        "isVerified": isVerified,
+        "avatar": avatar,
+        "role": role,
+        "sex": sex,
+        "subscription": subscription?.toJson(),
+        "dob": dob?.toIso8601String(),
+        "__v": v,
+      };
+
+  @override
+  List<Object?> get props => [
+        id,
+        email,
+        password,
+        fullname,
+        isVerified,
+        avatar,
+        role,
+        sex,
+        subscription,
+        dob,
+        v,
+      ];
+}
+
+class SubscriptionModel extends SubscriptionEntity {
+  const SubscriptionModel({
+    required super.status,
+    required super.tier,
+    required super.currentPeriodEnd,
+    required super.provider,
+  });
+
+  factory SubscriptionModel.fromJson(Map<String, dynamic> json) {
+    return SubscriptionModel(
+      status: json["status"],
+      tier: json["tier"],
+      currentPeriodEnd: DateTime.tryParse(json["currentPeriodEnd"] ?? ""),
+      provider: json["provider"],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "status": status,
+        "tier": tier,
+        "currentPeriodEnd": currentPeriodEnd?.toIso8601String(),
+        "provider": provider,
+      };
+
+  @override
+  List<Object?> get props => [
+        status,
+        tier,
+        currentPeriodEnd,
+        provider,
+      ];
 }

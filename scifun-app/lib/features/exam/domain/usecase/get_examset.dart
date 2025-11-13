@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/features/exam/data/model/examset_model.dart';
-import 'package:thilop10_3004/features/exam/domain/repository/examset_repository.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/features/exam/data/model/examset_model.dart';
+import 'package:sci_fun/features/exam/domain/repository/examset_repository.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
 
 class GetExamset implements Usecase<List<ExamsetModel>, PaginationParam<void>> {
   final ExamsetRepository repository;

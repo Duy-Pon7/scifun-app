@@ -1,15 +1,15 @@
 class AuthApiUrls {
   AuthApiUrls._();
 
-  static const String login = '/auth/login';
+  static const String login = '/user/login';
   static const String signup = '/users/register';
-  static const String sendEmail = '/auth/resend-otp';
-  static const String verifyOtp = '/auth/verification-otp';
-  static const String resetPassword = '/auth/update-password';
-  static const String resendOtp = '/auth/resend-otp';
-  static const String verificationOtp = '/auth/verification-otp';
-  static const String checkEmailPhone = '/auth/check-email-phone';
-  static const String getAuth = '/auth';
+  static const String sendEmail = '/user/resend-otp';
+  static const String verifyOtp = '/user/verification-otp';
+  static const String resetPassword = '/user/update-password';
+  static const String resendOtp = '/user/resend-otp';
+  static const String verificationOtp = '/user/verification-otp';
+  static const String checkEmailPhone = '/user/check-email-phone';
+  static const String getAuth = '/user';
 }
 
 class UserApiUrls {

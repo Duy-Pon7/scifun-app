@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/profile/domain/entities/package_history_entity.dart';
+import 'package:sci_fun/features/profile/domain/entities/package_history_entity.dart';
 
 class PackageHistoryModel extends PackageHistoryEntity {
   PackageHistoryModel({

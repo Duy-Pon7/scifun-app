@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class IsAuthorizedCubit extends Cubit<bool> {
@@ -9,8 +9,8 @@ class IsAuthorizedCubit extends Cubit<bool> {
         super(false);
 
   void isAuthorized() {
-    final token = _sharePrefsService
-        .getAuthToken(); // dùng đúng key 'auth_token'
+    final token =
+        _sharePrefsService.getAuthToken(); // dùng đúng key 'auth_token'
     emit(token != null);
   }
 

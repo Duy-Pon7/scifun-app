@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/analytics/presentation/components/list_statistics_school_one.dart';
-import 'package:thilop10_3004/features/analytics/presentation/components/list_statistics_school_two.dart';
-import 'package:thilop10_3004/features/analytics/presentation/cubits/school_paginator_cubit.dart';
-import 'package:thilop10_3004/features/analytics/presentation/cubits/tab_choice_of_school.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/select_tab_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/presentation/components/list_statistics_school_one.dart';
+import 'package:sci_fun/features/analytics/presentation/components/list_statistics_school_two.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/school_paginator_cubit.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/tab_choice_of_school.dart';
+import 'package:sci_fun/features/home/presentation/cubit/select_tab_cubit.dart';
 
 class StatisticsChoiceOfSchool extends StatefulWidget {
   const StatisticsChoiceOfSchool({super.key});

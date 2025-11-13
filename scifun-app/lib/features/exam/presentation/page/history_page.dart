@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/paginator_cubit.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/exam/presentation/widget/history_item.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_result_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_quizz_result.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_result_paginator_cubit.dart';
-import 'package:thilop10_3004/features/notification/presentation/page/noti_page.dart';
+import 'package:sci_fun/common/cubit/paginator_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/exam/presentation/widget/history_item.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_result_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_quizz_result.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_result_paginator_cubit.dart';
+import 'package:sci_fun/features/notification/presentation/page/noti_page.dart';
 
 class HistoryPage extends StatefulWidget {
   final int quizzId;

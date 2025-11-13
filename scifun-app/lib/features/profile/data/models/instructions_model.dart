@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/profile/domain/entities/instructions_entity.dart';
+import 'package:sci_fun/features/profile/domain/entities/instructions_entity.dart';
 
 class InstructionsModel extends InstructionsEntity {
   InstructionsModel({

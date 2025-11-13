@@ -1,5 +1,5 @@
-import 'package:thilop10_3004/features/subject/data/model/subject_item_model.dart';
-import 'package:thilop10_3004/features/subject/domain/entity/subject_entity.dart';
+import 'package:sci_fun/features/subject/data/model/subject_item_model.dart';
+import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 
 class SubjectModel extends SubjectEntity {
   SubjectModel({required super.subjects});

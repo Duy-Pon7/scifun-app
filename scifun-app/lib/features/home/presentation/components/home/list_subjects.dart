@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/page/topic_page.dart';
-import 'package:thilop10_3004/common/widget/topic_item.dart';
-import 'package:thilop10_3004/common/widget/topic_item_lesson.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_category_entity.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_lesson_category.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_list_lesson.dart';
-import 'package:thilop10_3004/features/home/presentation/page/lesson_page.dart';
-import 'package:thilop10_3004/features/home/presentation/widget/subject_item.dart';
-import 'package:thilop10_3004/features/subject/presentation/cubit/subject_cubit.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/page/topic_page.dart';
+import 'package:sci_fun/common/widget/topic_item.dart';
+import 'package:sci_fun/common/widget/topic_item_lesson.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_category_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_lesson_category.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_list_lesson.dart';
+import 'package:sci_fun/features/home/presentation/page/lesson_page.dart';
+import 'package:sci_fun/features/home/presentation/widget/subject_item.dart';
+import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class ListSubjects extends StatelessWidget {
   const ListSubjects({super.key});

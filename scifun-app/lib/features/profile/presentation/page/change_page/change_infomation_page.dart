@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/select_image_cubit.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/presentation/components/profile_detail_page.dart/change_infomation_form.dart';
+import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/presentation/components/profile_detail_page.dart/change_infomation_form.dart';
 
 class ChangeInfomationPage extends StatelessWidget {
   const ChangeInfomationPage({super.key});
@@ -39,7 +39,7 @@ class ChangeInfomationPage extends StatelessWidget {
           ],
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: ChangeInfomationForm(),
+            child: SizedBox(), // ChangeInfomationForm(),
           ),
         ),
       ),

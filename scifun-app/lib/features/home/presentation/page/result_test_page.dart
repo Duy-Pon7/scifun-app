@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:thilop10_3004/common/helper/get_category_score.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/assets/app_vector.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/page/homework_result_page.dart';
+import 'package:sci_fun/common/helper/get_category_score.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/assets/app_vector.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/home/presentation/page/homework_result_page.dart';
 
 class ResultTestPage extends StatelessWidget {
   const ResultTestPage(

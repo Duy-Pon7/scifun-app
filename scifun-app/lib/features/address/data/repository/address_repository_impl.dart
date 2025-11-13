@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/models/province_model.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/address/data/datasource/address_remote_datasource.dart';
-import 'package:thilop10_3004/features/address/domain/repository/address_repository.dart';
+import 'package:sci_fun/common/models/province_model.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/address/data/datasource/address_remote_datasource.dart';
+import 'package:sci_fun/features/address/domain/repository/address_repository.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
   final AddressRemoteDatasource addressRemoteDatasource;

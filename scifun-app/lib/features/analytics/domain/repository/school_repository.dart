@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/features/analytics/domain/entities/school_data_entity.dart';
-import 'package:thilop10_3004/features/analytics/domain/entities/school_scores_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_data_entity.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_scores_entity.dart';
 
 abstract interface class SchoolRepository {
   Future<Either<Failure, SchoolScoresEntity>> getSchoolScore();

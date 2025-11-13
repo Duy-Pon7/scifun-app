@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/common/entities/settings_entity.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/faqs_entity.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_faqs.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_settings.dart';
+import 'package:sci_fun/common/entities/settings_entity.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/profile/domain/entities/faqs_entity.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_faqs.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_settings.dart';
 
 sealed class FaqsState extends Equatable {
   @override
@@ -52,8 +52,7 @@ class FaqsCubit extends Cubit<FaqsState> {
       final res = await getAllFaqs.call(NoParams());
       res.fold(
         (failure) => emit(FaqsError(failure.message)),
-        (data) =>
-            emit(FaqsLoaded(data.whereType<FaqsEntity>().toList())),
+        (data) => emit(FaqsLoaded(data.whereType<FaqsEntity>().toList())),
       );
     } catch (e) {
       emit(FaqsError(e.toString()));

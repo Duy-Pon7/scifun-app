@@ -1,7 +1,7 @@
-import 'package:thilop10_3004/features/home/data/model/lesson_category_model.dart';
-import 'package:thilop10_3004/features/home/data/model/quizz_model.dart';
-import 'package:thilop10_3004/features/home/data/model/quizz_result_model.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_entity.dart';
+import 'package:sci_fun/features/home/data/model/lesson_category_model.dart';
+import 'package:sci_fun/features/home/data/model/quizz_model.dart';
+import 'package:sci_fun/features/home/data/model/quizz_result_model.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
 
 class LessonModel extends LessonEntity {
   LessonModel({

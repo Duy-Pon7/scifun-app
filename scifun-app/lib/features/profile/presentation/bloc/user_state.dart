@@ -1,26 +1,26 @@
-part of 'user_bloc.dart';
+// part of 'user_bloc.dart';
 
-@immutable
-sealed class UserState {}
+// @immutable
+// sealed class UserState {}
 
-final class UserInitial extends UserState {}
+// final class UserInitial extends UserState {}
 
-final class UserLoading extends UserInitial {}
+// final class UserLoading extends UserInitial {}
 
-final class UserFailure extends UserInitial {
-  final String message;
+// final class UserFailure extends UserInitial {
+//   final String message;
 
-  UserFailure({required this.message});
-}
+//   UserFailure({required this.message});
+// }
 
-final class UserMessageSuccess extends UserInitial {
-  final String message;
+// final class UserMessageSuccess extends UserInitial {
+//   final String message;
 
-  UserMessageSuccess({required this.message});
-}
+//   UserMessageSuccess({required this.message});
+// }
 
-final class UserSuccess extends UserInitial {
-  final User? user;
+// final class UserSuccess extends UserInitial {
+//   final UserEntity? user;
 
-  UserSuccess({required this.user});
-}
+//   UserSuccess({required this.user});
+// }

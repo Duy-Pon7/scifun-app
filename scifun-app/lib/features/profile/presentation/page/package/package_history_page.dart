@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/pagination_cubit.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/enums/enum_package.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/package_history_entity.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_history_packages.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/package_history_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/package/package_history_detail_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/widget/package_history_item.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/enums/enum_package.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/domain/entities/package_history_entity.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_history_packages.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/package_history_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/page/package/package_history_detail_page.dart';
+import 'package:sci_fun/features/profile/presentation/widget/package_history_item.dart';
 
 class PackageHistoryPage extends StatefulWidget {
   const PackageHistoryPage({super.key});

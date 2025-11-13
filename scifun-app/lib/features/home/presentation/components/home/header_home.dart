@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_input_field.dart';
-import 'package:thilop10_3004/common/widget/custom_network_asset_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/home/presentation/page/search_page.dart';
+import 'package:sci_fun/common/widget/basic_input_field.dart';
+import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/home/presentation/page/search_page.dart';
 
 class HeaderHome extends StatefulWidget {
   const HeaderHome({super.key});
@@ -21,20 +21,34 @@ class _HeaderHomeState extends State<HeaderHome> {
       spacing: 24.h,
       children: [
         BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _textName(),
-              _avatar(),
-            ],
-          ),
+          builder: (context, state) {
+            if (state is AuthUserSuccess) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _textName(name: state.user!.data?.fullname),
+                  _avatar(avatarUrl: state.user!.data?.avatar),
+                ],
+              );
+            } else if (state is AuthFailure) {
+              return Text(
+                'Lỗi tải thông tin người dùng',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontSize: 17.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                    ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
         _inputSearch(),
       ],
     );
   }
 
-  Widget _textName() => Column(
+  Widget _textName({required String? name}) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -45,21 +59,17 @@ class _HeaderHomeState extends State<HeaderHome> {
                   fontWeight: FontWeight.w400,
                 ),
           ),
-          if (context.read<AuthBloc>().state is AuthUserSuccess)
-            Text(
-              (context.read<AuthBloc>().state as AuthUserSuccess)
-                      .user!
-                      .fullname ??
-                  "",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
+          Text(
+            name ?? '',
+            style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
         ],
       );
 
-  Widget _avatar() => Container(
+  Widget _avatar({required String? avatarUrl}) => Container(
         width: 50.w,
         height: 50.w,
         decoration: BoxDecoration(
@@ -72,12 +82,7 @@ class _HeaderHomeState extends State<HeaderHome> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(25.r),
           child: CustomNetworkAssetImage(
-            imagePath: context.read<AuthBloc>().state is AuthUserSuccess
-                ? (context.read<AuthBloc>().state as AuthUserSuccess)
-                        .user!
-                        .avatar ??
-                    ""
-                : "",
+            imagePath: avatarUrl ?? '',
             width: 50.w,
             height: 50.w,
           ),

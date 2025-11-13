@@ -2,28 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:thilop10_3004/common/cubit/is_authorized_cubit.dart';
-import 'package:thilop10_3004/common/helper/show_alert_dialog.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
-import 'package:thilop10_3004/core/utils/assets/app_vector.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/bloc/user_bloc.dart';
-import 'package:thilop10_3004/features/profile/presentation/components/profile/header_profile.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/faqs_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/package_history_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/settings_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/about_us/about_us_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/change_page/change_infomation_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/contact/contact_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/faqs/faqs_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/package/package_history_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/package/package_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/policy/policy_page.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/change_pass/change_pass.dart';
+import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
+import 'package:sci_fun/common/helper/show_alert_dialog.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/utils/assets/app_vector.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/profile/presentation/bloc/user_bloc.dart';
+import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/package_history_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/change_page/change_infomation_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/faqs/faqs_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/package/package_history_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/package/package_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/policy/policy_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -109,13 +109,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                           is AuthUserSuccess
                                       ? (context.read<AuthBloc>().state
                                                   as AuthUserSuccess)
-                                              .user!
-                                              .avatar ??
+                                              .user
+                                              ?.data
+                                              ?.avatar ??
                                           ""
                                       : 'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
-                                  name: state.user?.fullname ?? "Khách",
-                                  remainingPackage: getRemainingDays(
-                                      state.user?.package?.endDate),
+                                  name: state.user?.data?.fullname ?? "Khách",
+                                  remainingPackage:
+                                      getRemainingDays(DateTime.now()),
                                 ),
                                 Column(
                                   spacing: 12.h,
@@ -169,11 +170,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Navigator.push(
                                           context,
                                           slidePage(PackagePage(
-                                              fullname: state.user?.fullname ??
-                                                  "Khách",
+                                              fullname:
+                                                  state.user?.data?.fullname ??
+                                                      "Khách",
                                               remainingPackage:
-                                                  getRemainingDays(state.user
-                                                      ?.package?.endDate))),
+                                                  getRemainingDays(
+                                                      DateTime.now()))),
                                         );
                                       },
                                     ),

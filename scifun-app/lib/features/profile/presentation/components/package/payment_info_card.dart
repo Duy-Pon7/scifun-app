@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class PaymentInfoCard extends StatefulWidget {
   final String title;

@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/common/models/user_model.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/features/profile/data/datasource/user_remote_datasource.dart';
-import 'package:thilop10_3004/features/profile/domain/repository/user_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/common/models/user_model.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/features/profile/data/datasource/user_remote_datasource.dart';
+import 'package:sci_fun/features/profile/domain/repository/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDatasource userRemoteDatasource;
@@ -16,7 +16,7 @@ class UserRepositoryImpl implements UserRepository {
   });
 
   @override
-  Future<Either<Failure, User?>> changeUser({
+  Future<Either<Failure, UserEntity?>> changeUser({
     required String fullname,
     required String email,
     required DateTime birthday,
@@ -38,7 +38,7 @@ class UserRepositoryImpl implements UserRepository {
     );
   }
 
-  Future<Either<Failure, User?>> _getUser(
+  Future<Either<Failure, UserEntity?>> _getUser(
     Future<UserModel?> Function() func,
   ) async {
     try {

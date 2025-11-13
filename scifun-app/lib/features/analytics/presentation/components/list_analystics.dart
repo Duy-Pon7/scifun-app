@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/features/analytics/presentation/page/score_average_of_subjects.dart';
-import 'package:thilop10_3004/features/analytics/presentation/page/statistics_choice_of_school.dart';
-import 'package:thilop10_3004/features/analytics/presentation/page/statistics_lesson.dart';
-import 'package:thilop10_3004/features/analytics/presentation/widget/analytic_item.dart';
-import 'package:thilop10_3004/features/exam/presentation/cubit/examset_paginator_cubit.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/features/analytics/presentation/page/score_average_of_subjects.dart';
+import 'package:sci_fun/features/analytics/presentation/page/statistics_choice_of_school.dart';
+import 'package:sci_fun/features/analytics/presentation/page/statistics_lesson.dart';
+import 'package:sci_fun/features/analytics/presentation/widget/analytic_item.dart';
+import 'package:sci_fun/features/exam/presentation/cubit/examset_paginator_cubit.dart';
 
 class ListAnalystics extends StatelessWidget {
   const ListAnalystics({super.key});

@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
 
-class Signup implements Usecase<User?, SignupParams> {
+class Signup implements Usecase<UserEntity?, SignupParams> {
   final AuthRepository authRepository;
 
   Signup({required this.authRepository});
 
   @override
-  Future<Either<Failure, User?>> call(SignupParams param) async {
+  Future<Either<Failure, UserEntity?>> call(SignupParams param) async {
     return await authRepository.signup(
         password: param.password,
         passwordConfimation: param.passwordConfimation,

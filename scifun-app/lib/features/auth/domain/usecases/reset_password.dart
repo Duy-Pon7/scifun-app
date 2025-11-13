@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
 
-class ResetPassword implements Usecase<User?, ResetPasswordParams> {
+class ResetPassword implements Usecase<UserEntity?, ResetPasswordParams> {
   final AuthRepository authRepository;
 
   ResetPassword({required this.authRepository});
 
   @override
-  Future<Either<Failure, User?>> call(ResetPasswordParams param) async {
+  Future<Either<Failure, UserEntity?>> call(ResetPasswordParams param) async {
     return await authRepository.resetPassword(
       email: param.email,
       newPass: param.newPass,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/packages_entity.dart';
-import 'package:thilop10_3004/features/profile/presentation/widget/package_item.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/domain/entities/packages_entity.dart';
+import 'package:sci_fun/features/profile/presentation/widget/package_item.dart';
 
 class PackageDetailPage extends StatelessWidget {
   final PackagesEntity package;

@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/common/entities/user_check_entity.dart';
+import 'package:sci_fun/common/entities/user_check_entity.dart';
 
 class UserCheckModel extends UserCheckEntity {
   UserCheckModel({

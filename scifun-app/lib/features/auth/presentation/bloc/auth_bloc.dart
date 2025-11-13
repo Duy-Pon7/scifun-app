@@ -2,21 +2,21 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/common/entities/user_check_entity.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/change_password.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/check_email_phone.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/get_auth.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/login.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/resend_otp.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/reset_password.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/send_email.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/signup.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/verification_otp.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/verify_otp.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/change_user.dart';
+import 'package:sci_fun/common/entities/user_check_entity.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/auth/domain/usecases/change_password.dart';
+import 'package:sci_fun/features/auth/domain/usecases/check_email_phone.dart';
+import 'package:sci_fun/features/auth/domain/usecases/get_auth.dart';
+import 'package:sci_fun/features/auth/domain/usecases/login.dart';
+import 'package:sci_fun/features/auth/domain/usecases/resend_otp.dart';
+import 'package:sci_fun/features/auth/domain/usecases/reset_password.dart';
+import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
+import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
+import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
+import 'package:sci_fun/features/auth/domain/usecases/verify_otp.dart';
+import 'package:sci_fun/features/profile/domain/usecase/change_user.dart';
 
-import '../../../../common/entities/user.dart';
+import '../../../../common/entities/user_entity.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -29,7 +29,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ResetPassword _resetPassword;
   final GetAuth _getAuth;
   final ChangePassword _changPass;
-  final Changes _change;
   final CheckEmailPhone _checkEmailPhone;
   final ResendOtp _resendOtp;
   final VerificationOtp _verificationOtp;
@@ -42,7 +41,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required GetAuth getAuth,
     required ChangePassword changPass,
     required CheckEmailPhone checkEmailPhone,
-    required Changes change,
     required ResendOtp resendOtp,
     required VerificationOtp verificationOtp,
   })  : _login = login,
@@ -53,7 +51,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _checkEmailPhone = checkEmailPhone,
         _getAuth = getAuth,
         _changPass = changPass,
-        _change = change,
         _resendOtp = resendOtp,
         _verificationOtp = verificationOtp,
         super(AuthInitial()) {
@@ -67,7 +64,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthUpdateSession>(_onAuthUpdateSession);
     on<AuthCheckEmailPhone>(_onCheckEmailPhone);
     on<AuthChangePass>(_onChangePass);
-    on<ChangeUser>(_onChangeUser);
     on<AuthResendOtp>(_onAuthResendOtp);
     on<AuthVerificationOtp>(_onAuthVerificationOtp);
   }
@@ -101,30 +97,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (usercheck) async => emit(AuthCheckSuccess(usercheck: usercheck)));
   }
 
-  void _onChangeUser(ChangeUser event, Emitter<AuthState> emit) async {
-    final res = await _change.call(ChangeUserParams(
-      fullname: event.fullname,
-      email: event.email,
-      birthday: event.birthday,
-      gender: event.gender,
-      image: event.image,
-      provinceId: event.provinceId,
-      wardId: event.wardId,
-    ));
-    print("ChangeUser: ${event.fullname}, ${event.image}");
-    res.fold(
-      (failure) => emit(AuthFailure(message: failure.message)),
-      (user) => emit(AuthUserSuccess(user: user)),
-    );
-  }
-
   void _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
     final res = await _login.call(LoginParams(
-      phone: event.phone,
+      email: event.email,
       password: event.password,
     ));
-    res.fold((failure) => emit(AuthFailure(message: failure.message)),
-        (package) async => emit(AuthUserLoginSuccess(package: package)));
+    res.fold(
+      (failure) {
+        print("❌ Login failure: ${failure.message}");
+        emit(AuthFailure(message: failure.message));
+      },
+      (user) async {
+        print("✅ Login success: $user");
+        emit(AuthUserLoginSuccess(user: user));
+      },
+    );
   }
 
   void _onAuthSignup(AuthSignup event, Emitter<AuthState> emit) async {

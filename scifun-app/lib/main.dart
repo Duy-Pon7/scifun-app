@@ -8,18 +8,19 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tex/flutter_tex.dart';
-import 'package:thilop10_3004/common/cubit/is_authorized_cubit.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_theme.dart';
-import 'package:thilop10_3004/features/address/presentation/cubit/address_cubit.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/auth_redirect_page/auth_redirect_page.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/dashboard_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/bloc/package_bloc.dart';
-import 'package:thilop10_3004/features/profile/presentation/bloc/user_bloc.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/faqs_cubit.dart';
-import 'package:thilop10_3004/features/profile/presentation/cubit/settings_cubit.dart';
+import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_theme.dart';
+import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/auth/presentation/page/auth_redirect_page/auth_redirect_page.dart';
+import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
+import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
+import 'package:sci_fun/features/profile/presentation/bloc/user_bloc.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
 
 void main() async {
   // debugPaintSizeEnabled = true;
@@ -38,9 +39,9 @@ void main() async {
             BlocProvider(
               create: (_) => sl<AuthBloc>(),
             ),
-            BlocProvider(
-              create: (_) => sl<UserBloc>(),
-            ),
+            // BlocProvider(
+            //   create: (_) => sl<UserBloc>(),
+            // ),
             BlocProvider(
               create: (_) => sl<PackageBloc>(),
             ),
@@ -86,7 +87,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.theme,
           builder: EasyLoading.init(),
           //TODO: Đang test history packages
-          home: isAuthorized ? const AuthRedirectPage() : const SigninPage(),
+          home: isAuthorized ? const DashboardPage() : const SigninPage(),
           // home: AddInfomationPage(),
         ),
       ),

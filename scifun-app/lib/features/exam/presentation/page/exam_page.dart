@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/assets/app_image.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/examset_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/subject_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/widget/type_exam_item.dart';
-import 'package:thilop10_3004/features/subject/presentation/cubit/subject_cubit.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/features/exam/presentation/page/examset_page.dart';
+import 'package:sci_fun/features/exam/presentation/page/subject_page.dart';
+import 'package:sci_fun/features/exam/presentation/widget/type_exam_item.dart';
+import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class ExamPage extends StatefulWidget {
   const ExamPage({super.key});

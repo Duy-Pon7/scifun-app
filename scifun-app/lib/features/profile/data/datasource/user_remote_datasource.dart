@@ -2,11 +2,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:thilop10_3004/common/models/response_model.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/constants/app_errors.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
+import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/constants/app_errors.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
 
 import '../../../../common/models/user_model.dart';
 

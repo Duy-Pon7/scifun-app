@@ -1,5 +1,5 @@
-import 'package:thilop10_3004/features/home/data/model/user_answer_model.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_result_entity.dart';
+import 'package:sci_fun/features/home/data/model/user_answer_model.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_result_entity.dart';
 
 class QuizzResultModel extends QuizzResultEntity {
   QuizzResultModel(

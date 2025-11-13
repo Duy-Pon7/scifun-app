@@ -1,13 +1,13 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/models/user_check_model.dart';
-import 'package:thilop10_3004/core/constants/app_errors.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
-import 'package:thilop10_3004/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:thilop10_3004/common/models/user_model.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sci_fun/common/models/user_check_model.dart';
+import 'package:sci_fun/core/constants/app_errors.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:sci_fun/common/models/user_model.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDatasource authRemoteDatasource;
@@ -60,13 +60,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Package>> login({
-    required String phone,
+  Future<Either<Failure, UserEntity?>> login({
+    required String email,
     required String password,
   }) async {
     try {
       final loginRes = await authRemoteDatasource.login(
-        phone: phone,
+        email: email,
         password: password,
       );
 
@@ -76,14 +76,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await sharePrefsService.saveAuthToken(loginRes.token); // 👈 Lưu token
 
-      return Right(loginRes.package);
+      return Right(loginRes);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
     }
   }
 
   @override
-  Future<Either<Failure, User?>> signup({
+  Future<Either<Failure, UserEntity?>> signup({
     required String phone,
     required String password,
     required String passwordConfimation,
@@ -132,7 +132,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User?>> resetPassword({
+  Future<Either<Failure, UserEntity?>> resetPassword({
     required String email,
     required String newPass,
     required String newPassConfirm,
@@ -165,11 +165,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User?>> getAuth() async {
+  Future<Either<Failure, UserEntity?>> getAuth() async {
     return await _getUser(authRemoteDatasource.getAuth);
   }
 
-  Future<Either<Failure, User?>> _getUser(
+  Future<Either<Failure, UserEntity?>> _getUser(
     Future<UserModel?> Function() func,
   ) async {
     try {
@@ -179,11 +179,4 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(Failure(message: e.message));
     }
   }
-}
-
-class LoginResponseModel {
-  final String token;
-  final PackageModel package;
-
-  LoginResponseModel({required this.token, required this.package});
 }

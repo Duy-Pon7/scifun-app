@@ -1,10 +1,10 @@
-import 'package:thilop10_3004/common/models/response_model.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/constants/message_constants.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
-import 'package:thilop10_3004/features/analytics/data/model/school_data_model.dart';
-import 'package:thilop10_3004/features/analytics/data/model/school_scores_model.dart';
+import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/constants/message_constants.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/features/analytics/data/model/school_data_model.dart';
+import 'package:sci_fun/features/analytics/data/model/school_scores_model.dart';
 
 abstract interface class SchoolRemoteDatasource {
   Future<SchoolScoresModel> getSchoolScore();

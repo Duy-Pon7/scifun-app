@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:thilop10_3004/features/exam/data/model/examset_model.dart';
+import 'package:sci_fun/features/exam/data/model/examset_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/features/exam/domain/usecase/get_examset.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
+import 'package:sci_fun/features/exam/domain/usecase/get_examset.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
 
 sealed class ExamsetState extends Equatable {
   @override

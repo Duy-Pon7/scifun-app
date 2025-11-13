@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/home/domain/entity/response_progress_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_subject_progress.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/home/domain/entity/response_progress_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_subject_progress.dart';
 
 abstract class ProgressState extends Equatable {
   const ProgressState();

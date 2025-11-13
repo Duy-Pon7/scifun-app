@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:thilop10_3004/features/analytics/domain/entities/school_data_entity.dart';
-import 'package:thilop10_3004/features/analytics/domain/usecase/get_list_school_data.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_data_entity.dart';
+import 'package:sci_fun/features/analytics/domain/usecase/get_list_school_data.dart';
 
 abstract class SchoolDataState extends Equatable {
   const SchoolDataState();

@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 
 extension SharedPrefsKeysX on SharePrefsKey {
   String get getKey {

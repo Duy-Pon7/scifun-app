@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
-import 'package:thilop10_3004/core/utils/is_expire_token.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/utils/is_expire_token.dart';
 
 class CheckTokenInterceptor extends Interceptor {
   final SharePrefsService _sharePrefsService;

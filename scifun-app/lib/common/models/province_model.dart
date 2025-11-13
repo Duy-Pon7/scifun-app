@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/common/entities/address_entity.dart';
+import 'package:sci_fun/common/entities/address_entity.dart';
 
 class ProvinceModel extends ProvinceEntity {
   ProvinceModel({

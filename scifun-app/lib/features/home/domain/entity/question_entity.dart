@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/home/domain/entity/answer_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/answer_entity.dart';
 
 class QuestionEntity {
   final int? id;

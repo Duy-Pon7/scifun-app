@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/analytics/domain/entities/school_data_entity.dart';
-import 'package:thilop10_3004/features/analytics/presentation/cubits/school_paginator_cubit.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_data_entity.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/school_paginator_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 
 class ListStatisticsSchoolTwo extends StatefulWidget {
   const ListStatisticsSchoolTwo({super.key});
@@ -22,7 +22,7 @@ class _ListStatisticsSchoolTwoState extends State<ListStatisticsSchoolTwo> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = context.read<AuthBloc>().state;
       if (authState is AuthUserSuccess) {
-        final provinceId = authState.user!.province?.id ?? 0;
+        final provinceId = 0;
         context.read<SchoolPaginatorCubit>().fetchSchoolData(
               DateTime.now().year,
               provinceId,
@@ -36,7 +36,7 @@ class _ListStatisticsSchoolTwoState extends State<ListStatisticsSchoolTwo> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthUserSuccess) {
-          final provinceName = state.user!.province?.name;
+          final provinceName = "state.user!.province?.name";
 
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),

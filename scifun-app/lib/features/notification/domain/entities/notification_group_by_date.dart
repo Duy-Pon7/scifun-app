@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/notification/domain/entities/notification.dart';
+import 'package:sci_fun/features/notification/domain/entities/notification.dart';
 
 class NotificationGroupByDate {
   final String date;

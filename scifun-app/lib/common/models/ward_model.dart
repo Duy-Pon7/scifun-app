@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/common/entities/ward_entity.dart';
+import 'package:sci_fun/common/entities/ward_entity.dart';
 
 class WardModel extends WardEntity {
   WardModel({

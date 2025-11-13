@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/page/topic_page.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/common/widget/basic_input_field.dart';
-import 'package:thilop10_3004/common/widget/topic_item_lesson.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/services/share_prefs_service.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/page/topic_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_input_field.dart';
+import 'package:sci_fun/common/widget/topic_item_lesson.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_key_list_lesson.dart';
-import 'package:thilop10_3004/features/home/presentation/page/lesson_page.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_key_list_lesson.dart';
+import 'package:sci_fun/features/home/presentation/page/lesson_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});

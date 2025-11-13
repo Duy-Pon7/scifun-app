@@ -1,11 +1,11 @@
-import 'package:thilop10_3004/common/entities/user.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
 
 class Notification {
   final int? id;
   final String? title;
   final String? message;
   final int? status;
-  final User? user;
+  final UserEntity? user;
   final DateTime? createdAt;
 
   Notification({

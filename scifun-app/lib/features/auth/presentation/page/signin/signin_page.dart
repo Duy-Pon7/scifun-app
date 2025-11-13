@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:thilop10_3004/features/auth/presentation/components/signin/signin_form.dart';
-import 'package:thilop10_3004/features/auth/presentation/widget/background_auth.dart';
-import 'package:thilop10_3004/features/auth/presentation/widget/logo_title_widget.dart';
+import 'package:sci_fun/features/auth/presentation/components/signin/signin_form.dart';
+import 'package:sci_fun/features/auth/presentation/widget/background_auth.dart';
+import 'package:sci_fun/features/auth/presentation/widget/logo_title_widget.dart';
 
 class SigninPage extends StatelessWidget {
   const SigninPage({super.key});

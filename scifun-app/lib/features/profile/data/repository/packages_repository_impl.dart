@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/profile/data/datasource/packages_remote_datasource.dart';
-import 'package:thilop10_3004/features/profile/data/models/instructions_model.dart';
-import 'package:thilop10_3004/features/profile/data/models/package_history_model.dart';
-import 'package:thilop10_3004/features/profile/data/models/packages_model.dart';
-import 'package:thilop10_3004/features/profile/domain/repository/packages_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/profile/data/datasource/packages_remote_datasource.dart';
+import 'package:sci_fun/features/profile/data/models/instructions_model.dart';
+import 'package:sci_fun/features/profile/data/models/package_history_model.dart';
+import 'package:sci_fun/features/profile/data/models/packages_model.dart';
+import 'package:sci_fun/features/profile/domain/repository/packages_repository.dart';
 
 class PackagesRepositoryImpl implements PackagesRepository {
   final PackagesRemoteDatasource packagesRemoteDatasource;
@@ -22,6 +22,7 @@ class PackagesRepositoryImpl implements PackagesRepository {
       return Left(Failure(message: e.toString()));
     }
   }
+
   @override
   Future<Either<Failure, List<PackagesModel>>> getPackages() async {
     try {
@@ -31,8 +32,10 @@ class PackagesRepositoryImpl implements PackagesRepository {
       return Left(Failure(message: e.message));
     }
   }
+
   @override
-  Future<Either<Failure, List<NotificationModel>>> getHistoryPackage({required int page}) async {
+  Future<Either<Failure, List<NotificationModel>>> getHistoryPackage(
+      {required int page}) async {
     try {
       final res = await packagesRemoteDatasource.getHistoryPackage(page: page);
       return Right(res);

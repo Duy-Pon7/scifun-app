@@ -1,6 +1,6 @@
-import 'package:thilop10_3004/features/home/data/model/lesson_model.dart';
-import 'package:thilop10_3004/features/home/data/model/progress_model.dart';
-import 'package:thilop10_3004/features/home/domain/entity/response_progress_entity.dart';
+import 'package:sci_fun/features/home/data/model/lesson_model.dart';
+import 'package:sci_fun/features/home/data/model/progress_model.dart';
+import 'package:sci_fun/features/home/domain/entity/response_progress_entity.dart';
 
 class ResponseProgressModel extends ResponseProgressEntity {
   ResponseProgressModel({

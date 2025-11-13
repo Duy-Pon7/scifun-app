@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/common/entities/user_check_entity.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/common/entities/user_check_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
 
 abstract interface class AuthRepository {
-  Future<Either<Failure, Package?>> login({
-    required String phone,
+  Future<Either<Failure, UserEntity?>> login({
+    required String email,
     required String password,
   });
 
-  Future<Either<Failure, User?>> signup({
+  Future<Either<Failure, UserEntity?>> signup({
     required String phone,
     required String password,
     required String passwordConfimation,
@@ -33,7 +33,7 @@ abstract interface class AuthRepository {
     required String email,
     required String otp,
   });
-  Future<Either<Failure, User?>> resetPassword({
+  Future<Either<Failure, UserEntity?>> resetPassword({
     required String email,
     required String newPass,
     required String newPassConfirm,
@@ -48,5 +48,5 @@ abstract interface class AuthRepository {
     required String email,
   });
 
-  Future<Either<Failure, User?>> getAuth();
+  Future<Either<Failure, UserEntity?>> getAuth();
 }

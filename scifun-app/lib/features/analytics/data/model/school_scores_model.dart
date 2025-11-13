@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/analytics/domain/entities/school_scores_entity.dart';
+import 'package:sci_fun/features/analytics/domain/entities/school_scores_entity.dart';
 
 class SchoolScoresModel extends SchoolScoresEntity {
   SchoolScoresModel({

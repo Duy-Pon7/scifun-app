@@ -2,21 +2,19 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/cubit/obscure_text_cubit.dart';
-import 'package:thilop10_3004/common/helper/show_alert_dialog_custom.dart';
-import 'package:thilop10_3004/common/helper/text_formatter.dart';
-import 'package:thilop10_3004/common/helper/transition_page.dart';
-import 'package:thilop10_3004/common/widget/basic_button.dart';
-import 'package:thilop10_3004/common/widget/basic_input_field.dart';
-import 'package:thilop10_3004/common/widget/basic_text_button.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/forgot_pass/forgot_pass_page.dart';
-import 'package:thilop10_3004/features/auth/presentation/page/signup/signup_page.dart';
-import 'package:thilop10_3004/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/common/cubit/obscure_text_cubit.dart';
+import 'package:sci_fun/common/helper/show_alert_dialog_custom.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/common/widget/basic_input_field.dart';
+import 'package:sci_fun/common/widget/basic_text_button.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/auth/presentation/page/forgot_pass/forgot_pass_page.dart';
+import 'package:sci_fun/features/auth/presentation/page/signup/signup_page.dart';
+import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:thilop10_3004/features/profile/presentation/page/package/package_page.dart';
 
 class SigninForm extends StatefulWidget {
   const SigninForm({super.key});
@@ -29,12 +27,20 @@ class _SigninFormState extends State<SigninForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneCon = TextEditingController();
   final TextEditingController _passCon = TextEditingController();
+  final TextEditingController _emailCon = TextEditingController();
+  late final AuthBloc authBloc;
+  @override
+  void initState() {
+    super.initState();
+    authBloc = context.read<AuthBloc>();
+  }
 
   @override
   void dispose() {
     super.dispose();
     _phoneCon.dispose();
     _passCon.dispose();
+    _emailCon.dispose();
   }
 
   void _listener(BuildContext context, AuthState state) {
@@ -57,37 +63,36 @@ class _SigninFormState extends State<SigninForm> {
     } else if (state is AuthUserLoginSuccess) {
       EasyLoading.dismiss();
 
-      final package = state.package;
-      final now = DateTime.now();
+      // final package = state.package;
+      // final now = DateTime.now();
 
-      if (package == null ||
-          package.endDate == null ||
-          package.endDate!.isBefore(now)) {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PackagePage(
-                  flagpop: false,
-                  fullname: "Khách",
-                  remainingPackage: getRemainingDays(state.package?.endDate)),
-            ));
-      } else {
-        // Gói còn hạn → vào Dashboard
-        Navigator.pushAndRemoveUntil(
-          context,
-          DashboardPage.route(),
-          (route) => false,
-        );
-      }
+      // if (package == null ||
+      //     package.endDate == null ||
+      //     package.endDate!.isBefore(now)) {
+      //   Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => PackagePage(
+      //             flagpop: false,
+      //             fullname: "Khách",
+      //             remainingPackage: getRemainingDays(state.package?.endDate)),
+      //       ));
+      // } else {
+      // Gói còn hạn → vào Dashboard
+      Navigator.pushAndRemoveUntil(
+        context,
+        DashboardPage.route(),
+        (route) => false,
+      );
+      // }
     }
   }
 
   void _onSignin() {
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
-      context.read<AuthBloc>().add(AuthLogin(
-          password: _passCon.text.trim(),
-          phone: _phoneCon.text.replaceAll(' ', '').trim()));
+      authBloc.add(AuthLogin(
+          password: _passCon.text.trim(), email: _emailCon.text.trim()));
     }
   }
 
@@ -101,7 +106,7 @@ class _SigninFormState extends State<SigninForm> {
           child: Column(
             spacing: 16.h,
             children: [
-              _phoneField(),
+              _emailnameField(),
               _passwordField(),
               _forgotPassword(),
               _signInButton(),
@@ -113,21 +118,32 @@ class _SigninFormState extends State<SigninForm> {
     );
   }
 
-  Widget _phoneField() => BasicInputField(
-        controller: _phoneCon,
-        hintText: "Số điện thoại",
+  Widget _emailnameField() => BasicInputField(
+        controller: _emailCon,
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Không được để trống';
-          } else if (value.length < 12) {
-            return 'Số điện thoại không hợp lệ';
+            return 'Nhập email';
           }
           return null;
         },
-        inputFormatters: [TextFormatter.phoneFormat],
+        hintText: "Email",
         textInputAction: TextInputAction.next,
-        keyboardType: TextInputType.phone,
       );
+  // Widget _phoneField() => BasicInputField(
+  //       controller: _phoneCon,
+  //       hintText: "Số điện thoại",
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Không được để trống';
+  //         } else if (value.length < 12) {
+  //           return 'Số điện thoại không hợp lệ';
+  //         }
+  //         return null;
+  //       },
+  //       inputFormatters: [TextFormatter.phoneFormat],
+  //       textInputAction: TextInputAction.next,
+  //       keyboardType: TextInputType.phone,
+  //     );
 
   Widget _passwordField() => BlocProvider(
         create: (context) => sl<ObscureTextCubit>(),

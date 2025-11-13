@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:thilop10_3004/core/network/check_token_interceptor.dart';
+import 'package:sci_fun/core/network/check_token_interceptor.dart';
 
 class DioClient {
   final CheckTokenInterceptor checkTokenInterceptor;
@@ -29,6 +29,9 @@ class DioClient {
     Options? options, // ✅ Cho phép custom headers như multipart
   }) async {
     try {
+      print("DioClient POST URL: $url");
+      print("DioClient POST Data: $data");
+      print("DioClient POST Options: $options");
       final res = await _dio.post(
         url,
         data: data,

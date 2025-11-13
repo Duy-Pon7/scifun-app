@@ -1,10 +1,10 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:thilop10_3004/common/models/response_model.dart';
-import 'package:thilop10_3004/core/constants/api_urls.dart';
-import 'package:thilop10_3004/core/constants/message_constants.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/core/network/dio_client.dart';
-import 'package:thilop10_3004/features/home/data/model/response_lesson_category_model.dart';
+import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/constants/message_constants.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/features/home/data/model/response_lesson_category_model.dart';
 
 abstract interface class LessonCategoryRemoteDatasource {
   Future<ResponseLessonCategoryModel> getLessonCate({

@@ -1,7 +1,7 @@
-import 'package:thilop10_3004/features/home/data/model/category_subject_model.dart';
-import 'package:thilop10_3004/features/home/data/model/question_model.dart';
-import 'package:thilop10_3004/features/home/data/model/quizz_result_model.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/home/data/model/category_subject_model.dart';
+import 'package:sci_fun/features/home/data/model/question_model.dart';
+import 'package:sci_fun/features/home/data/model/quizz_result_model.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_entity.dart';
 
 class QuizzModel extends QuizzEntity {
   QuizzModel({

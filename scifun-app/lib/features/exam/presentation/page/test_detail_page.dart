@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:thilop10_3004/common/helper/show_alert_dialog.dart';
-import 'package:thilop10_3004/common/widget/basic_appbar.dart';
-import 'package:thilop10_3004/core/di/injection.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/history_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/test_examset_page.dart';
-import 'package:thilop10_3004/features/exam/presentation/page/test_literature_examset_page.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_quizz_result.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_cubit.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/quizz_result_paginator_cubit.dart';
+import 'package:sci_fun/common/helper/show_alert_dialog.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/exam/presentation/page/history_page.dart';
+import 'package:sci_fun/features/exam/presentation/page/test_examset_page.dart';
+import 'package:sci_fun/features/exam/presentation/page/test_literature_examset_page.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_quizz_result.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/home/presentation/cubit/quizz_result_paginator_cubit.dart';
 
 class TestDetailPage extends StatelessWidget {
   final int examId;

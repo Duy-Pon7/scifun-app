@@ -4,11 +4,11 @@ part of 'auth_bloc.dart';
 sealed class AuthEvent {}
 
 final class AuthLogin extends AuthEvent {
-  final String phone;
+  final String email;
   final String password;
 
   AuthLogin({
-    required this.phone,
+    required this.email,
     required this.password,
   });
 }
@@ -98,7 +98,7 @@ final class AuthCheckEmailPhone extends AuthEvent {
 final class AuthGetSession extends AuthEvent {}
 
 final class AuthUpdateSession extends AuthEvent {
-  final User? user;
+  final UserEntity? user;
 
   AuthUpdateSession({this.user});
 }

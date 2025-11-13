@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/instructions_entity.dart';
-import 'package:thilop10_3004/features/profile/domain/entities/packages_entity.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/buy_packages.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_instructions.dart';
-import 'package:thilop10_3004/features/profile/domain/usecase/get_packages.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/profile/domain/entities/instructions_entity.dart';
+import 'package:sci_fun/features/profile/domain/entities/packages_entity.dart';
+import 'package:sci_fun/features/profile/domain/usecase/buy_packages.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_instructions.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_packages.dart';
 
 part 'package_event.dart';
 part 'package_state.dart';

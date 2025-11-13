@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/home/domain/entity/progress_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/progress_entity.dart';
 
 class ProgressModel extends ProgressEntity {
   ProgressModel({

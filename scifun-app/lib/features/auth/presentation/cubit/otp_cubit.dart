@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/features/auth/domain/usecases/verification_otp.dart';
-import 'package:thilop10_3004/features/auth/presentation/cubit/otp_state.dart';
+import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
+import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 
 class OtpCubit extends Cubit<OtpState> {
   Timer? _countdownTimer;

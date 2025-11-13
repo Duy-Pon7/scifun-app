@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/common/widget/custom_network_asset_image.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class NewsItem extends StatelessWidget {
   const NewsItem({

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/subject/domain/entity/subject_entity.dart';
-import 'package:thilop10_3004/features/subject/domain/usecase/get_all_subjects.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
+import 'package:sci_fun/features/subject/domain/usecase/get_all_subjects.dart';
 
 sealed class SubjectState extends Equatable {
   @override

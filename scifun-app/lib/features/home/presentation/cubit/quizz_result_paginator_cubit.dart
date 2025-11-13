@@ -1,7 +1,7 @@
-import 'package:thilop10_3004/common/cubit/paginator_cubit.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/home/domain/entity/quizz_result_entity.dart';
-import 'package:thilop10_3004/features/home/domain/usecase/get_quizz_result.dart';
+import 'package:sci_fun/common/cubit/paginator_cubit.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/home/domain/entity/quizz_result_entity.dart';
+import 'package:sci_fun/features/home/domain/usecase/get_quizz_result.dart';
 
 class QuizzResultPaginatorCubit
     extends PaginatorCubit<QuizzResultEntity, PaginationParamId<void>> {

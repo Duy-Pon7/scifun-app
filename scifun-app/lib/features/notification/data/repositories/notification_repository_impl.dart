@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/error/server_exception.dart';
-import 'package:thilop10_3004/features/notification/data/datasources/notification_remote_datasource.dart';
-import 'package:thilop10_3004/features/notification/data/models/noti_model.dart';
-import 'package:thilop10_3004/features/notification/domain/repositories/notification_repository.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
+import 'package:sci_fun/features/notification/data/datasources/notification_remote_datasource.dart';
+import 'package:sci_fun/features/notification/data/models/noti_model.dart';
+import 'package:sci_fun/features/notification/domain/repositories/notification_repository.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDatasource notificationRemoteDatasource;

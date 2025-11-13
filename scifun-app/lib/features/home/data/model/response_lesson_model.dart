@@ -1,5 +1,5 @@
-import 'package:thilop10_3004/features/home/data/model/lesson_model.dart';
-import 'package:thilop10_3004/features/home/domain/entity/response_lesson_entity.dart';
+import 'package:sci_fun/features/home/data/model/lesson_model.dart';
+import 'package:sci_fun/features/home/domain/entity/response_lesson_entity.dart';
 
 class ResponseLessonModel extends ResponseLessonEntity {
   ResponseLessonModel({required super.lessons});

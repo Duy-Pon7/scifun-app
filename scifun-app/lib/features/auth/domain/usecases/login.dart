@@ -1,29 +1,29 @@
 import 'package:dartz/dartz.dart';
-import 'package:thilop10_3004/common/entities/user.dart';
-import 'package:thilop10_3004/core/error/failure.dart';
-import 'package:thilop10_3004/core/utils/usecase.dart';
-import 'package:thilop10_3004/features/auth/domain/repositories/auth_repository.dart';
+import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
 
-class Login implements Usecase<Package?, LoginParams> {
+class Login implements Usecase<UserEntity?, LoginParams> {
   final AuthRepository authRepository;
 
   Login({required this.authRepository});
 
   @override
-  Future<Either<Failure, Package?>> call(LoginParams param) async {
+  Future<Either<Failure, UserEntity?>> call(LoginParams param) async {
     return await authRepository.login(
-      phone: param.phone,
+      email: param.email,
       password: param.password,
     );
   }
 }
 
 class LoginParams {
-  final String phone;
+  final String email;
   final String password;
 
   LoginParams({
-    required this.phone,
+    required this.email,
     required this.password,
   });
 }

@@ -1,4 +1,4 @@
-import 'package:thilop10_3004/features/home/domain/entity/lesson_category_entity.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_category_entity.dart';
 
 class LessonCategoryModel extends LessonCategoryEntity {
   LessonCategoryModel({
@@ -17,7 +17,8 @@ class LessonCategoryModel extends LessonCategoryEntity {
 
   static List<LessonCategoryModel> fromListJson(List<dynamic> jsonList) {
     return jsonList
-        .map((json) => LessonCategoryModel.fromJson(json as Map<String, dynamic>))
+        .map((json) =>
+            LessonCategoryModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 }

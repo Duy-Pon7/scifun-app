@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:thilop10_3004/core/utils/theme/app_color.dart';
-import 'package:thilop10_3004/features/analytics/presentation/widget/custom_expansion_tile_lesson.dart';
-import 'package:thilop10_3004/features/analytics/presentation/widget/lesson_item.dart';
-import 'package:thilop10_3004/features/home/domain/entity/lesson_entity.dart';
-import 'package:thilop10_3004/features/home/presentation/cubit/progress_cubit.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/presentation/widget/custom_expansion_tile_lesson.dart';
+import 'package:sci_fun/features/analytics/presentation/widget/lesson_item.dart';
+import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
+import 'package:sci_fun/features/home/presentation/cubit/progress_cubit.dart';
 
 class ListStatisticsLesson extends StatelessWidget {
   final int? subjectId;
