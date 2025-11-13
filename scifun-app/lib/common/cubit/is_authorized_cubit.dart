@@ -1,0 +1,21 @@
+import 'package:thilop10_3004/core/services/share_prefs_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class IsAuthorizedCubit extends Cubit<bool> {
+  final SharePrefsService _sharePrefsService;
+
+  IsAuthorizedCubit({required SharePrefsService sharePrefsService})
+      : _sharePrefsService = sharePrefsService,
+        super(false);
+
+  void isAuthorized() {
+    final token = _sharePrefsService
+        .getAuthToken(); // dùng đúng key 'auth_token'
+    emit(token != null);
+  }
+
+  void logout() async {
+    await _sharePrefsService.clear();
+    emit(false); // đảm bảo tự quay lại login luôn
+  }
+}

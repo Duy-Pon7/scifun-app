@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:thilop10_3004/common/widget/basic_appbar.dart';
+import 'package:thilop10_3004/core/di/injection.dart';
+import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:thilop10_3004/features/analytics/presentation/components/list_statistics_school_one.dart';
+import 'package:thilop10_3004/features/analytics/presentation/components/list_statistics_school_two.dart';
+import 'package:thilop10_3004/features/analytics/presentation/cubits/school_paginator_cubit.dart';
+import 'package:thilop10_3004/features/analytics/presentation/cubits/tab_choice_of_school.dart';
+import 'package:thilop10_3004/features/home/presentation/cubit/select_tab_cubit.dart';
+
+class StatisticsChoiceOfSchool extends StatefulWidget {
+  const StatisticsChoiceOfSchool({super.key});
+
+  @override
+  State<StatisticsChoiceOfSchool> createState() =>
+      _StatisticsChoiceOfSchoolState();
+}
+
+class _StatisticsChoiceOfSchoolState extends State<StatisticsChoiceOfSchool> {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SelectTabCubit(),
+      child: Scaffold(
+          appBar: BasicAppbar(
+            title: Text(
+              "Tư vấn chọn trường",
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 17.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            centerTitle: true,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios_rounded,
+                color: AppColor.primary600,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ),
+          body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                  child: TabChoiceOfSchool(),
+                ),
+                Expanded(
+                  child: BlocProvider(
+                    create: (context) => sl<SchoolPaginatorCubit>(),
+                    child: BlocBuilder<SelectTabCubit, int>(
+                      builder: (context, selectedIndex) {
+                        return IndexedStack(
+                          index: selectedIndex,
+                          children: [
+                            ListStatisticsSchoolOne(),
+                            ListStatisticsSchoolTwo(),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ])),
+    );
+  }
+}

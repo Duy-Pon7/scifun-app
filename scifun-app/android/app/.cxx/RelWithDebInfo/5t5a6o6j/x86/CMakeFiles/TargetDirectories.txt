@@ -1,0 +1,2 @@
+C:/Users/Admin/source/repos/thilop10_3004/android/app/.cxx/RelWithDebInfo/5t5a6o6j/x86/CMakeFiles/edit_cache.dir
+C:/Users/Admin/source/repos/thilop10_3004/android/app/.cxx/RelWithDebInfo/5t5a6o6j/x86/CMakeFiles/rebuild_cache.dir

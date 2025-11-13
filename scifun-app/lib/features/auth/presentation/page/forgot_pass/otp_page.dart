@@ -1,0 +1,95 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:thilop10_3004/common/widget/basic_appbar.dart';
+import 'package:thilop10_3004/core/di/injection.dart';
+import 'package:thilop10_3004/core/utils/theme/app_color.dart';
+import 'package:thilop10_3004/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:thilop10_3004/features/auth/presentation/components/forgot_pass/otp_form.dart';
+import 'package:thilop10_3004/features/auth/presentation/cubit/otp_cubit.dart';
+import 'package:thilop10_3004/features/auth/presentation/widget/background_auth.dart';
+
+class OtpPage extends StatefulWidget {
+  final String email;
+  final String phone;
+  final String password;
+  final String confirmPassword;
+  final bool? flag;
+  const OtpPage(
+      {super.key,
+      this.flag,
+      required this.email,
+      required this.phone,
+      required this.password,
+      required this.confirmPassword});
+
+  @override
+  State<OtpPage> createState() => _OtpPageState();
+}
+
+class _OtpPageState extends State<OtpPage> {
+  late final blocAuth = context.read<AuthBloc>();
+  @override
+  void initState() {
+    blocAuth.add(AuthResendOtp(email: widget.email));
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: BasicAppbar(
+        title: Text(
+          "Nhập OTP",
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: AppColor.primary600,
+          ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: BlocProvider(
+        create: (context) => sl<OtpCubit>()..startCountdown(),
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                print("stateauth $state");
+                if (state is AuthMessageSuccess) {
+                  if (state.message == "true") {
+                    EasyLoading.showToast("Đã gửi mã Otp vào ${widget.email}",
+                        toastPosition: EasyLoadingToastPosition.bottom);
+                  } else {
+                    EasyLoading.showToast("Lỗi gửi mã Otp",
+                        toastPosition: EasyLoadingToastPosition.bottom);
+                  }
+                } else if (state is AuthFailure) {
+                  EasyLoading.showToast("Lỗi gửi mã Otp",
+                      toastPosition: EasyLoadingToastPosition.bottom);
+                }
+              },
+            ),
+          ],
+          child: BackgroundAuth(
+            child: SingleChildScrollView(
+              child: OtpForm(
+                  flag: widget.flag,
+                  email: widget.email,
+                  phoneNumber: widget.phone,
+                  password: widget.password,
+                  confirmPassword: widget.confirmPassword),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

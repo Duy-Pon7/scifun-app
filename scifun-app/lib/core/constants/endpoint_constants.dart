@@ -1,0 +1,3 @@
+class EndpointConstants {
+  EndpointConstants._();
+}
