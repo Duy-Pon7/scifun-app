@@ -11,7 +11,6 @@ import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:sci_fun/features/profile/presentation/bloc/user_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/package_history_cubit.dart';
@@ -321,50 +320,46 @@ class _ProfilePageState extends State<ProfilePage> {
                                     return SizedBox();
                                   },
                                 ),
-                                GestureDetector(
-                                  onTap: () {
-                                    showAlertDialog(
-                                      context,
-                                      () async {
-                                        await sl<SharePrefsService>().clear();
-                                        sl<IsAuthorizedCubit>().isAuthorized();
-                                        resetSingleton();
-                                        Navigator.of(context)
-                                            .pushAndRemoveUntil(
-                                          MaterialPageRoute(
-                                              builder: (_) => SigninPage()),
-                                          (route) => false,
-                                        );
-                                      },
-                                      () {}, // Không làm gì khi cancel
-                                      "Xác nhận đăng xuất",
-                                      "Bạn có chắc chắn muốn đăng xuất không?",
-                                      "Đăng xuất",
-                                      "Hủy",
-                                    );
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.all(6.w),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.logout_rounded),
-                                        SizedBox(width: 4.w),
-                                        Text(
-                                          "Đăng xuất",
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               ],
                             );
                           }
-                          return SizedBox();
+                          return GestureDetector(
+                            onTap: () {
+                              showAlertDialog(
+                                context,
+                                () async {
+                                  await sl<SharePrefsService>().clear();
+                                  sl<IsAuthorizedCubit>().isAuthorized();
+                                  resetSingleton();
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                        builder: (_) => SigninPage()),
+                                    (route) => false,
+                                  );
+                                },
+                                () {}, // Không làm gì khi cancel
+                                "Xác nhận đăng xuất",
+                                "Bạn có chắc chắn muốn đăng xuất không?",
+                                "Đăng xuất",
+                                "Hủy",
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.all(6.w),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.logout_rounded),
+                                  SizedBox(width: 4.w),
+                                  Text(
+                                    "Đăng xuất",
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),

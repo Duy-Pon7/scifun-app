@@ -1,7 +1,5 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,17 +8,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_theme.dart';
 import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sci_fun/features/auth/presentation/page/auth_redirect_page/auth_redirect_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
-import 'package:sci_fun/features/profile/presentation/bloc/user_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 void main() async {
   // debugPaintSizeEnabled = true;
@@ -39,9 +37,15 @@ void main() async {
             BlocProvider(
               create: (_) => sl<AuthBloc>(),
             ),
-            // BlocProvider(
-            //   create: (_) => sl<UserBloc>(),
-            // ),
+            BlocProvider(
+              create: (_) {
+                final token = sl<SharePrefsService>().getAuthToken();
+                if (token != null) {
+                  return sl<UserCubit>()..getUser(token: token);
+                }
+                return sl<UserCubit>();
+              },
+            ),
             BlocProvider(
               create: (_) => sl<PackageBloc>(),
             ),
@@ -83,7 +87,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           debugShowCheckedModeBanner: false,
-          title: 'Ôn Thi Lớp 10 MK SCHOOL',
+          title: 'Sci Fun',
           theme: AppTheme.theme,
           builder: EasyLoading.init(),
           //TODO: Đang test history packages

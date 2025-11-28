@@ -14,7 +14,6 @@ import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
 import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verify_otp.dart';
-import 'package:sci_fun/features/profile/domain/usecase/change_user.dart';
 
 import '../../../../common/entities/user_entity.dart';
 
@@ -62,7 +61,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthResetPassword>(_onAuthResetPassword);
     on<AuthGetSession>(_onAuthGetSession);
     on<AuthUpdateSession>(_onAuthUpdateSession);
-    on<AuthCheckEmailPhone>(_onCheckEmailPhone);
     on<AuthChangePass>(_onChangePass);
     on<AuthResendOtp>(_onAuthResendOtp);
     on<AuthVerificationOtp>(_onAuthVerificationOtp);
@@ -87,15 +85,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             emit(AuthMessageSuccess(message: success.toString())));
   }
 
-  void _onCheckEmailPhone(
-      AuthCheckEmailPhone event, Emitter<AuthState> emit) async {
-    final res = await _checkEmailPhone.call(CheckEmailPhoneParams(
-      phone: event.phone,
-      email: event.email,
-    ));
-    res.fold((failure) => emit(AuthFailure(message: failure.message)),
-        (usercheck) async => emit(AuthCheckSuccess(usercheck: usercheck)));
-  }
 
   void _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
     final res = await _login.call(LoginParams(
@@ -118,12 +107,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final res = await _signup.call(SignupParams(
         password: event.password,
         passwordConfimation: event.passwordConfimation,
-        phone: event.phone,
         fullname: event.fullname,
-        provinceId: event.provinceId,
-        wardId: event.wardId,
-        email: event.email,
-        birthday: event.birthday));
+        email: event.email));
     res.fold((failure) => emit(AuthFailure(message: failure.message)),
         (user) => emit(AuthUserSuccess(user: user)));
   }

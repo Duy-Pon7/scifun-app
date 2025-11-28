@@ -25,7 +25,6 @@ class SigninForm extends StatefulWidget {
 
 class _SigninFormState extends State<SigninForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _phoneCon = TextEditingController();
   final TextEditingController _passCon = TextEditingController();
   final TextEditingController _emailCon = TextEditingController();
   late final AuthBloc authBloc;
@@ -38,7 +37,6 @@ class _SigninFormState extends State<SigninForm> {
   @override
   void dispose() {
     super.dispose();
-    _phoneCon.dispose();
     _passCon.dispose();
     _emailCon.dispose();
   }
@@ -62,23 +60,6 @@ class _SigninFormState extends State<SigninForm> {
       );
     } else if (state is AuthUserLoginSuccess) {
       EasyLoading.dismiss();
-
-      // final package = state.package;
-      // final now = DateTime.now();
-
-      // if (package == null ||
-      //     package.endDate == null ||
-      //     package.endDate!.isBefore(now)) {
-      //   Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => PackagePage(
-      //             flagpop: false,
-      //             fullname: "Khách",
-      //             remainingPackage: getRemainingDays(state.package?.endDate)),
-      //       ));
-      // } else {
-      // Gói còn hạn → vào Dashboard
       Navigator.pushAndRemoveUntil(
         context,
         DashboardPage.route(),
@@ -129,21 +110,6 @@ class _SigninFormState extends State<SigninForm> {
         hintText: "Email",
         textInputAction: TextInputAction.next,
       );
-  // Widget _phoneField() => BasicInputField(
-  //       controller: _phoneCon,
-  //       hintText: "Số điện thoại",
-  //       validator: (value) {
-  //         if (value == null || value.isEmpty) {
-  //           return 'Không được để trống';
-  //         } else if (value.length < 12) {
-  //           return 'Số điện thoại không hợp lệ';
-  //         }
-  //         return null;
-  //       },
-  //       inputFormatters: [TextFormatter.phoneFormat],
-  //       textInputAction: TextInputAction.next,
-  //       keyboardType: TextInputType.phone,
-  //     );
 
   Widget _passwordField() => BlocProvider(
         create: (context) => sl<ObscureTextCubit>(),

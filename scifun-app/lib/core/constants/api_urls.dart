@@ -1,19 +1,20 @@
 class AuthApiUrls {
   AuthApiUrls._();
 
-  static const String login = '/user/login';
-  static const String signup = '/users/register';
+  static const String login = '/user/login'; //
+  static const String signup = '/user/register';
   static const String sendEmail = '/user/resend-otp';
-  static const String verifyOtp = '/user/verification-otp';
+  static const String verifyOtp = '/user/verify-otp';
   static const String resetPassword = '/user/update-password';
   static const String resendOtp = '/user/resend-otp';
-  static const String verificationOtp = '/user/verification-otp';
+  static const String verificationOtp = '/user/verify-otp'; //
   static const String checkEmailPhone = '/user/check-email-phone';
-  static const String getAuth = '/user';
+  static const String getAuth = '/user/get-user/';
 }
 
 class UserApiUrls {
   UserApiUrls._();
+  static const String getInfo = '/user/get-user/';
 
   static const String reviseInfo = '/users/update';
   static const String changePassword = '/auth/change-password';
@@ -43,7 +44,7 @@ class HomeApiUrls {
 class SubjectApiUrl {
   SubjectApiUrl._();
 
-  static const String getSubjects = '/subjects';
+  static const String getSubjects = '/subject/get-subjects';
 }
 
 class PackagesApiUrl {

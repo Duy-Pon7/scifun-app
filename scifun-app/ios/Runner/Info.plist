@@ -51,9 +51,11 @@
 		<false/>
 		<key>NSAppTransportSecurity</key>
 		<dict>
-			<key>NSAllowsArbitraryLoads</key> <true/>
+			<key>NSAllowsArbitraryLoads</key>
+			<true/>
 		</dict>
-		<key>io.flutter.embedded_views_preview</key> <true/> 
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
 		<key>LSApplicationQueriesSchemes</key>
 		<array>
 			<string>https</string>

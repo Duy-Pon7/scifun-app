@@ -84,24 +84,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, UserEntity?>> signup({
-    required String phone,
     required String password,
     required String passwordConfimation,
     required String fullname,
-    required int provinceId,
-    required int wardId,
-    required DateTime birthday,
     required String email,
   }) async {
     return await _getUser(
       () => authRemoteDatasource.signup(
         password: password,
         passwordConfimation: passwordConfimation,
-        phone: phone,
         fullname: fullname,
-        provinceId: provinceId,
-        wardId: wardId,
-        birthday: birthday,
         email: email,
       ),
     );

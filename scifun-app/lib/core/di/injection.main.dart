@@ -67,6 +67,10 @@ Future<void> _profile() async {
         () => UserRemoteDatasourceImpl(dioClient: sl()))
     ..registerFactory<UserRepository>(
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
+    ..registerFactory(() => GetInfoUser(userRepository: sl()))
+    ..registerLazySingleton(() => UserCubit(
+          sl<GetInfoUser>(),
+        ))
     // ..registerFactory(() => Changes(userRepository: sl()))
     // ..registerLazySingleton(() => UserBloc(
     //       change: sl(),

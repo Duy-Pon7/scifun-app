@@ -45,8 +45,6 @@ class _HomePageState extends State<HomePage>
             listener: (context, state) {
               if (state is AuthUserSuccess) {
                 EasyLoading.dismiss();
-                final package = "state.user?.package";
-                final now = DateTime.now();
 
                 final province = 0;
                 final ward = 0;
@@ -100,7 +98,7 @@ class _HomePageState extends State<HomePage>
                 onRefresh: () async {
                   newcontext.read<NewsCubit>().getNews();
                   newcontext.read<SubjectCubit>().getSubjects();
-                  // newcontext.read<AuthBloc>()..add(AuthGetSession());
+                  newcontext.read<AuthBloc>().add(AuthGetSession());
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),

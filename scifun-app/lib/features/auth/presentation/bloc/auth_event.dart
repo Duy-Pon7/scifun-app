@@ -16,22 +16,14 @@ final class AuthLogin extends AuthEvent {
 final class AuthSignup extends AuthEvent {
   final String password;
   final String passwordConfimation;
-  final String phone;
   final String fullname;
-  final int provinceId;
-  final int wardId;
-  final DateTime birthday;
   final String email;
 
   AuthSignup(
       {required this.password,
       required this.passwordConfimation,
-      required this.phone,
       required this.fullname,
-      required this.provinceId,
-      required this.wardId,
-      required this.email,
-      required this.birthday});
+      required this.email});
 }
 
 final class AuthSendEmail extends AuthEvent {

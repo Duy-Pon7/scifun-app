@@ -10,7 +10,6 @@ import 'package:sci_fun/core/constants/app_errors.dart';
 import 'package:sci_fun/core/constants/app_successes.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
-import 'package:sci_fun/features/auth/data/repositories/auth_repository_impl.dart';
 
 abstract interface class AuthRemoteDatasource {
   Future<UserModel?> login({
@@ -19,13 +18,9 @@ abstract interface class AuthRemoteDatasource {
   });
 
   Future<UserModel?> signup({
-    required String phone,
     required String password,
     required String passwordConfimation,
     required String fullname,
-    required int provinceId,
-    required int wardId,
-    required DateTime birthday,
     required String email,
   });
 
@@ -134,30 +129,43 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
   @override
   Future<UserModel?> signup({
-    required String phone,
     required String password,
     required String passwordConfimation,
     required String fullname,
-    required int provinceId,
-    required int wardId,
-    required DateTime birthday,
     required String email,
   }) async {
-    return await _getUser(
-      () => dioClient.post(
+    print("🔄 Attempting signup for email: $email");
+    try {
+      final res = await dioClient.post(
         url: AuthApiUrls.signup,
-        data: {
-          "fullname": fullname,
-          "password": password,
-          "password_confirmation": passwordConfimation,
-          "phone": phone,
-          "province_id": provinceId,
-          "ward_id": wardId,
-          "birthday": DateFormat("yyyy-MM-dd").format(birthday),
-          "email": email,
-        },
-      ),
-    );
+        data: {"email": email, "password": password, "fullname": fullname},
+      );
+      print("✅ Signup Response status: ${res.statusCode}");
+      print("✅ Signup Response data: ${res.data}");
+
+      if (res.statusCode == 200) {
+        final userModel = UserModel.fromJson(res.data);
+        return userModel;
+      }
+
+      throw ServerException(message: AppErrors.getAuthFailure);
+    } on DioException catch (e) {
+      print("❌ DioException in signup: ${e.message}");
+      print("❌ Response data: ${e.response?.data}");
+      print("❌ Response status: ${e.response?.statusCode}");
+
+      String mess = AppErrors.commonError;
+      final errors = e.response?.data;
+      if (errors != null) {
+        mess = errors is Map<String, dynamic>
+            ? _getErrorMessage(errors)
+            : AppErrors.commonError;
+      }
+      throw ServerException(message: mess);
+    } catch (e) {
+      print("❌ Unexpected error in signup: $e");
+      throw ServerException(message: AppErrors.commonError);
+    }
   }
 
   @override
@@ -187,12 +195,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<String> otpVerifyOtp(
       {required String email, required String otp}) async {
     try {
+      print("otp in datasource $otp");
       final res = await dioClient.post(url: AuthApiUrls.verifyOtp, data: {
         "value": email,
         "type": "email",
         "otp": otp,
       });
-
       if (res.statusCode == 200) {
         return AppSuccesses.successfullSendEmail;
       }
@@ -274,6 +282,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   ) async {
     try {
       final res = await func();
+      print("Get User Response status: ${res}");
       if (res.statusCode == 200) {
         final returnedData = ResponseModel<UserModel>.fromJson(
           res.data,
@@ -367,15 +376,13 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String otp,
   }) async {
     try {
+      print("otp in datasource $otp");
       final res = await dioClient.post(
         url: AuthApiUrls.verificationOtp,
-        data: {
-          "type": "email",
-          "value": email,
-          "otp": otp,
-        },
+        data: {"email": email, "otp": otp},
       );
-
+      print("Response status: ${res.statusCode}");
+      print("Response data: ${res.data}");
       if (res.statusCode == 200) {
         final status = res.data['status'];
         final message = res.data['message'] ?? AppErrors.commonError;
@@ -391,6 +398,10 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
+      print("DioException: ${e.message}");
+      print("Response data: ${e.response?.data}");
+      print("Response status: ${e.response?.statusCode}");
+
       String mess = AppErrors.commonError;
       final errors = e.response?.data;
       if (errors != null) {

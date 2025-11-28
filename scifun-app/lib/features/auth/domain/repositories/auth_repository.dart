@@ -10,13 +10,9 @@ abstract interface class AuthRepository {
   });
 
   Future<Either<Failure, UserEntity?>> signup({
-    required String phone,
     required String password,
     required String passwordConfimation,
     required String fullname,
-    required int provinceId,
-    required int wardId,
-    required DateTime birthday,
     required String email,
   });
 

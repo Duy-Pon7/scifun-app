@@ -45,9 +45,16 @@ class _SignupFormState extends State<SignupForm> {
   void _onSignup() {
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
-      final String phone = _phoneCon.text.replaceAll(' ', '').trim();
       final String email = _emailCon.text.trim();
-      authBloc.add(AuthCheckEmailPhone(phone: phone, email: email));
+      final String password = _passCon.text.trim();
+      final String passswordConfimation = _confirmPassCon.text.trim();
+      final String fullname = _phoneCon.text.trim();
+      authBloc.add(AuthSignup(
+        email: email,
+        password: password,
+        passwordConfimation: passswordConfimation,
+        fullname: fullname,
+      ));
     }
   }
 
@@ -55,28 +62,21 @@ class _SignupFormState extends State<SignupForm> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthCheckSuccess) {
-          if (state.usercheck.phoneExists == true) {
-            EasyLoading.showToast("Số điện thoại đã tồn tại",
-                toastPosition: EasyLoadingToastPosition.bottom);
-          } else if (state.usercheck.emailExists == true) {
-            EasyLoading.showToast("Email đã tồn tại",
-                toastPosition: EasyLoadingToastPosition.bottom);
-          } else if (state.usercheck.phoneExists == false &&
-              state.usercheck.emailExists == false) {
-            EasyLoading.dismiss();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtpPage(
-                  email: _emailCon.text.trim(),
-                  phone: _phoneCon.text.replaceAll(' ', '').trim(),
-                  password: _passCon.text.trim(),
-                  confirmPassword: _confirmPassCon.text.trim(),
-                ),
+        print("Auth State: $state");
+        if (state is AuthUserSuccess) {
+          // After successful signup, navigate to OTP page
+          EasyLoading.dismiss();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpPage(
+                email: _emailCon.text.trim(),
+                phone: _phoneCon.text.replaceAll(' ', '').trim(),
+                password: _passCon.text.trim(),
+                confirmPassword: _confirmPassCon.text.trim(),
               ),
-            );
-          }
+            ),
+          );
         } else if (state is AuthLoading) {
           EasyLoading.show(
             status: 'Đang tải',
@@ -93,8 +93,8 @@ class _SignupFormState extends State<SignupForm> {
         child: Column(
           spacing: 16.h,
           children: [
+            _fullnameField(),
             _emailnameField(),
-            _phoneField(),
             _passwordField(),
             _confirmPassField(),
             _signUpButton(),
@@ -104,6 +104,18 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
+
+  Widget _fullnameField() => BasicInputField(
+        controller: _phoneCon,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Nhập họ tên';
+          }
+          return null;
+        },
+        hintText: "Họ tên",
+        textInputAction: TextInputAction.next,
+      );
 
   Widget _emailnameField() => BasicInputField(
         controller: _emailCon,
@@ -115,21 +127,6 @@ class _SignupFormState extends State<SignupForm> {
         },
         hintText: "Email",
         textInputAction: TextInputAction.next,
-      );
-  Widget _phoneField() => BasicInputField(
-        controller: _phoneCon,
-        hintText: "Số điện thoại",
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Không được để trống';
-          } else if (value.length < 12) {
-            return 'Số điện thoại không hợp lệ';
-          }
-          return null;
-        },
-        inputFormatters: [TextFormatter.phoneFormat],
-        textInputAction: TextInputAction.next,
-        keyboardType: TextInputType.phone,
       );
 
   Widget _passwordField() => BlocProvider(

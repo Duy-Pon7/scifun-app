@@ -6,6 +6,7 @@ import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/home/presentation/page/search_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class HeaderHome extends StatefulWidget {
   const HeaderHome({super.key});
@@ -20,17 +21,18 @@ class _HeaderHomeState extends State<HeaderHome> {
     return Column(
       spacing: 24.h,
       children: [
-        BlocBuilder<AuthBloc, AuthState>(
+        BlocBuilder<UserCubit, UserState>(
           builder: (context, state) {
-            if (state is AuthUserSuccess) {
+            print("UserState in HeaderHome: $state");
+            if (state is UserLoaded) {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _textName(name: state.user!.data?.fullname),
-                  _avatar(avatarUrl: state.user!.data?.avatar),
+                  _textName(name: state.user.data?.fullname),
+                  _avatar(avatarUrl: state.user.data?.avatar),
                 ],
               );
-            } else if (state is AuthFailure) {
+            } else if (state is UserError) {
               return Text(
                 'Lỗi tải thông tin người dùng',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(

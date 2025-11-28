@@ -10,7 +10,9 @@ import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
+import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signup/add_infomation_page.dart';
+import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 
 class OtpForm extends StatefulWidget {
   const OtpForm(
@@ -55,6 +57,18 @@ class _OtpFormState extends State<OtpForm> {
 
   @override
   Widget build(BuildContext context) {
+    String maskedEmail() {
+      final email = widget.email;
+      if (email.isEmpty) return '';
+      final len = email.length;
+      if (len >= 7) {
+        return email.replaceRange(0, 5, '*****');
+      } else {
+        return email.replaceRange(
+            0, len, List.generate(len, (_) => '*').join());
+      }
+    }
+
     return BlocListener<OtpCubit, OtpState>(
       listener: (context, state) {
         if (state is OtpSuccess) {
@@ -74,16 +88,10 @@ class _OtpFormState extends State<OtpForm> {
             );
           } else {
             Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddInfomationPage(
-                  email: widget.email,
-                  phone: widget.phoneNumber,
-                  password: widget.password,
-                  confirmPassword: widget.confirmPassword,
-                ),
-              ),
-            );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SigninPage(),
+                ));
           }
         } else if (state is OtpFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -126,7 +134,7 @@ class _OtpFormState extends State<OtpForm> {
                       ),
                 ),
                 Text(
-                  "Mã đã được gửi đến số ${widget.phoneNumber.replaceRange(0, 7, '*******')}",
+                  "Mã đã được gửi đến gmail ${maskedEmail()}",
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.w400,
                         fontSize: 17.sp,

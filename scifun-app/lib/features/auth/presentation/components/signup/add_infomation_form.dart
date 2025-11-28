@@ -78,12 +78,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
       FocusScope.of(context).unfocus();
       context.read<AuthBloc>().add(AuthSignup(
             fullname: _fullnameCon.text.trim(),
-            birthday: selectedBirthday ?? DateTime(2000, 1, 1),
-            // gender: _genderFieldValue ?? 1,
-            provinceId: _selectedProvinceId ?? 0,
-            wardId: _selectedWardId ?? 0,
             email: widget.email,
-            phone: widget.phone,
             password: widget.password,
             passwordConfimation: widget.confirmPassword,
           ));

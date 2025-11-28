@@ -16,36 +16,26 @@ class UserRepositoryImpl implements UserRepository {
   });
 
   @override
-  Future<Either<Failure, UserEntity?>> changeUser({
-    required String fullname,
-    required String email,
-    required DateTime birthday,
-    required int gender,
-    required int provinceId,
-    required int wardId,
-    File? image,
-  }) async {
-    return await _getUser(
-      () => userRemoteDatasource.changeUser(
-        fullname: fullname,
-        email: email,
-        birthday: birthday,
-        gender: gender,
-        image: image,
-        provinceId: provinceId,
-        wardId: wardId,
-      ),
-    );
-  }
-
-  Future<Either<Failure, UserEntity?>> _getUser(
-    Future<UserModel?> Function() func,
-  ) async {
+  Future<Either<Failure, UserEntity?>> getInfoUser(
+      {required String token}) async {
     try {
-      final UserModel? user = await func();
-      return Right(user);
+      final res = await userRemoteDatasource.getUser(token: token);
+      return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
     }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity?>> changeUser(
+      {required String fullname,
+      required DateTime birthday,
+      required int gender,
+      File? image,
+      required int provinceId,
+      required int wardId,
+      required String email}) {
+    // TODO: implement changeUser
+    throw UnimplementedError();
   }
 }

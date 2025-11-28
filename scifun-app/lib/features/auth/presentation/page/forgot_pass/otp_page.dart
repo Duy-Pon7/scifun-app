@@ -65,7 +65,8 @@ class _OtpPageState extends State<OtpPage> {
                 print("stateauth $state");
                 if (state is AuthMessageSuccess) {
                   if (state.message == "true") {
-                    EasyLoading.showToast("Đã gửi mã Otp vào ${widget.email}",
+                    EasyLoading.showToast(
+                        "Đã gửi mã OTP vào email đã nhập: ${widget.email}",
                         toastPosition: EasyLoadingToastPosition.bottom);
                   } else {
                     EasyLoading.showToast("Lỗi gửi mã Otp",

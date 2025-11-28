@@ -33,44 +33,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is AuthCheckSuccess) {
-          if (state.usercheck.phoneExists == false) {
-            EasyLoading.showToast("Số điện thoại chưa tồn tại",
-                toastPosition: EasyLoadingToastPosition.bottom);
-          } else if (state.usercheck.emailExists == false) {
-            EasyLoading.showToast("Email chưa tồn tại",
-                toastPosition: EasyLoadingToastPosition.bottom);
-          } else if (state.usercheck.phoneExists == true &&
-              state.usercheck.emailExists == true) {
-            if (state.usercheck.phoneUser?.email == _emailCon.text.trim()) {
-              EasyLoading.dismiss();
-              Navigator.push(
-                  context,
-                  slidePage(ConfirmPage(
-                    email: _emailCon.text.trim(),
-                    phone: _phoneCon.text.replaceAll(' ', '').trim(),
-                    fullName: state.usercheck.phoneUser?.fullname ?? "",
-                    avatar: state.usercheck.phoneUser?.avatar ?? "",
-                  )));
-            } else {
-              EasyLoading.showToast("Email không khớp với tài khoản",
-                  toastPosition: EasyLoadingToastPosition.bottom);
-            }
-
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => OtpPage(
-            //       email: _emailCon.text.trim(),
-            //       phone: _phoneCon.text.replaceAll(' ', '').trim(),
-            //       password: _passCon.text.trim(),
-            //       confirmPassword: _confirmPassCon.text.trim(),
-            //     ),
-
-            //   ),
-            // );
-          }
-        } else if (state is AuthLoading) {
+        if (state is AuthLoading) {
           EasyLoading.show(
             status: 'Đang tải',
             maskType: EasyLoadingMaskType.black,

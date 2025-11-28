@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:sci_fun/common/models/response_model.dart';
-import 'package:sci_fun/common/models/settings_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/message_constants.dart';
 import 'package:sci_fun/core/error/server_exception.dart';

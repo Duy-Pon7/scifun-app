@@ -31,7 +31,7 @@ class PaginationCubit<T, Param> extends Cubit<PaginationState<T>> {
   bool _isLastPage = false;
   bool get isLastPage => _isLastPage;
   int _currentPage = 1;
-  List<T> _items = [];
+  final List<T> _items = [];
 
   List<T> get items => _items;
 
@@ -55,7 +55,6 @@ class PaginationCubit<T, Param> extends Cubit<PaginationState<T>> {
 
     res.fold(
       (failure) {
-        print(failure.message);
         emit(PaginationFailed<T>(message: failure.message));
       },
       (data) {

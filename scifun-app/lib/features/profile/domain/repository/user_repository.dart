@@ -14,4 +14,5 @@ abstract interface class UserRepository {
     required int wardId,
     required String email,
   });
+  Future<Either<Failure, UserEntity?>> getInfoUser({required String token});
 }
