@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
-import 'package:sci_fun/common/page/topic_page.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/topic_item_lesson.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
 import 'package:sci_fun/features/home/domain/usecase/get_key_list_lesson.dart';
@@ -62,21 +62,9 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BasicAppbar(
-        title: Text(
-          "Tìm kiếm",
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 17.sp,
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColor.primary600,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: "Chi tiết lịch sử gói cước",
+        showTitle: true,
+        showBack: true,
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -159,28 +147,6 @@ class _SearchPageState extends State<SearchPage> {
             if (text.isNotEmpty) {
               _saveSearch(text);
               _controller.clear();
-
-              Navigator.push(
-                context,
-                slidePage(
-                  TopicPage<LessonEntity, String>(
-                    title: 'Kết quả tìm kiếm',
-                    param: text, // keyword search
-                    usecase:
-                        sl<GetKeyListLesson>(), // lấy danh sách theo keyword
-                    itemBuilder: (context, lesson) => TopicItemLesson(
-                      title: lesson.name ?? "",
-                      onTap: () => Navigator.push(
-                        context,
-                        slidePage(
-                          LessonPage(lessonId: lesson.id ?? 0),
-                        ),
-                      ),
-                      isCompleted: lesson.isCompleted ?? false,
-                    ),
-                  ),
-                ),
-              );
             }
           },
         );

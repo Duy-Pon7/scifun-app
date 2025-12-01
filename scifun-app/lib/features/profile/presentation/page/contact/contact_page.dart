@@ -39,21 +39,9 @@ class ContactPage extends StatelessWidget {
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: BasicAppbar(
-          title: Text(
-            "Liên hệ",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: AppColor.primary600,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          centerTitle: true,
+          title: "Về chúng tôi",
+          showTitle: true,
+          showBack: true,
         ),
         body: SingleChildScrollView(
           child: Column(

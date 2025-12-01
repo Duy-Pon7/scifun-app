@@ -11,8 +11,8 @@ class DashboardCubit extends Cubit<int> {
 
   final List<Widget> pages = [
     HomePage(),
-    AnalysticPage(),
-    ExamPage(),
+    // AnalysticPage(),
+    // ExamPage(),
     NotiPage(),
     ProfilePage(),
   ];

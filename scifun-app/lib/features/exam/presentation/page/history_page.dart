@@ -57,21 +57,9 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BasicAppbar(
-        title: Text(
-          "Lịch sử làm bài",
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 17.sp,
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_rounded,
-            color: AppColor.primary600,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: "Chi tiết lịch sử gói cước",
+        showTitle: true,
+        showBack: true,
       ),
       body: BlocProvider.value(
         value: _historyCubit,

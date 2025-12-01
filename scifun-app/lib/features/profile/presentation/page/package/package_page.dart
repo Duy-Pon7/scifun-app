@@ -36,24 +36,9 @@ class _PackagePageState extends State<PackagePage> {
       ],
       child: Scaffold(
         appBar: BasicAppbar(
-          automaticallyImplyLeading: widget.flagpop != false,
-          leading: (widget.flagpop == false)
-              ? null
-              : IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios_rounded,
-                  ),
-                  color: AppColor.primary600,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-          title: Text(
-            "Gói thành viên",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          centerTitle: true,
+          title: "Chi tiết gói cước",
+          showTitle: true,
+          showBack: true,
         ),
         body: SafeArea(
           child: SingleChildScrollView(

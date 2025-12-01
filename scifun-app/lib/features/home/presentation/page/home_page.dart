@@ -20,10 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -36,7 +32,7 @@ class _HomePageState extends State<HomePage>
           create: (context) => sl<NewsCubit>()..getNews(),
         ),
         BlocProvider(
-          create: (context) => sl<SubjectCubit>()..getSubjects(),
+          create: (context) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
         ),
       ],
       child: MultiBlocListener(
@@ -97,7 +93,7 @@ class _HomePageState extends State<HomePage>
               return RefreshIndicator(
                 onRefresh: () async {
                   newcontext.read<NewsCubit>().getNews();
-                  newcontext.read<SubjectCubit>().getSubjects();
+                  newcontext.read<SubjectCubit>().getSubjects(searchQuery: "");
                   newcontext.read<AuthBloc>().add(AuthGetSession());
                 },
                 child: SingleChildScrollView(
@@ -109,7 +105,7 @@ class _HomePageState extends State<HomePage>
                       children: [
                         HeaderHome(),
                         ListSubjects(),
-                        ListNews(),
+                        // ListNews(),
                       ],
                     ),
                   ),

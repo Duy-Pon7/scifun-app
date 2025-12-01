@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sci_fun/core/utils/usecase.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/domain/usecase/get_all_subjects.dart';
 
@@ -14,7 +13,7 @@ class SubjectInitial extends SubjectState {}
 class SubjectLoading extends SubjectState {}
 
 class SubjectsLoaded extends SubjectState {
-  final SubjectEntity subjectList;
+  final List<SubjectEntity> subjectList;
 
   SubjectsLoaded(this.subjectList);
 
@@ -45,10 +44,13 @@ class SubjectCubit extends Cubit<SubjectState> {
 
   SubjectCubit({required this.getAllSubjects}) : super(SubjectInitial());
 
-  Future<void> getSubjects() async {
+  Future<void> getSubjects({required String searchQuery}) async {
     emit(SubjectLoading());
+
     try {
-      final res = await getAllSubjects.call(NoParams());
+      final res = await getAllSubjects(
+        SubjectsParams(searchQuery),
+      );
 
       res.fold(
         (failure) => emit(SubjectError(failure.message)),

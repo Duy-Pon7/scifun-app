@@ -1,51 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final bool showTitle;
+  final bool showBack;
+  final Widget? leftIcon;
+  final Widget? rightIcon;
+
   const BasicAppbar({
     super.key,
-    this.backgroundColor = Colors.white,
-    this.leading,
-    this.leadingWidth,
-    this.title,
-    this.actions,
-    this.centerTitle,
-    this.bottom,
-    this.automaticallyImplyLeading = true, // thêm dòng này
+    required this.title,
+    this.showTitle = true,
+    this.showBack = true,
+    this.leftIcon,
+    this.rightIcon,
   });
-
-  final Color backgroundColor;
-  final Widget? leading;
-  final double? leadingWidth;
-  final Widget? title;
-  final List<Widget>? actions;
-  final bool? centerTitle;
-  final PreferredSizeWidget? bottom;
-  final bool automaticallyImplyLeading; // thêm dòng này
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
-      scrolledUnderElevation: 0,
-      backgroundColor: backgroundColor,
-      leading: leading,
-      leadingWidth: leadingWidth,
-      title: title,
-      actions: actions,
-      centerTitle: centerTitle,
-      bottom: bottom,
-      automaticallyImplyLeading:
-          automaticallyImplyLeading, // truyền xuống AppBar
-      shape: Border(
-        bottom: BorderSide(
-          color: AppColor.border,
-          width: 0.5,
-        ),
-      ),
+      // leadingWidth: 48.w,
+
+      // leading diff
+      leading: leftIcon ??
+          (showBack
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back_ios, color: AppColor.primary600),
+                  onPressed: () => Navigator.pop(context),
+                )
+              : null),
+      title: showTitle
+          ? Text(
+              title,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 17.sp,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+              ),
+            )
+          : null,
+      centerTitle: true,
+      actions: [
+        if (rightIcon != null) rightIcon!,
+      ],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

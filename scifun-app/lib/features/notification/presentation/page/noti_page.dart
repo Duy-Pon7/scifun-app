@@ -97,43 +97,32 @@ class _NotiPageState extends State<NotiPage>
       ],
       child: Scaffold(
         appBar: BasicAppbar(
-          title: Text(
-            "Thông báo",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          centerTitle: true,
-          actions: [
-            BlocBuilder<PaginatorCubit<NotiModel, dynamic>,
-                PaginatorState<NotiModel>>(
-              builder: (context, state) {
-                final notis =
-                    context.read<PaginatorCubit<NotiModel, dynamic>>().items;
-                final hasUnread = _hasUnread(notis);
+          title: "Thông báo",
+          rightIcon: BlocBuilder<PaginatorCubit<NotiModel, dynamic>,
+              PaginatorState<NotiModel>>(
+            builder: (context, state) {
+              final notis =
+                  context.read<PaginatorCubit<NotiModel, dynamic>>().items;
+              final hasUnread = _hasUnread(notis);
 
-                return IconButton(
-                  icon: Icon(
-                    Icons.done_all_rounded,
-                    color: hasUnread
-                        ? AppColor.primary600
-                        : Colors.grey, // Đổi màu
-                  ),
-                  onPressed: hasUnread
-                      ? () async {
-                          await context
-                              .read<NotiCubit>()
-                              .markNotificationAsReadAll();
-                          await context
-                              .read<PaginatorCubit<NotiModel, dynamic>>()
-                              .refreshData();
-                        }
-                      : null, // Disable nếu không còn thông báo chưa đọc
-                );
-              },
-            ),
-          ],
+              return IconButton(
+                icon: Icon(
+                  Icons.done_all_rounded,
+                  color: hasUnread ? AppColor.primary600 : Colors.grey,
+                ),
+                onPressed: hasUnread
+                    ? () async {
+                        await context
+                            .read<NotiCubit>()
+                            .markNotificationAsReadAll();
+                        await context
+                            .read<PaginatorCubit<NotiModel, dynamic>>()
+                            .refreshData();
+                      }
+                    : null,
+              );
+            },
+          ),
         ),
         body: Column(
           children: [

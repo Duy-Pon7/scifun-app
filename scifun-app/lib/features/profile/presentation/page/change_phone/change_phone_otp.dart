@@ -22,21 +22,9 @@ class ChangePhoneOtp extends StatelessWidget {
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: BasicAppbar(
-          title: Text(
-            "Nhập mã OTP",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: AppColor.primary600,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          centerTitle: true,
+          title: "Nhập mã OTP",
+          showTitle: true,
+          showBack: true,
         ),
         body: BlocProvider(
           create: (context) => sl<OtpCubit>()..startCountdown(),

@@ -11,9 +11,10 @@ class SubjectRepositoryImpl implements SubjectRepository {
   SubjectRepositoryImpl({required this.subjectRemoteDatasource});
 
   @override
-  Future<Either<Failure, SubjectEntity>> getAllSubjects() async {
+  Future<Either<Failure, List<SubjectEntity>>> getAllSubjects(
+      String? searchQuery) async {
     try {
-      final res = await subjectRemoteDatasource.getAllSubjects();
+      final res = await subjectRemoteDatasource.getAllSubjects(searchQuery);
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));

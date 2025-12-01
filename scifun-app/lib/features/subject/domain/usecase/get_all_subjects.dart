@@ -4,13 +4,20 @@ import 'package:sci_fun/core/utils/usecase.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';
 
-class GetAllSubjects implements Usecase<SubjectEntity, NoParams> {
+class GetAllSubjects implements Usecase<List<SubjectEntity>, SubjectsParams> {
   final SubjectRepository subjectRepository;
 
   GetAllSubjects({required this.subjectRepository});
 
   @override
-  Future<Either<Failure, SubjectEntity>> call(param) async {
-    return await subjectRepository.getAllSubjects();
+  Future<Either<Failure, List<SubjectEntity>>> call(
+      SubjectsParams params) async {
+    return await subjectRepository.getAllSubjects(params.searchQuery);
   }
+}
+
+class SubjectsParams {
+  final String? searchQuery;
+
+  SubjectsParams(this.searchQuery);
 }

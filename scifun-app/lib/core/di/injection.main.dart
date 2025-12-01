@@ -53,6 +53,7 @@ Future<void> initializeDependencies() async {
     ..registerFactory(() => SubjectCubit(getAllSubjects: sl<GetAllSubjects>()));
   // Other
   await _authInit();
+  await _topicInit();
   await _addressInti();
   await _notiInti();
   await _examInti();
@@ -142,6 +143,16 @@ Future<void> _statisticsInti() async {
     )
     ..registerLazySingleton(() => SchoolCubit(sl()))
     ..registerLazySingleton(() => SchoolPaginatorCubit(sl()));
+}
+
+Future<void> _topicInit() async {
+  sl
+    ..registerFactory<TopicRemoteDatasource>(
+        () => TopicRemoteDatasourceImpl(dioClient: sl()))
+    ..registerFactory<TopicRepository>(
+        () => TopicRepositoryImpl(topicRemoteDatasource: sl()))
+    ..registerFactory(() => GetAllTopics(topicRepository: sl()))
+    ..registerLazySingleton(() => TopicCubit(sl()));
 }
 
 Future<void> _notiInti() async {

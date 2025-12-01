@@ -35,19 +35,9 @@ class PaymentPage extends StatelessWidget {
       create: (context) => sl<SelectImageCubit>(),
       child: Scaffold(
         appBar: BasicAppbar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_rounded),
-            color: AppColor.primary600,
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text(
-            "Chi tiết gói",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          centerTitle: true,
+          title: "Chi tiết lịch sử gói cước",
+          showTitle: true,
+          showBack: true,
         ),
         body: BlocBuilder<SelectImageCubit, SelectImageState>(
           builder: (context, imageState) {

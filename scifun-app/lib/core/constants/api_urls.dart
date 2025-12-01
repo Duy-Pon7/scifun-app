@@ -43,8 +43,12 @@ class HomeApiUrls {
 
 class SubjectApiUrl {
   SubjectApiUrl._();
-
   static const String getSubjects = '/subject/get-subjects';
+}
+
+class TopicApiUrl {
+  TopicApiUrl._();
+  static const String getTopics = '/topic/get-topics';
 }
 
 class PackagesApiUrl {

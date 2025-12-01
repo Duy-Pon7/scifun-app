@@ -1,12 +1,9 @@
-import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
-import 'package:sci_fun/core/constants/message_constants.dart';
-import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/features/subject/data/model/subject_model.dart';
 
 abstract interface class SubjectRemoteDatasource {
-  Future<SubjectModel> getAllSubjects();
+  Future<List<SubjectModel>> getAllSubjects(String? searchQuery);
 }
 
 class SubjectRemoteDatasourceImpl implements SubjectRemoteDatasource {
@@ -15,26 +12,24 @@ class SubjectRemoteDatasourceImpl implements SubjectRemoteDatasource {
   SubjectRemoteDatasourceImpl({required this.dioClient});
 
   @override
-  Future<SubjectModel> getAllSubjects() async {
+  Future<List<SubjectModel>> getAllSubjects(
+    String? searchQuery,
+  ) async {
     try {
       final res = await dioClient.get(
-          url: "${SubjectApiUrl.getSubjects}?page=1&limit=10");
-      if (res.statusCode != 200) {
-        throw ServerException();
+          url:
+              "${SubjectApiUrl.getSubjects}?page=1&limit=10&search=$searchQuery");
+      if (res.statusCode == 200) {
+        final List<dynamic> data = res.data['data']['subjects'];
+        return data
+            .map((subjectJson) =>
+                SubjectModel.fromJson(subjectJson as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Failed to load subjects');
       }
-
-      final responseData = ResponseModel<SubjectModel>.fromJson(res.data,
-          (json) => SubjectModel.fromJson(json as Map<String, dynamic>));
-
-      if (responseData.status != 200 || responseData.data == null) {
-        throw ServerException(message: MessageConstant.failedGetInfo);
-      }
-
-      return responseData.data!;
-    } on ServerException {
-      rethrow;
     } catch (e) {
-      throw ServerException();
+      throw Exception('Failed to load subjects: $e');
     }
   }
 }

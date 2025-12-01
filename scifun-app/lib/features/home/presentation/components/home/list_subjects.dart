@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
-import 'package:sci_fun/common/page/topic_page.dart';
-import 'package:sci_fun/common/widget/topic_item.dart';
-import 'package:sci_fun/common/widget/topic_item_lesson.dart';
-import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/features/home/domain/entity/lesson_category_entity.dart';
-import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
-import 'package:sci_fun/features/home/domain/usecase/get_lesson_category.dart';
-import 'package:sci_fun/features/home/domain/usecase/get_list_lesson.dart';
-import 'package:sci_fun/features/home/presentation/page/lesson_page.dart';
 import 'package:sci_fun/features/home/presentation/widget/subject_item.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
+import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 
 class ListSubjects extends StatelessWidget {
   const ListSubjects({super.key});
@@ -42,59 +33,75 @@ class ListSubjects extends StatelessWidget {
         ),
         BlocBuilder<SubjectCubit, SubjectState>(
           builder: (context, state) {
-            if (state is SubjectsLoaded) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: state.subjectList.subjects
-                    .map(
-                      (subject) => SubjectItem(
-                        subjectName: subject.name ?? "",
-                        imagePath: subject.avatar ?? "",
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            slidePage(
-                              TopicPage<LessonCategoryEntity,
-                                  GetLessonCateParam>(
-                                title: 'Chủ đề',
-                                param: GetLessonCateParam(
-                                    subjectId: subject.id ?? 0),
-                                usecase: sl<GetLessonCategory>(),
-                                itemBuilder: (context, cate) => TopicItem(
-                                  title: cate.name ?? "",
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    slidePage(
-                                      TopicPage<LessonEntity, int>(
-                                        title: 'Danh sách bài học',
-                                        param: cate.id ?? 0,
-                                        usecase: sl<GetListLesson>(),
-                                        itemBuilder: (context, lesson) =>
-                                            TopicItemLesson(
-                                          title: lesson.name ?? "",
-                                          onTap: () => Navigator.push(
-                                            context,
-                                            slidePage(LessonPage(
-                                              lessonId: lesson.id ?? 0,
-                                            )),
-                                          ),
-                                          isCompleted:
-                                              lesson.isCompleted ?? false,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                    .toList(),
+            print("SubjectState: $state");
+            if (state is SubjectLoading) {
+              return SizedBox(
+                height: 150.h,
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
-            return SizedBox();
+
+            if (state is SubjectsLoaded) {
+              final items = state.subjectList;
+              if (items.isEmpty) {
+                return SizedBox(
+                  height: 150.h,
+                  child: const Center(child: Text('Không có môn học')),
+                );
+              }
+
+              return SizedBox(
+                height: 150.h,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: items.length,
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  separatorBuilder: (_, __) => SizedBox(width: 8.w),
+                  itemBuilder: (context, index) {
+                    final subject = items[index];
+                    return SubjectItem(
+                      subjectName: subject.name ?? "",
+                      imagePath: subject.image ?? "",
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TopicPage(
+                                subjectId: subject.id ?? '',
+                                subjectName: subject.name ?? '',
+                              ),
+                            ));
+                      },
+                    );
+                  },
+                ),
+              );
+            }
+
+            if (state is SubjectError) {
+              return SizedBox(
+                height: 150.h,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Lỗi khi tải môn học: ${state.message}'),
+                      ElevatedButton(
+                        onPressed: () => context
+                            .read<SubjectCubit>()
+                            .getSubjects(searchQuery: ""),
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return SizedBox(
+              height: 150.h,
+              child: const Center(child: Text('Không có môn học')),
+            );
           },
         ),
       ],

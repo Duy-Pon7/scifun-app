@@ -78,21 +78,9 @@ class _ChangePassState extends State<ChangePass> {
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: BasicAppbar(
-          title: Text(
-            "Đổi số mật khẩu",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: AppColor.primary600,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          centerTitle: true,
+          title: "Đổi mật khẩu",
+          showTitle: true,
+          showBack: true,
         ),
         body: SingleChildScrollView(
           child: Padding(
