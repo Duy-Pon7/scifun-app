@@ -15,6 +15,7 @@ import 'package:sci_fun/features/profile/presentation/components/profile/header_
 import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/package_history_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_page/change_infomation_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
@@ -97,23 +98,16 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      child: BlocBuilder<AuthBloc, AuthState>(
+                      child: BlocBuilder<UserCubit, UserState>(
                         builder: (context, state) {
-                          if (state is AuthUserSuccess) {
+                          if (state is UserLoaded) {
                             return Column(
                               spacing: 12.h,
                               children: [
                                 HeaderProfile(
-                                  imgUrl: context.read<AuthBloc>().state
-                                          is AuthUserSuccess
-                                      ? (context.read<AuthBloc>().state
-                                                  as AuthUserSuccess)
-                                              .user
-                                              ?.data
-                                              ?.avatar ??
-                                          ""
-                                      : 'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
-                                  name: state.user?.data?.fullname ?? "Khách",
+                                  imgUrl: state.user.data?.avatar ??
+                                      "https://cdn-icons-png.flaticon.com/512/8345/8345328.png",
+                                  name: state.user.data?.fullname ?? "Khách",
                                   remainingPackage:
                                       getRemainingDays(DateTime.now()),
                                 ),
@@ -137,20 +131,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     _itemNavigator(
                                         Icons.person, "Thông tin cá nhân", () {
                                       Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => BlocProvider.value(
-                                            value: context.read<AuthBloc>(),
-                                            child: const ChangeInfomationPage(),
-                                          ),
-                                        ),
-                                      ).then((result) {
-                                        if (result == true) {
-                                          context
-                                              .read<AuthBloc>()
-                                              .add(AuthGetSession());
-                                        }
-                                      });
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ChangeInfomationPage(),
+                                          ));
                                     }),
                                     _itemNavigator(
                                       Icons.lock,
@@ -170,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           context,
                                           slidePage(PackagePage(
                                               fullname:
-                                                  state.user?.data?.fullname ??
+                                                  state.user.data?.fullname ??
                                                       "Khách",
                                               remainingPackage:
                                                   getRemainingDays(

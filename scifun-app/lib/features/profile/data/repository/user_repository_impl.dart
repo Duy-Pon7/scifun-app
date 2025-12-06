@@ -20,6 +20,7 @@ class UserRepositoryImpl implements UserRepository {
       {required String token}) async {
     try {
       final res = await userRemoteDatasource.getUser(token: token);
+      print("UserRepositoryImpl getInfoUser result: $res");
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));

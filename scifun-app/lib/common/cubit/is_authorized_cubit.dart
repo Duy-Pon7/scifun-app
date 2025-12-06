@@ -14,6 +14,12 @@ class IsAuthorizedCubit extends Cubit<bool> {
     emit(token != null);
   }
 
+  void getIdData() {
+    final userData =
+        _sharePrefsService.getUserData(); // dùng đúng key 'user_data'
+    emit(userData != null);
+  }
+
   void logout() async {
     await _sharePrefsService.clear();
     emit(false); // đảm bảo tự quay lại login luôn

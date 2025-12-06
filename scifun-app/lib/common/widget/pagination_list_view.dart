@@ -28,7 +28,7 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    widget.cubit.loadInitial();
+    // Không gọi loadInitial() ở đây - để parent/cubit xử lý
   }
 
   void _onScroll() {

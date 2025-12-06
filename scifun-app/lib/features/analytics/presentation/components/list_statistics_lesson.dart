@@ -1,28 +1,25 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/analytics/presentation/widget/custom_expansion_tile_lesson.dart';
 import 'package:sci_fun/features/analytics/presentation/widget/lesson_item.dart';
-import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
-import 'package:sci_fun/features/home/presentation/cubit/progress_cubit.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 
 class ListStatisticsLesson extends StatelessWidget {
-  final int? subjectId;
+  final String? subjectId;
   const ListStatisticsLesson({super.key, required this.subjectId});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProgressCubit, ProgressState>(
       builder: (context, state) {
-        print("State: $state");
+        print("ProgressCubit: $state");
         if (state is ProgressLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is ProgressLoaded) {
-          final groupedLessons = groupBy(state.progress.lessons,
-              (LessonEntity e) => e.lessonCategory?.name ?? 'Khác');
+          final topics = state.progress.topics;
+          final progress = state.progress.progress ?? 0;
 
           return SingleChildScrollView(
             child: Column(
@@ -34,11 +31,10 @@ class ListStatisticsLesson extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 32.w),
                       child: LinearProgressIndicator(
-                        value: state.progress.progress.completionPercentage
-                                .toDouble() /
-                            100,
+                        value: progress.toDouble() / 100,
                         minHeight: 6,
-                        backgroundColor: Color(0xFF787880).withOpacity(0.16),
+                        backgroundColor:
+                            Color(0xFF787880).withValues(alpha: .16),
                         valueColor:
                             const AlwaysStoppedAnimation<Color>(Colors.red),
                         borderRadius: BorderRadius.circular(5.r),
@@ -49,12 +45,10 @@ class ListStatisticsLesson extends StatelessWidget {
                           EdgeInsets.symmetric(horizontal: 32.w, vertical: 4.h),
                       child: LayoutBuilder(
                         builder: (context, constraints) {
-                          final progress = state
-                              .progress.progress.completionPercentage
-                              .toDouble()
-                              .clamp(0, 100);
+                          final progressValue =
+                              progress.toDouble().clamp(0, 100);
                           final barWidth = constraints.maxWidth;
-                          final currentOffset = barWidth * progress / 100;
+                          final currentOffset = barWidth * progressValue / 100;
 
                           return SizedBox(
                             height: 24.h,
@@ -83,12 +77,12 @@ class ListStatisticsLesson extends StatelessWidget {
                                 ),
 
                                 // % hiện tại — chỉ hiển thị khi không phải 0% hoặc 100%
-                                if (progress > 0 && progress < 100)
+                                if (progressValue > 0 && progressValue < 100)
                                   Positioned(
                                     left: currentOffset -
                                         20.w, // căn giữa tương đối
                                     child: Text(
-                                      "${progress.round()}%",
+                                      "${progressValue.round()}%",
                                       style: TextStyle(
                                           fontSize: 17.sp,
                                           fontWeight: FontWeight.w600),
@@ -103,63 +97,31 @@ class ListStatisticsLesson extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 40.h),
-                ...groupedLessons.entries.map((entry) {
-                  final categoryName = entry.key;
-                  final lessons = entry.value;
-                  print(lessons);
+                ...topics.map((topic) {
                   return Column(
                     children: [
                       CustomExpansionTileLesson(
-                        completedCount: lessons
-                            .where((l) =>
-                                l.quizz.isNotEmpty &&
-                                l.quizz.first.quizResult != null)
-                            .length,
-                        title: categoryName,
+                        completedCount: topic.completedQuizzes ?? 0,
+                        title: topic.name ?? "Không có tên",
                         backgroundColor: Colors.white,
                         borderColor: AppColor.primary300,
                         iconColor: AppColor.primary600,
                         titleFontSize: 18.sp,
-                        children: lessons.map((lesson) {
-                          final quizResult = lesson.quizz.isNotEmpty
-                              ? lesson.quizz.first.quizResult
-                              : null;
-                          return LessonItem(
-                            title: lesson.name ?? "",
-                            completedTime: quizResult?.updatedAt != null
-                                ? DateFormat('HH:mm - dd/MM/yyyy')
-                                    .format(quizResult!.updatedAt!)
-                                : '---',
-                            score: quizResult?.score != null
-                                ? "${quizResult!.score} điểm"
-                                : "",
-                          );
-                        }).toList(),
+                        children: [
+                          LessonItem(
+                            title: topic.name ?? "Không có tên",
+                            completedTime:
+                                '${topic.completedQuizzes}/${topic.totalQuizzes} bài',
+                            score: topic.averageScore != null
+                                ? "${topic.averageScore} điểm"
+                                : "---",
+                          ),
+                        ],
                       ),
                       SizedBox(height: 16.h),
                     ],
                   );
-                }).toList(),
-                // CustomExpansionTileLesson(
-                //   completedCount: 2,
-                //   title: 'Phân tích bài học',
-                //   backgroundColor: Colors.white,
-                //   borderColor: AppColor.primary300,
-                //   iconColor: AppColor.primary600,
-                //   titleFontSize: 18.sp,
-                //   children: [
-                //     LessonItem(
-                //       title: 'Bài 1: Đạo hàm số thập phân',
-                //       completedTime: '15:30 20/3/2024',
-                //       score: '10 điểm',
-                //     ),
-                //     LessonItem(
-                //       title: 'Bài 2: Thần số học',
-                //       completedTime: '15:30 20/3/2024',
-                //       score: '10 điểm',
-                //     ),
-                //   ],
-                // ),
+                }),
               ],
             ),
           );

@@ -10,7 +10,6 @@ import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
-import 'package:sci_fun/features/home/domain/usecase/get_key_list_lesson.dart';
 import 'package:sci_fun/features/home/presentation/page/lesson_page.dart';
 
 class SearchPage extends StatefulWidget {

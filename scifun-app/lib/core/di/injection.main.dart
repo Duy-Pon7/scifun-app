@@ -33,12 +33,6 @@ Future<void> initializeDependencies() async {
     ..registerFactory(() => OtpCubit(sl()))
     ..registerFactory(() => SelectTabCubit())
     ..registerFactory(() => CountdownCubit(totalSeconds: sl()))
-    ..registerFactory(() => QuizzCubit(sl<GetQuizzDetail>(), sl<AddQuizz>(),
-        sl<GetQuizzExamsets>(), sl<GetQuizzByLesson>()))
-    ..registerLazySingleton(() => QuizzResultPaginatorCubit(
-          usecase: sl(),
-          quizzId: sl(),
-        ))
     ..registerFactory<SubjectRemoteDatasource>(
       () => SubjectRemoteDatasourceImpl(dioClient: sl<DioClient>()),
     )
@@ -130,19 +124,12 @@ Future<void> _examInti() async {
 
 Future<void> _statisticsInti() async {
   sl
-    ..registerFactory<SchoolRemoteDatasource>(
-        () => SchoolRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<SchoolRepository>(
-        () => SchoolRepositoryImpl(schoolRemoteDatasource: sl()))
-    ..registerFactory(() => GetSchool(sl()))
-    ..registerFactory(
-      () => GetListSchool(schoolRepository: sl<SchoolRepository>()),
-    )
-    ..registerFactory(
-      () => GetListSchoolData(schoolRepository: sl<SchoolRepository>()),
-    )
-    ..registerLazySingleton(() => SchoolCubit(sl()))
-    ..registerLazySingleton(() => SchoolPaginatorCubit(sl()));
+    ..registerFactory<ProgressRemoteDatasource>(
+        () => ProgressRemoteDatasourceImpl(dioClient: sl()))
+    ..registerFactory<ProgressRepository>(
+        () => ProgressRepositoryImpl(progressRemoteDatasource: sl()))
+    ..registerFactory(() => GetProgress(progressRepository: sl()))
+    ..registerLazySingleton(() => ProgressCubit(getProgress: sl()));
 }
 
 Future<void> _topicInit() async {
@@ -185,10 +172,10 @@ Future<void> _addressInti() async {
 
 Future<void> _authInit() async {
   sl
-    ..registerFactory<AuthRemoteDatasource>(
-        () => AuthRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<AuthRepository>(() =>
-        AuthRepositoryImpl(authRemoteDatasource: sl(), sharePrefsService: sl()))
+    ..registerFactory<AuthRemoteDatasource>(() =>
+        AuthRemoteDatasourceImpl(dioClient: sl(), sharePrefsService: sl()))
+    ..registerFactory<AuthRepository>(
+        () => AuthRepositoryImpl(authRemoteDatasource: sl()))
     ..registerFactory(() => Login(authRepository: sl()))
     ..registerFactory(() => Signup(authRepository: sl()))
     ..registerFactory(() => SendEmail(authRepository: sl()))
@@ -248,32 +235,29 @@ void _homeInit() {
       () => GetLessonCategory(
           lessonCategoryRepository: sl<LessonCategoryRepository>()),
     )
-    ..registerFactory<LessonRemoteDatasource>(
-      () => LessonRemoteDatasourceImpl(dioClient: sl<DioClient>()),
-    )
-    ..registerFactory<LessonRepository>(
-      () => LessonRepositoryImpl(
-        lessonRemoteDatasource: sl<LessonRemoteDatasource>(),
-      ),
-    )
-    ..registerFactory(
-      () => GetListLesson(lessonRepository: sl<LessonRepository>()),
-    )
-    ..registerFactory(
-      () => GetKeyListLesson(lessonRepository: sl<LessonRepository>()),
-    )
-    ..registerFactory(
-      () => GetSubjectProgress(lessonRepository: sl<LessonRepository>()),
-    )
-    ..registerFactory(
-      () => GetLessonDetail(lessonRepository: sl<LessonRepository>()),
-    )
-    ..registerFactory(
-      () => ProgressCubit(sl<GetSubjectProgress>()),
-    )
-    ..registerFactory(
-      () => LessonCubit(sl<GetLessonDetail>(), sl<GetLessonCategory>()),
-    )
+    // ..registerFactory<LessonRemoteDatasource>(
+    //   () => LessonRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    // )
+    // ..registerFactory<LessonRepository>(
+    //   () => LessonRepositoryImpl(
+    //     lessonRemoteDatasource: sl<LessonRemoteDatasource>(),
+    //   ),
+    // )
+    // ..registerFactory(
+    //   () => GetListLesson(lessonRepository: sl<LessonRepository>()),
+    // )
+    // ..registerFactory(
+    //   () => GetKeyListLesson(lessonRepository: sl<LessonRepository>()),
+    // )
+    // ..registerFactory(
+    //   () => GetSubjectProgress(lessonRepository: sl<LessonRepository>()),
+    // )
+    // ..registerFactory(
+    //   () => GetLessonDetail(lessonRepository: sl<LessonRepository>()),
+    // )
+    // ..registerFactory(
+    //   () => LessonCubit(sl<GetLessonDetail>(), sl<GetLessonCategory>()),
+    // )
     ..registerFactory<QuizzRemoteDatasource>(
       () => QuizzRemoteDatasourceImpl(dioClient: sl<DioClient>()),
     )
@@ -283,22 +267,10 @@ void _homeInit() {
       ),
     )
     ..registerFactory(
-      () => GetQuizzResult(quizzRepository: sl<QuizzRepository>()),
+      () => GetAllQuizzes(quizzRepository: sl<QuizzRepository>()),
     )
     ..registerFactory(
-      () => GetQuizzByCate(quizzRepository: sl<QuizzRepository>()),
-    )
-    ..registerFactory(
-      () => GetQuizzByLesson(quizzRepository: sl<QuizzRepository>()),
-    )
-    ..registerFactory(
-      () => GetQuizzDetail(quizzRepository: sl<QuizzRepository>()),
-    )
-    ..registerFactory(
-      () => GetQuizzExamsets(quizzRepository: sl<ExamsetRepository>()),
-    )
-    ..registerFactory(
-      () => AddQuizz(quizzRepository: sl<QuizzRepository>()),
+      () => QuizzCubit(sl<GetAllQuizzes>()),
     );
 }
 

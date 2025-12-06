@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/topic/presentation/cubit/topic_cubit.dart';
 import 'package:sci_fun/features/topic/domain/entity/topic_entity.dart';
+import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
 
 class TopicPage extends StatefulWidget {
   final String subjectId;
@@ -27,12 +29,23 @@ class _TopicPageState extends State<TopicPage> {
   void initState() {
     super.initState();
     cubit = sl<TopicCubit>();
+    print('Subject ID: ${widget.subjectId}');
     cubit.loadInitial(filterId: widget.subjectId);
   }
 
   @override
+  void didUpdateWidget(TopicPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Nếu subjectId thay đổi, reload dữ liệu
+    if (oldWidget.subjectId != widget.subjectId) {
+      print('Subject ID changed: ${widget.subjectId}');
+      cubit.loadInitial(filterId: widget.subjectId);
+    }
+  }
+
+  @override
   void dispose() {
-    cubit.close();
+    // Không close cubit vì nó là LazySingleton
     super.dispose();
   }
 
@@ -49,18 +62,22 @@ class _TopicPageState extends State<TopicPage> {
           // ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0.w,
+            vertical: 12.0.h,
+          ),
           child: PaginationListView<TopicEntity>(
             cubit: cubit,
             itemBuilder: (context, topic) {
               return Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 8.0, horizontal: 12.0),
                   leading: topic.image != null && topic.image!.isNotEmpty
                       ? SizedBox(
-                          width: 56,
-                          height: 56,
+                          width: 56.w,
+                          height: 56.h,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6.0),
                             child: Image.network(
@@ -71,12 +88,9 @@ class _TopicPageState extends State<TopicPage> {
                             ),
                           ),
                         )
-                      : const SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: Icon(Icons.book),
-                        ),
-                  title: Text(topic.name ?? 'No title'),
+                      : Icon(Icons.play_lesson, color: AppColor.primary600),
+                  title: Text(topic.name ?? 'No title',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: topic.description != null
                       ? Text(
                           topic.description!,
@@ -84,8 +98,29 @@ class _TopicPageState extends State<TopicPage> {
                           overflow: TextOverflow.ellipsis,
                         )
                       : null,
+                  trailing: Icon(Icons.arrow_forward_ios,
+                      size: 18.sp, color: AppColor.primary600),
                   onTap: () {
-                    // Placeholder for navigation to topic detail
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(16)),
+                      ),
+                      builder: (context) => SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.85,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                          ),
+                          child: QuizzPage(
+                            topicId: topic.id ?? '',
+                            topicName: topic.name ?? 'Quizz',
+                          ),
+                        ),
+                      ),
+                    );
                   },
                 ),
               );
@@ -95,5 +130,6 @@ class _TopicPageState extends State<TopicPage> {
         ),
       ),
     );
+    // Import QuizzPage
   }
 }

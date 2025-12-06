@@ -19,6 +19,7 @@ import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 
 void main() async {
   // debugPaintSizeEnabled = true;
@@ -39,7 +40,7 @@ void main() async {
             ),
             BlocProvider(
               create: (_) {
-                final token = sl<SharePrefsService>().getAuthToken();
+                final token = sl<SharePrefsService>().getUserData();
                 if (token != null) {
                   return sl<UserCubit>()..getUser(token: token);
                 }
@@ -57,6 +58,9 @@ void main() async {
             BlocProvider(
                 create: (_) => sl<IsAuthorizedCubit>()..isAuthorized()),
             BlocProvider(create: (_) => sl<DashboardCubit>()),
+            BlocProvider(
+              create: (context) => sl<QuizzCubit>(),
+            )
           ],
           child: MyApp(),
         ),

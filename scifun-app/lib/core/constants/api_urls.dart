@@ -51,6 +51,17 @@ class TopicApiUrl {
   static const String getTopics = '/topic/get-topics';
 }
 
+class UserProgressApiUrl {
+  UserProgressApiUrl._();
+  static const String getUserProgress = '/user-progress';
+}
+
+class QuizApiUrl {
+  QuizApiUrl._();
+
+  static const String getQuizzes = '/quiz/get-quizzes';
+}
+
 class PackagesApiUrl {
   PackagesApiUrl._();
 

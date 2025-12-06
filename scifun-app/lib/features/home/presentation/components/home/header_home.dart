@@ -23,8 +23,8 @@ class _HeaderHomeState extends State<HeaderHome> {
       children: [
         BlocBuilder<UserCubit, UserState>(
           builder: (context, state) {
-            print("UserState in HeaderHome: $state");
             if (state is UserLoaded) {
+              print("UserState in HeaderHome: ${state.user.data?.avatar}");
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

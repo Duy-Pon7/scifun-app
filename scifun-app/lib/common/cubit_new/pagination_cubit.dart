@@ -82,8 +82,8 @@ abstract class PaginationCubit<T> extends Cubit<PaginationState<T>> {
     String searchQuery = '',
     String? filterId,
   }) async {
-    // Sử dụng filterId từ param hoặc từ state hiện tại
-    final activeFilterId = filterId ?? state.filterId;
+    // Luôn ưu tiên filterId truyền vào, không sử dụng state cũ
+    final activeFilterId = filterId;
 
     emit(PaginationLoading<T>(
       searchQuery: searchQuery,

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:sci_fun/common/models/response_model.dart';
@@ -56,13 +55,21 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
   @override
   Future<UserModel?> getUser({required String token}) async {
     try {
-      final res = await dioClient.get(url: UserApiUrls.getInfo);
+      print("token in getUser: $token");
+      final res = await dioClient.get(
+        url: "${UserApiUrls.getInfo}$token",
+      );
       print("Get User Response: ${res.data}");
       if (res.statusCode == 200) {
         final returnedData = ResponseModel<UserModel>.fromJson(
           res.data,
           (json) => UserModel.fromJson(
-            json as Map<String, dynamic>,
+            {
+              'status': res.data['status'],
+              'message': res.data['message'],
+              'token': res.data['token'],
+              'data': json,
+            },
           ),
         );
         if (returnedData.data == null) {

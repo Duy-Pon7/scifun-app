@@ -7,7 +7,7 @@ class SharePrefsService {
   final SharedPreferences _prefs;
   static const String _keyToken = 'auth_token';
   static const String _keySaveSession = 'save_session';
-
+  static const String _keyUserData = 'user_data';
   SharePrefsService({required SharedPreferences prefs}) : _prefs = prefs;
   Future<void> saveSearchHistory(List<String> searches) async {
     await _prefs.setStringList(SharePrefsKey.searchHistory.getKey, searches);
@@ -25,12 +25,24 @@ class SharePrefsService {
     }
   }
 
+  Future<void> saveUserData(String? userData) async {
+    if (userData == null) {
+      await _prefs.remove(_keyUserData);
+    } else {
+      await _prefs.setString(_keyUserData, userData);
+    }
+  }
+
   Future<void> saveSession(bool isSaveSession) async {
     await _prefs.setBool(_keySaveSession, isSaveSession);
   }
 
   String? getAuthToken() {
     return _prefs.getString(_keyToken);
+  }
+
+  String? getUserData() {
+    return _prefs.getString(_keyUserData);
   }
 
   bool? getSaveSession() {

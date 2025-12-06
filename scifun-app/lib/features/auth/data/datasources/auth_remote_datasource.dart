@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/common/models/user_check_model.dart';
 import 'package:sci_fun/common/models/user_model.dart';
@@ -10,6 +9,7 @@ import 'package:sci_fun/core/constants/app_errors.dart';
 import 'package:sci_fun/core/constants/app_successes.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 
 abstract interface class AuthRemoteDatasource {
   Future<UserModel?> login({
@@ -51,8 +51,9 @@ abstract interface class AuthRemoteDatasource {
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   final DioClient dioClient;
-
-  AuthRemoteDatasourceImpl({required this.dioClient});
+  final SharePrefsService sharePrefsService;
+  AuthRemoteDatasourceImpl(
+      {required this.dioClient, required this.sharePrefsService});
 
   String _getErrorMessage(Map<String, dynamic> errors) {
     String mess = AppErrors.commonError;
@@ -97,8 +98,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
       if (res.statusCode == 200) {
         final userModel = UserModel.fromJson(res.data);
-        print("✅ UserModel created: ${userModel.token}");
-
+        print("✅ UserModel created: ${userModel.data?.id}");
+        await sharePrefsService.saveAuthToken(userModel.token); // 👈 Lưu token
+        await sharePrefsService.saveUserData(userModel.data?.id);
         if (userModel.token == null) {
           print("❌ Token is null");
           throw ServerException(message: AppErrors.failureLogin);

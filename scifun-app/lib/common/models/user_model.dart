@@ -1,7 +1,4 @@
-import 'package:intl/intl.dart';
 import 'package:sci_fun/common/entities/user_entity.dart';
-import 'package:sci_fun/common/models/province_model.dart';
-import 'package:sci_fun/common/models/ward_model.dart';
 
 // NEW
 class UserModel extends UserEntity {
@@ -21,6 +18,7 @@ class UserModel extends UserEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         "status": status,
         "message": message,
@@ -54,7 +52,7 @@ class DataModel extends DataEntity {
 
   factory DataModel.fromJson(Map<String, dynamic> json) {
     return DataModel(
-      id: json["_id"],
+      id: json["id"] ?? json["_id"],
       email: json["email"],
       password: json["password"],
       fullname: json["fullname"],
@@ -70,6 +68,7 @@ class DataModel extends DataEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         "_id": id,
         "email": email,
@@ -117,6 +116,7 @@ class SubscriptionModel extends SubscriptionEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
         "status": status,
         "tier": tier,

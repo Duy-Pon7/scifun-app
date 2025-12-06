@@ -1,5 +1,3 @@
-import 'package:sci_fun/common/entities/address_entity.dart';
-import 'package:sci_fun/common/entities/ward_entity.dart';
 import 'package:equatable/equatable.dart';
 
 // class User {

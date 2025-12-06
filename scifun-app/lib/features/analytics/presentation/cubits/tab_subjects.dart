@@ -24,9 +24,9 @@ class _TabSubjectsState extends State<TabSubjects> {
           ),
           child: Row(
             children: [
-              _buildTab(0, 'Toán', selectedIndex),
-              _buildTab(1, 'Tiếng Anh', selectedIndex),
-              _buildTab(2, 'Ngữ Văn', selectedIndex),
+              _buildTab(0, 'Vật Lý', selectedIndex),
+              _buildTab(1, 'Hóa Học', selectedIndex),
+              _buildTab(2, 'Sinh học', selectedIndex),
             ],
           ),
         );

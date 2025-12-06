@@ -3,7 +3,6 @@ import 'package:sci_fun/common/models/user_check_model.dart';
 import 'package:sci_fun/core/constants/app_errors.dart';
 import 'package:sci_fun/core/error/failure.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:sci_fun/common/models/user_model.dart';
 import 'package:sci_fun/common/entities/user_entity.dart';
@@ -11,11 +10,9 @@ import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDatasource authRemoteDatasource;
-  final SharePrefsService sharePrefsService;
 
   AuthRepositoryImpl({
     required this.authRemoteDatasource,
-    required this.sharePrefsService,
   });
   @override
   Future<Either<Failure, bool>> resendOtp({
@@ -73,9 +70,6 @@ class AuthRepositoryImpl implements AuthRepository {
       if (loginRes == null) {
         return Left(Failure(message: AppErrors.failureLogin));
       }
-
-      await sharePrefsService.saveAuthToken(loginRes.token); // 👈 Lưu token
-
       return Right(loginRes);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
