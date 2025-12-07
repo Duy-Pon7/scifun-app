@@ -16,7 +16,7 @@ class ProgressRemoteDatasourceImpl implements ProgressRemoteDatasource {
     print("Fetching progress for subjectId: $subjectId");
     try {
       final res = await dioClient.get(
-        url: "${UserProgressApiUrl.getUserProgress}/$subjectId",
+        url: "${SubmissionApiUrl.getUserProgress}/$subjectId",
       );
       print("Response status code: ${res.statusCode}");
       if (res.statusCode == 200) {

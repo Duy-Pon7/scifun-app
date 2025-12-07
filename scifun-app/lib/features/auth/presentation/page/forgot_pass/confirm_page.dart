@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/components/forgot_pass/confirm_content.dart';
 import 'package:sci_fun/features/auth/presentation/widget/background_auth.dart';
 

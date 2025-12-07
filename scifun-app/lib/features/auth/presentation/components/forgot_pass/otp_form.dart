@@ -11,8 +11,6 @@ import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:sci_fun/features/auth/presentation/page/signup/add_infomation_page.dart';
-import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 
 class OtpForm extends StatefulWidget {
   const OtpForm(

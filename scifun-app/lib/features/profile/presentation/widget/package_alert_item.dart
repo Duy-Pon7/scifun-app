@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
-import 'package:sci_fun/core/enums/enum_package.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class PackageAlertItem extends StatefulWidget {
   const PackageAlertItem({

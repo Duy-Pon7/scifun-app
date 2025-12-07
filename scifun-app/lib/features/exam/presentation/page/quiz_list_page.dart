@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/enums/enum_quiz.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/exam/presentation/widget/quiz_item.dart';
 
 class QuizListPage extends StatelessWidget {

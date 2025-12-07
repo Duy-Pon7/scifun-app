@@ -63,8 +63,10 @@ Future<void> _profile() async {
     ..registerFactory<UserRepository>(
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
     ..registerFactory(() => GetInfoUser(userRepository: sl()))
+    ..registerFactory(() => UpdateInfoUser(userRepository: sl()))
     ..registerLazySingleton(() => UserCubit(
-          sl<GetInfoUser>(),
+          getInfoUser: sl(),
+          updateInfoUser: sl(),
         ))
     // ..registerFactory(() => Changes(userRepository: sl()))
     // ..registerLazySingleton(() => UserBloc(
@@ -179,8 +181,6 @@ Future<void> _authInit() async {
     ..registerFactory(() => Login(authRepository: sl()))
     ..registerFactory(() => Signup(authRepository: sl()))
     ..registerFactory(() => SendEmail(authRepository: sl()))
-    ..registerFactory(() => VerifyOtp(authRepository: sl()))
-    ..registerFactory(() => ResetPassword(authRepository: sl()))
     ..registerFactory(() => ChangePassword(authRepository: sl()))
     ..registerFactory(() => CheckEmailPhone(authRepository: sl()))
     ..registerFactory(() => ResendOtp(authRepository: sl()))
@@ -193,8 +193,6 @@ Future<void> _authInit() async {
           login: sl(),
           signup: sl(),
           sendEmail: sl(),
-          verifyOtp: sl(),
-          resetPassword: sl(),
           resendOtp: sl(),
           verificationOtp: sl(),
           checkEmailPhone: sl(),

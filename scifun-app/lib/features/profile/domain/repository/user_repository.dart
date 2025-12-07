@@ -15,4 +15,12 @@ abstract interface class UserRepository {
     required String email,
   });
   Future<Either<Failure, UserEntity?>> getInfoUser({required String token});
+
+  Future<Either<Failure, UserEntity?>> updateInfoUser({
+    required String userId,
+    required String fullname,
+    required DateTime dob,
+    required int sex,
+    File? avatar,
+  });
 }

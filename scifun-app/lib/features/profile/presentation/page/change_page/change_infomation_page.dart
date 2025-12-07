@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile_detail_page.dart/change_infomation_form.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class ChangeInfomationPage extends StatelessWidget {
   const ChangeInfomationPage({super.key});
@@ -24,10 +25,13 @@ class ChangeInfomationPage extends StatelessWidget {
             BlocProvider<SelectImageCubit>(
               create: (_) => SelectImageCubit(),
             ),
+            BlocProvider<UserCubit>(
+              create: (_) => sl<UserCubit>(),
+            ),
           ],
           child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: SizedBox(), // ChangeInfomationForm(),
+            child: ChangeInfomationForm(),
           ),
         ),
       ),

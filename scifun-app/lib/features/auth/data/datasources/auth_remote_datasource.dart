@@ -28,15 +28,9 @@ abstract interface class AuthRemoteDatasource {
   Future<UserCheckModel> checkEmailPhone(
       {required String phone, required String email});
 
-  Future<String> otpVerifyOtp({required String email, required String otp});
   Future<String> verificationOtp({
     required String email,
     required String otp,
-  });
-  Future<UserModel?> resetPassword({
-    required String email,
-    required String newPass,
-    required String newPassConfirm,
   });
   Future<bool> resendOtp({
     required String email,
@@ -193,50 +187,6 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
   }
 
-  @override
-  Future<String> otpVerifyOtp(
-      {required String email, required String otp}) async {
-    try {
-      print("otp in datasource $otp");
-      final res = await dioClient.post(url: AuthApiUrls.verifyOtp, data: {
-        "value": email,
-        "type": "email",
-        "otp": otp,
-      });
-      if (res.statusCode == 200) {
-        return AppSuccesses.successfullSendEmail;
-      }
-      return AppErrors.failureSendEmail;
-    } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
-    }
-  }
-
-  @override
-  Future<UserModel?> resetPassword({
-    required String email,
-    required String newPass,
-    required String newPassConfirm,
-  }) async {
-    return await _getUser(
-      () => dioClient.put(
-        url: AuthApiUrls.resetPassword,
-        data: {
-          "type": "email",
-          "email": email,
-          "password": newPass,
-          "password_confirmation": newPassConfirm
-        },
-      ),
-    );
-  }
 
   @override
   Future<UserModel?> getAuth() async {

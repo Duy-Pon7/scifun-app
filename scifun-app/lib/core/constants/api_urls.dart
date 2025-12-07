@@ -1,24 +1,63 @@
+//! Chưa làm
+//? Còn vấn đề
+// Hoàn thành
 class AuthApiUrls {
   AuthApiUrls._();
-
+  //? Kiểm tra sao nó hiển thị lỗi lúc mới vào và check token trong thời gian bao lâu
   static const String login = '/user/login'; //
-  static const String signup = '/user/register';
-  static const String sendEmail = '/user/resend-otp';
-  static const String verifyOtp = '/user/verify-otp';
-  static const String resetPassword = '/user/update-password';
-  static const String resendOtp = '/user/resend-otp';
+  static const String signup = '/user/register'; //
   static const String verificationOtp = '/user/verify-otp'; //
+
+  static const String forgotPassword = '/user/forgot-password'; //!
+  static const String updatePassword = '/user/update-password'; //!
+  static const String sendEmail = '/user/resend-otp';
+  static const String resendOtp = '/user/resend-otp';
   static const String checkEmailPhone = '/user/check-email-phone';
   static const String getAuth = '/user/get-user/';
 }
 
 class UserApiUrls {
   UserApiUrls._();
-  static const String getInfo = '/user/get-user/';
-
+  static const String getInfo = '/user/get-user/'; //
+  //? Còn đang hiển thị lỗi change info. Chưa hoạt động
+  static const String updateInfo = '/user/update-user/'; //
   static const String reviseInfo = '/users/update';
   static const String changePassword = '/auth/change-password';
 }
+
+class SubjectApiUrl {
+  SubjectApiUrl._();
+  //? Còn thiếu search ở ngoài là chỉ search theo chủ đề yêu thích
+  static const String getSubjects = '/subject/get-subjects'; //
+}
+
+class TopicApiUrl {
+  TopicApiUrl._();
+  static const String getTopics = '/topic/get-topics'; //
+}
+
+class QuizApiUrl {
+  QuizApiUrl._();
+
+  static const String getQuizzes = '/quiz/get-quizzes'; //
+}
+
+class QuestionApiUrl {
+  QuestionApiUrl._();
+
+  static const String getQuestions = '/question/get-questions'; //!
+  static const String getQuestionById = '/question/get-questionById'; //!
+}
+
+class SubmissionApiUrl {
+  SubmissionApiUrl._();
+
+  static const String postSubmission = '/submission/handle-submit'; //!
+  static const String getSubmissionDetail =
+      '/submission/get-submissionDetail'; //!
+  static const String getUserProgress = '/user-progress'; //
+}
+//? ----------------------------------------------------------
 
 class NotificationApiUrls {
   NotificationApiUrls._();
@@ -39,27 +78,6 @@ class HomeApiUrls {
   static const String getQuizzByCate = '/quizzes';
   static const String getResultQuizz = '/quiz-results';
   static const String addQuizz = '/quizzes/score/multiple-choice';
-}
-
-class SubjectApiUrl {
-  SubjectApiUrl._();
-  static const String getSubjects = '/subject/get-subjects';
-}
-
-class TopicApiUrl {
-  TopicApiUrl._();
-  static const String getTopics = '/topic/get-topics';
-}
-
-class UserProgressApiUrl {
-  UserProgressApiUrl._();
-  static const String getUserProgress = '/user-progress';
-}
-
-class QuizApiUrl {
-  QuizApiUrl._();
-
-  static const String getQuizzes = '/quiz/get-quizzes';
 }
 
 class PackagesApiUrl {
