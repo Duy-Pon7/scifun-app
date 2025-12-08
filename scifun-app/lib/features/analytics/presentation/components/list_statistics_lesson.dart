@@ -36,7 +36,7 @@ class ListStatisticsLesson extends StatelessWidget {
                         backgroundColor:
                             Color(0xFF787880).withValues(alpha: .16),
                         valueColor:
-                            const AlwaysStoppedAnimation<Color>(Colors.red),
+                            AlwaysStoppedAnimation<Color>(AppColor.primary600),
                         borderRadius: BorderRadius.circular(5.r),
                       ),
                     ),
@@ -49,7 +49,6 @@ class ListStatisticsLesson extends StatelessWidget {
                               progress.toDouble().clamp(0, 100);
                           final barWidth = constraints.maxWidth;
                           final currentOffset = barWidth * progressValue / 100;
-
                           return SizedBox(
                             height: 24.h,
                             child: Stack(

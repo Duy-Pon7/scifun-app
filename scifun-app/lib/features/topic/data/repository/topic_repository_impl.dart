@@ -13,7 +13,7 @@ class TopicRepositoryImpl implements TopicRepository {
   @override
   Future<Either<Failure, List<TopicEntity>>> getAllTopics(
     String? searchQuery, {
-    required String subjectId,
+    String? subjectId,
     required int page,
     required int limit,
   }) async {

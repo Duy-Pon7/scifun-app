@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
-import 'package:sci_fun/common/widget/topic_item_lesson.dart';
+import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
+import 'package:sci_fun/features/topic/presentation/cubit/topic_cubit.dart';
+import 'package:sci_fun/features/topic/domain/entity/topic_entity.dart';
+import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sci_fun/features/home/domain/entity/lesson_entity.dart';
-import 'package:sci_fun/features/home/presentation/page/lesson_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -20,13 +20,16 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  late final TopicCubit cubit;
   final TextEditingController _controller = TextEditingController();
   late SharePrefsService _prefsService;
   List<String> _searchHistory = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
+    cubit = sl<TopicCubit>();
     _initPrefs();
   }
 
@@ -36,7 +39,6 @@ class _SearchPageState extends State<SearchPage> {
     _loadSearchHistory();
   }
 
-  void _searchAction() {}
   void _loadSearchHistory() {
     final history = _prefsService.getSearchHistory();
     setState(() {
@@ -59,37 +61,115 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppbar(
-        title: "Chi tiết lịch sử gói cước",
-        showTitle: true,
-        showBack: true,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _inputSearch(),
-            SizedBox(height: 24.h),
-            Text(
-              'Tìm kiếm gần đây',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
-            ),
-            SizedBox(height: 12.h),
-            Wrap(
-              spacing: 12.w,
-              runSpacing: 12.h,
-              children: _searchHistory.isNotEmpty
-                  ? _searchHistory.take(4).map((e) => _buildTag(e)).toList()
-                  : [
-                      Text(
-                        "Chưa có lịch sử tìm kiếm",
-                        style: TextStyle(color: Colors.grey),
-                      )
-                    ],
-            ),
-          ],
+    return BlocProvider<TopicCubit>.value(
+      value: cubit,
+      child: Scaffold(
+        appBar: BasicAppbar(
+          title: "Tìm kiếm chủ đề",
+          showTitle: true,
+          showBack: true,
+        ),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _inputSearch(),
+              SizedBox(height: 24.h),
+              // Hiển thị kết quả tìm kiếm nếu đang tìm
+              if (_isSearching)
+                Expanded(
+                  child: PaginationListView<TopicEntity>(
+                    cubit: cubit,
+                    itemBuilder: (context, topic) {
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: ListTile(
+                          leading: topic.image != null &&
+                                  topic.image!.isNotEmpty
+                              ? SizedBox(
+                                  width: 56.w,
+                                  height: 56.h,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(6.0),
+                                    child: Image.network(
+                                      topic.image!,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                          const Icon(Icons.image_not_supported),
+                                    ),
+                                  ),
+                                )
+                              : Icon(Icons.play_lesson,
+                                  color: AppColor.primary600),
+                          title: Text(topic.name ?? 'No title',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: topic.description != null
+                              ? Text(
+                                  topic.description!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                )
+                              : null,
+                          trailing: Icon(Icons.arrow_forward_ios,
+                              size: 18.sp, color: AppColor.primary600),
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(16)),
+                              ),
+                              builder: (context) => SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.85,
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom,
+                                  ),
+                                  child: QuizzPage(
+                                    topicId: topic.id ?? '',
+                                    topicName: topic.name ?? 'Quizz',
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    emptyWidget:
+                        const Center(child: Text('Không tìm thấy chủ đề nào')),
+                  ),
+                )
+              // Hiển thị lịch sử tìm kiếm nếu không tìm
+              else ...[
+                Text(
+                  'Tìm kiếm gần đây',
+                  style:
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
+                ),
+                SizedBox(height: 12.h),
+                Wrap(
+                  spacing: 12.w,
+                  runSpacing: 12.h,
+                  children: _searchHistory.isNotEmpty
+                      ? _searchHistory.take(4).map((e) => _buildTag(e)).toList()
+                      : [
+                          Text(
+                            "Chưa có lịch sử tìm kiếm",
+                            style: TextStyle(color: Colors.grey),
+                          )
+                        ],
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -113,6 +193,9 @@ class _SearchPageState extends State<SearchPage> {
                   onTap: () {
                     _controller.clear();
                     setState(() {});
+                    this.setState(() {
+                      _isSearching = false;
+                    });
                   },
                   child: Padding(
                     padding: EdgeInsets.only(right: 7.w),
@@ -139,13 +222,22 @@ class _SearchPageState extends State<SearchPage> {
           ),
           onChanged: (value) {
             setState(() {}); // cập nhật UI cho icon clear
+            // Trigger search với debounce khi user gõ
+            if (value.trim().isNotEmpty) {
+              cubit.search(value.trim());
+              this.setState(() {
+                _isSearching = true;
+              });
+            } else {
+              this.setState(() {
+                _isSearching = false;
+              });
+            }
           },
           onEditingComplete: () {
             final text = _controller.text.trim();
-            print(text);
             if (text.isNotEmpty) {
               _saveSearch(text);
-              _controller.clear();
             }
           },
         );
@@ -157,7 +249,11 @@ class _SearchPageState extends State<SearchPage> {
     return GestureDetector(
       onTap: () {
         _controller.text = text;
-        setState(() {});
+        _saveSearch(text);
+        cubit.search(text);
+        setState(() {
+          _isSearching = true;
+        });
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
@@ -168,11 +264,11 @@ class _SearchPageState extends State<SearchPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history, color: Colors.red, size: 24.sp),
+            Icon(Icons.history, color: AppColor.primary600, size: 24.sp),
             SizedBox(width: 12.w),
             Text(text,
                 style: TextStyle(
-                    color: Colors.red,
+                    color: AppColor.primary600,
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w400)),
           ],

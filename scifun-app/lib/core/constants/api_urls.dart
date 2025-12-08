@@ -122,3 +122,9 @@ class ExamsetApiUrl {
   static const String getExamset = '/exam-sets';
   static const String getExamsetQuizz = '/exam-sets/search';
 }
+
+class VideoApiUrl {
+  VideoApiUrl._();
+
+  static const String getVideoLessons = '/video-lesson/list';
+}

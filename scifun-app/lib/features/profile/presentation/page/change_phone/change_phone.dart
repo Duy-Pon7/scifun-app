@@ -7,7 +7,6 @@ import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/auth/presentation/page/forgot_pass/otp_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_phone/change_phone_otp.dart';
 
 class ChangePhone extends StatefulWidget {

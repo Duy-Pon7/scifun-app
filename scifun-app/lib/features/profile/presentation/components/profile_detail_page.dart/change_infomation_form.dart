@@ -4,7 +4,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
@@ -14,8 +13,6 @@ import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 import 'package:intl/intl.dart';
-
-import 'package:sci_fun/features/profile/presentation/page/change_phone/change_phone.dart';
 
 class ChangeInfomationForm extends StatefulWidget {
   const ChangeInfomationForm({super.key});
@@ -27,12 +24,12 @@ class ChangeInfomationForm extends StatefulWidget {
 class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   final _formKey = GlobalKey<FormState>();
   final _fullnameCon = TextEditingController();
-  final _emailCon = TextEditingController();
+  // final _emailCon = TextEditingController();
   final _birthdayCon = TextEditingController();
 
-  final _phoneCon = TextEditingController();
-  int? _selectedProvinceId;
-  int? _selectedWardId;
+  // final _phoneCon = TextEditingController();
+  // int? _selectedProvinceId;
+  // int? _selectedWardId;
 
   DateTime? selectedBirthday;
   bool _isFirstLoad = true;
@@ -61,8 +58,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   void dispose() {
     _fullnameCon.dispose();
     _birthdayCon.dispose();
-    _phoneCon.dispose();
-    _emailCon.dispose();
+    // _phoneCon.dispose();
+    // _emailCon.dispose();
     super.dispose();
   }
 
@@ -108,16 +105,17 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           final user = state.user.data;
           if (_isFirstLoad) {
             _fullnameCon.text = user?.fullname ?? 'Khách';
-            _emailCon.text = user?.email ?? '';
+            // _emailCon.text = user?.email ?? '';
             selectedBirthday = user?.dob ?? DateTime(2000);
             _birthdayCon.text = user?.dob != null
                 ? DateFormat('dd/MM/yyyy').format(user!.dob!)
                 : '';
             _genderFieldValue = user?.sex;
-            // Note: API doesn't support province/ward yet
+            // Note: API doesn't support email, phone, province/ward
+            // _emailCon.text = user?.email ?? '';
+            // _phoneCon.text = user?.phone ?? '';
             // _selectedProvinceId = user?.province?.id;
             // _selectedWardId = user?.ward?.id;
-            // _phoneCon.text = user?.phone ?? '';
             _isFirstLoad = false;
           }
 
@@ -156,93 +154,95 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-                _emailnameField(),
-                SizedBox(height: 16.h),
-                BlocBuilder<AddressCubit, AddressState>(
-                  builder: (context, state) {
-                    if (state is AddressLoading) {
-                      // return const CircularProgressIndicator();
-                    } else if (state is AddressLoaded) {
-                      final provinces = state.provinces;
-                      final items = {
-                        for (var p in provinces) p.id: p.name,
-                      };
+                // _emailnameField(),
+                // Note: Email field not supported by API
+                // SizedBox(height: 16.h),
+                // BlocBuilder<AddressCubit, AddressState>(
+                //   builder: (context, state) {
+                //     if (state is AddressLoading) {
+                //       // return const CircularProgressIndicator();
+                //     } else if (state is AddressLoaded) {
+                //       final provinces = state.provinces;
+                //       final items = {
+                //         for (var p in provinces) p.id: p.name,
+                //       };
 
-                      return CustomizeDropdown<int?>(
-                        items: items.cast<int?, String>(),
-                        onChanged: (int? selectedId) {
-                          if (selectedId != null) {
-                            setState(() {
-                              _selectedProvinceId = selectedId;
-                              _selectedWardId =
-                                  null; // reset quận/huyện khi đổi tỉnh
-                            });
-                            context.read<AddressCubit>().fetchWards(selectedId);
-                          }
-                        },
-                        hintText: "Chọn tỉnh/thành",
-                        value: _selectedProvinceId, // ✅ Sửa chỗ này
-                      );
-                    } else if (state is AddressError) {
-                      return Text("Lỗi: ${state.message}");
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-                SizedBox(height: 16.h),
-                BlocBuilder<AddressCubit, AddressState>(
-                  builder: (context, state) {
-                    if (_selectedProvinceId == null)
-                      return const SizedBox.shrink();
+                //       return CustomizeDropdown<int?>(
+                //         items: items.cast<int?, String>(),
+                //         onChanged: (int? selectedId) {
+                //           if (selectedId != null) {
+                //             setState(() {
+                //               _selectedProvinceId = selectedId;
+                //               _selectedWardId =
+                //                   null; // reset quận/huyện khi đổi tỉnh
+                //             });
+                //             context.read<AddressCubit>().fetchWards(selectedId);
+                //           }
+                //         },
+                //         hintText: "Chọn tỉnh/thành",
+                //         value: _selectedProvinceId,
+                //       );
+                //     } else if (state is AddressError) {
+                //       return Text("Lỗi: ${state.message}");
+                //     }
+                //     return const SizedBox.shrink();
+                //   },
+                // ),
+                // SizedBox(height: 16.h),
+                // BlocBuilder<AddressCubit, AddressState>(
+                //   builder: (context, state) {
+                //     if (_selectedProvinceId == null)
+                //       return const SizedBox.shrink();
 
-                    final wards = context.read<AddressCubit>().wards;
-                    if (wards.isEmpty) {
-                      return const SizedBox(
-                          height: 50,
-                          child: Center(child: CircularProgressIndicator()));
-                    }
+                //     final wards = context.read<AddressCubit>().wards;
+                //     if (wards.isEmpty) {
+                //       return const SizedBox(
+                //           height: 50,
+                //           child: Center(child: CircularProgressIndicator()));
+                //     }
 
-                    final items = {
-                      for (var ward in wards) ward.id: ward.name,
-                    };
+                //     final items = {
+                //       for (var ward in wards) ward.id: ward.name,
+                //     };
 
-                    return CustomizeDropdown<int?>(
-                      items: items.cast<int?, String>(),
-                      onChanged: (int? selectedWardId) {
-                        setState(() {
-                          _selectedWardId = selectedWardId;
-                        });
-                      },
-                      hintText: "Chọn quận/huyện",
-                      value: _selectedWardId,
-                    );
-                  },
-                ),
-                SizedBox(height: 16.h),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _phoneField(),
-                    ),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      flex: 1,
-                      child: _changePhoneButton(),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 6.h),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Đổi sđt sẽ đăng nhập lại',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: const Color(0xFF666666),
-                    ),
-                  ),
-                ),
+                //     return CustomizeDropdown<int?>(
+                //       items: items.cast<int?, String>(),
+                //       onChanged: (int? selectedWardId) {
+                //         setState(() {
+                //           _selectedWardId = selectedWardId;
+                //         });
+                //       },
+                //       hintText: "Chọn quận/huyện",
+                //       value: _selectedWardId,
+                //     );
+                //   },
+                // ),
+                // SizedBox(height: 16.h),
+                // Note: Phone field is not editable as per API
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       flex: 3,
+                //       child: _phoneField(),
+                //     ),
+                //     SizedBox(width: 16.w),
+                //     Expanded(
+                //       flex: 1,
+                //       child: _changePhoneButton(),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 6.h),
+                // Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     'Đổi sđt sẽ đăng nhập lại',
+                //     style: TextStyle(
+                //       fontSize: 12.sp,
+                //       color: const Color(0xFF666666),
+                //     ),
+                //   ),
+                // ),
                 SizedBox(height: 40.h),
                 _changeButton(),
               ],
@@ -310,18 +310,19 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
     );
   }
 
-  Widget _emailnameField() => BasicInputField(
-        controller: _emailCon,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Nhập email';
-          }
-          return null;
-        },
-        hintText: "Nhập email",
-        textInputAction: TextInputAction.next,
-        suffixIcon: const Icon(Icons.edit),
-      );
+  // Email field not supported by API
+  // Widget _emailnameField() => BasicInputField(
+  //       controller: _emailCon,
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Nhập email';
+  //         }
+  //         return null;
+  //       },
+  //       hintText: "Nhập email",
+  //       textInputAction: TextInputAction.next,
+  //       suffixIcon: const Icon(Icons.edit),
+  //     );
   Widget _fullnameField() => BasicInputField(
         controller: _fullnameCon,
         validator: (value) {
@@ -378,22 +379,23 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         suffixIcon: const Icon(Icons.calendar_month),
       );
 
-  Widget _phoneField() => BasicInputField(
-        controller: _phoneCon,
-        fillColor: const Color(0xFFF0F0F0),
-        readOnly: true,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Số điện thoại không được để trống';
-          }
-          return null;
-        },
-        style: TextStyle(
-          color: AppColor.hurricane800.withValues(alpha: 0.3),
-        ),
-        textInputAction: TextInputAction.next,
-        keyboardType: TextInputType.phone,
-      );
+  // Phone field not supported by API
+  // Widget _phoneField() => BasicInputField(
+  //       controller: _phoneCon,
+  //       fillColor: const Color(0xFFF0F0F0),
+  //       readOnly: true,
+  //       validator: (value) {
+  //         if (value == null || value.isEmpty) {
+  //           return 'Số điện thoại không được để trống';
+  //         }
+  //         return null;
+  //       },
+  //       style: TextStyle(
+  //         color: AppColor.hurricane800.withValues(alpha: 0.3),
+  //       ),
+  //       textInputAction: TextInputAction.next,
+  //       keyboardType: TextInputType.phone,
+  //     );
 
   Widget _changeButton() => BasicButton(
         text: "Cập nhật",
@@ -403,15 +405,16 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
         backgroundColor: AppColor.primary600,
       );
-  Widget _changePhoneButton() => BasicButton(
-        text: "Đổi",
-        textColor: AppColor.primary600,
-        onPressed: () {
-          Navigator.push(context, slidePage(ChangePhone()));
-        },
-        width: double.infinity,
-        fontSize: 18.sp,
-        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-        backgroundColor: AppColor.primary600.withValues(alpha: 0.15),
-      );
+  // Phone change not supported by current API
+  // Widget _changePhoneButton() => BasicButton(
+  //       text: "Đổi",
+  //       textColor: AppColor.primary600,
+  //       onPressed: () {
+  //         Navigator.push(context, slidePage(ChangePhone()));
+  //       },
+  //       width: double.infinity,
+  //       fontSize: 18.sp,
+  //       padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
+  //       backgroundColor: AppColor.primary600.withValues(alpha: 0.15),
+  //     );
 }

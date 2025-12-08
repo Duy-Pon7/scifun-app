@@ -187,9 +187,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     }
   }
 
-
   @override
   Future<UserModel?> getAuth() async {
+    // Check if token exists before calling API
+    if (sharePrefsService.getAuthToken() == null) {
+      return null;
+    }
     return await _getUser(
       () => dioClient.get(url: AuthApiUrls.getAuth),
     );

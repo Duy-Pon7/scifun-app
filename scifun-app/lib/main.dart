@@ -16,8 +16,6 @@ import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart'
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/faqs_cubit.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/settings_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 
@@ -53,8 +51,6 @@ void main() async {
             BlocProvider(
               create: (_) => sl<AddressCubit>(),
             ),
-            BlocProvider(create: (_) => sl<SettingsCubit>()..getSettings()),
-            BlocProvider(create: (_) => sl<FaqsCubit>()..getFaqs()),
             BlocProvider(
                 create: (_) => sl<IsAuthorizedCubit>()..isAuthorized()),
             BlocProvider(create: (_) => sl<DashboardCubit>()),
@@ -94,7 +90,6 @@ class MyApp extends StatelessWidget {
           title: 'Sci Fun',
           theme: AppTheme.theme,
           builder: EasyLoading.init(),
-          //TODO: Đang test history packages
           home: isAuthorized ? const DashboardPage() : const SigninPage(),
           // home: AddInfomationPage(),
         ),

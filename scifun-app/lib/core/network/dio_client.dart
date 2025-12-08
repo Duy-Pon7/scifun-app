@@ -46,12 +46,14 @@ class DioClient {
   // PUT
   Future<Response> put({
     required String url,
-    Map<String, dynamic>? data,
+    dynamic data, // Cho phép truyền FormData hoặc Map
+    Options? options, // Cho phép custom headers như multipart
   }) async {
     try {
       final res = await _dio.put(
         url,
         data: data,
+        options: options,
       );
       return res;
     } on DioException {

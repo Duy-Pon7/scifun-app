@@ -114,7 +114,7 @@ class _HeaderHomeState extends State<HeaderHome> {
                 color: AppColor.hurricane800.withValues(alpha: 0.6),
               ),
             ),
-            hintText: "Tìm kiếm bài học",
+            hintText: "Tìm kiếm chủ đề",
             hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                   fontSize: 17.sp,
                   color: AppColor.hurricane800.withValues(alpha: 0.6),

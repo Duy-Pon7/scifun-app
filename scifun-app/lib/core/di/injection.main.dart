@@ -50,10 +50,11 @@ Future<void> initializeDependencies() async {
   await _topicInit();
   await _addressInti();
   await _notiInti();
-  await _examInti();
   await _statisticsInti();
   await _profile();
   _homeInit();
+  _questionInit();
+  _videoInit();
 }
 
 Future<void> _profile() async {
@@ -86,42 +87,7 @@ Future<void> _profile() async {
           getPackage: sl(),
           buyPackages: sl(),
           getInstructions: sl(),
-        ))
-    ..registerLazySingleton(() => PackageHistoryCubit(
-          getHistoryPackages: sl(),
-        ))
-
-    //Settings
-    ..registerFactory<SettingsRemoteDatasource>(
-        () => SettingsRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<SettingsRepository>(
-        () => SettingsRepositoryImpl(settingsRemoteDatasource: sl()))
-    ..registerFactory(() => GetSettings(settingsRepository: sl()))
-    ..registerLazySingleton(() => SettingsCubit(
-          sl<GetSettings>(),
-        ))
-    //Faqs
-    ..registerFactory<FaqsRemoteDatasource>(
-        () => FaqsRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<FaqsRepository>(
-        () => FaqsRepositoryImpl(faqsRemoteDatasource: sl()))
-    ..registerFactory(() => GetFaqs(faqsRepository: sl()))
-    ..registerLazySingleton(() => FaqsCubit(
-          sl<GetFaqs>(),
         ));
-}
-
-Future<void> _examInti() async {
-  sl
-    ..registerFactory<ExamsetRemoteDatasource>(
-        () => ExamsetRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<ExamsetRepository>(
-        () => ExamsetRepositoryImpl(examsetRemoteDatasource: sl()))
-    ..registerFactory(() => GetExamset(sl()))
-    ..registerLazySingleton(() => ExamsetPaginatorCubit(
-          sl(),
-        ))
-    ..registerLazySingleton(() => ExamsetCubit(sl()));
 }
 
 Future<void> _statisticsInti() async {
@@ -154,11 +120,7 @@ Future<void> _notiInti() async {
     ..registerFactory(() => GetNotificationDetail(sl()))
     ..registerFactory(() => MarkAsRead(sl()))
     ..registerFactory(() => MarkAsReadAll(sl()))
-    ..registerFactory(() => DeleteNotification(sl()))
-    ..registerLazySingleton(() => NotificationPaginatorCubit(
-          sl(),
-        ))
-    ..registerLazySingleton(() => NotiCubit(sl(), sl(), sl(), sl()));
+    ..registerFactory(() => DeleteNotification(sl()));
 }
 
 Future<void> _addressInti() async {
@@ -269,6 +231,39 @@ void _homeInit() {
     )
     ..registerFactory(
       () => QuizzCubit(sl<GetAllQuizzes>()),
+    );
+}
+
+void _questionInit() {
+  sl
+    ..registerFactory<QuestionRemoteDatasource>(
+      () => QuestionRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    )
+    ..registerFactory<QuestionRepository>(
+      () => QuestionRepositoryImpl(
+        questionRemoteDatasource: sl<QuestionRemoteDatasource>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetAllQuestions(questionRepository: sl<QuestionRepository>()),
+    );
+}
+
+void _videoInit() {
+  sl
+    ..registerFactory<VideoRemoteDatasource>(
+      () => VideoRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    )
+    ..registerFactory<VideoRepository>(
+      () => VideoRepositoryImpl(
+        videoRemoteDatasource: sl<VideoRemoteDatasource>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetAllVideos(videoRepository: sl<VideoRepository>()),
+    )
+    ..registerFactory(
+      () => VideoPaginationCubit(sl<GetAllVideos>()),
     );
 }
 

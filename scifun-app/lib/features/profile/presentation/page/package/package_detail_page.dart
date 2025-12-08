@@ -1,34 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/profile/domain/entities/packages_entity.dart';
-import 'package:sci_fun/features/profile/presentation/widget/package_item.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:sci_fun/common/widget/basic_appbar.dart';
+// import 'package:sci_fun/core/utils/theme/app_color.dart';
+// import 'package:sci_fun/features/profile/domain/entities/packages_entity.dart';
+// import 'package:sci_fun/features/profile/presentation/widget/package_item.dart';
 
-class PackageDetailPage extends StatelessWidget {
-  final PackagesEntity package;
-  const PackageDetailPage({super.key, required this.package});
+// class PackageDetailPage extends StatelessWidget {
+//   final PackagesEntity package;
+//   const PackageDetailPage({super.key, required this.package});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppbar(
-        title: "Chi tiết gói cước",
-        showTitle: true,
-        showBack: true,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: PackageItem(
-            id: package.id ?? 0,
-            title: package.name ?? "",
-            description: package.description.join('\n'),
-            price: package.price ?? "",
-            maxLines: null,
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: BasicAppbar(
+//         title: "Chi tiết gói cước",
+//         showTitle: true,
+//         showBack: true,
+//       ),
+//       body: SafeArea(
+//         child: Padding(
+//           padding: EdgeInsets.all(16.w),
+//           child: PackageItem(
+//             id: package.id ?? 0,
+//             title: package.name ?? "",
+//             description: package.description.join('\n'),
+//             price: package.price ?? "",
+//             maxLines: null,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

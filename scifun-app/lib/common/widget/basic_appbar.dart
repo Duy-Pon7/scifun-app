@@ -8,6 +8,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBack;
   final Widget? leftIcon;
   final Widget? rightIcon;
+  final VoidCallback? onBackPress;
 
   const BasicAppbar({
     super.key,
@@ -16,6 +17,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
     this.showBack = true,
     this.leftIcon,
     this.rightIcon,
+    this.onBackPress,
   });
 
   @override
@@ -30,7 +32,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
           (showBack
               ? IconButton(
                   icon: Icon(Icons.arrow_back_ios, color: AppColor.primary600),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: onBackPress ?? () => Navigator.pop(context),
                 )
               : null),
       title: showTitle

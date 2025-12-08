@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sci_fun/common/cubit_new/pagination_cubit.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 
 // Phiên bản dọc
 class PaginationListView<T> extends StatefulWidget {

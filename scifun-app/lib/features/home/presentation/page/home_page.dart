@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
-import 'package:sci_fun/features/home/presentation/components/home/list_news.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
@@ -23,10 +23,20 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    // Check if user has token before calling AuthGetSession
+    final hasToken = sl<SharePrefsService>().getAuthToken() != null;
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => sl<AuthBloc>()..add(AuthGetSession()),
+          create: (context) {
+            final authBloc = sl<AuthBloc>();
+            if (hasToken) {
+              authBloc.add(AuthGetSession());
+            }
+            return authBloc;
+          },
         ),
         BlocProvider(
           create: (context) => sl<NewsCubit>()..getNews(),
@@ -48,8 +58,8 @@ class _HomePageState extends State<HomePage>
                 print("province $province ward $ward");
               } else if (state is AuthFailure) {
                 EasyLoading.dismiss();
-                EasyLoading.showToast(state.message,
-                    toastPosition: EasyLoadingToastPosition.bottom);
+                // Không hiển thị toast error nếu getSession fail vì user có thể chưa login
+                print("AuthBloc Error: ${state.message}");
               } else {
                 EasyLoading.dismiss();
               }
@@ -94,7 +104,9 @@ class _HomePageState extends State<HomePage>
                 onRefresh: () async {
                   newcontext.read<NewsCubit>().getNews();
                   newcontext.read<SubjectCubit>().getSubjects(searchQuery: "");
-                  newcontext.read<AuthBloc>().add(AuthGetSession());
+                  if (hasToken) {
+                    newcontext.read<AuthBloc>().add(AuthGetSession());
+                  }
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),

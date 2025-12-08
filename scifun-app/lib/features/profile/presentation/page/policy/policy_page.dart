@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class PolicyPage extends StatelessWidget {
   final String? plainValue;

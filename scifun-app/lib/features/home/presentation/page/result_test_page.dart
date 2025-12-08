@@ -1,50 +1,92 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:sci_fun/common/helper/get_category_score.dart';
-// import 'package:sci_fun/common/widget/basic_appbar.dart';
-// import 'package:sci_fun/common/widget/basic_button.dart';
-// import 'package:sci_fun/core/di/injection.dart';
-// import 'package:sci_fun/core/utils/assets/app_vector.dart';
-// import 'package:sci_fun/core/utils/theme/app_color.dart';
-// import 'package:sci_fun/features/home/presentation/cubit/quizz_cubit.dart';
-// import 'package:sci_fun/features/home/presentation/page/homework_result_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 
-// class ResultTestPage extends StatelessWidget {
-//   const ResultTestPage(
-//       {super.key, this.submissionData, this.timeTaken, this.quizzId});
+class ResultTestPage extends StatelessWidget {
+  const ResultTestPage({
+    super.key,
+    this.submissionData,
+    this.timeTaken,
+    this.quizzId,
+  });
 
-//   final Map<String, dynamic>? submissionData;
-//   final String? timeTaken;
-//   final int? quizzId;
+  final Map<String, dynamic>? submissionData;
+  final String? timeTaken;
+  final String? quizzId;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider(
-//       create: (context) =>
-//           sl<QuizzCubit>()..addQuizz(quizzParam: submissionData ?? {}),
-//       child: Scaffold(
-//         appBar: BasicAppbar(
-//           title: Text(
-//             "Kết quả bài làm",
-//             style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                   fontSize: 17.sp,
-//                   fontWeight: FontWeight.w600,
-//                 ),
-//           ),
-//           centerTitle: true,
-//           leading: IconButton(
-//             icon: Icon(
-//               Icons.arrow_back_ios_rounded,
-//               color: AppColor.primary600,
-//             ),
-//             onPressed: () => Navigator.of(context).pop(),
-//           ),
-//         ),
-//         body: BlocBuilder<QuizzCubit, QuizzState>(
-//           builder: (context, state) {
-//             if (state is QuizzDetailLoaded) {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: BasicAppbar(
+        title: "Kết quả bài làm",
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Thông tin nộp bài",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(height: 16.h),
+            Card(
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Quiz ID:"),
+                        Text("$quizzId"),
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Thời gian làm bài:"),
+                        Text("$timeTaken"),
+                      ],
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      "Câu trả lời: ${submissionData?.length ?? 0} câu",
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 24.h),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primary500,
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                ),
+                child: Text(
+                  "Quay về trang chủ",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 //               return Column(
 //                 children: [
 //                   Flexible(

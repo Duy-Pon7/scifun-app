@@ -1,5 +1,5 @@
 // Cubit
-import 'package:sci_fun/common/cubit_new/pagination_cubit.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';
 

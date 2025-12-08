@@ -13,7 +13,8 @@ class GetAllTopics implements Usecase<List<TopicEntity>, TopicsParams> {
   Future<Either<Failure, List<TopicEntity>>> call(TopicsParams params) async {
     return await topicRepository.getAllTopics(
       params.searchQuery,
-      subjectId: params.subjectId,
+      subjectId: params.subjectId ??
+          '', // Default to an empty string if subjectId is null
       page: params.page,
       limit: params.limit,
     );
@@ -22,13 +23,13 @@ class GetAllTopics implements Usecase<List<TopicEntity>, TopicsParams> {
 
 class TopicsParams {
   final String? searchQuery;
-  final String subjectId;
+  final String? subjectId;
   final int page;
   final int limit;
 
   TopicsParams(
-    this.searchQuery, {
-    required this.subjectId,
+    this.searchQuery,
+    this.subjectId, {
     required this.page,
     required this.limit,
   });

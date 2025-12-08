@@ -1,4 +1,4 @@
-import 'package:sci_fun/common/cubit_new/pagination_cubit.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_all_quizz.dart';
 

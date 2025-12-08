@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -8,10 +7,6 @@ import 'package:sci_fun/features/auth/presentation/components/forgot_pass/otp_fo
 import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
-import 'package:sci_fun/features/profile/presentation/widget/social_circle_button.dart';
-import 'package:sci_fun/features/profile/presentation/widget/text_with_copy_icon.dart';
-import 'package:sci_fun/core/utils/assets/app_image.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class ChangePhoneOtp extends StatelessWidget {
   const ChangePhoneOtp({super.key});

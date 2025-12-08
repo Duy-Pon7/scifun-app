@@ -70,7 +70,7 @@ class _CustomExpansionTileLessonState extends State<CustomExpansionTileLesson> {
                       children: [
                         Icon(
                           Icons.folder_open, // hoặc Icons.topic_outlined
-                          color: Colors.red, // giống ảnh bạn gửi
+                          color: AppColor.primary600, // giống ảnh bạn gửi
                           size: 20.sp,
                         ),
                         SizedBox(width: 8.w),

@@ -1,4 +1,4 @@
-import 'package:sci_fun/common/cubit_new/pagination_cubit.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/topic/domain/entity/topic_entity.dart';
 import 'package:sci_fun/features/topic/domain/usecase/get_all_topics.dart';
 
@@ -16,8 +16,8 @@ class TopicCubit extends PaginationCubit<TopicEntity> {
   }) async {
     final result = await getAllTopics.call(
       TopicsParams(
-        searchQuery ?? "",
-        subjectId: filterId ?? "",
+        searchQuery,
+        filterId,
         page: page,
         limit: limit,
       ),

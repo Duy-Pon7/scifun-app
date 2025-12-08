@@ -87,7 +87,7 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
           ),
       });
 
-      final res = await dioClient.post(
+      final res = await dioClient.put(
         url: "${UserApiUrls.updateInfo}$userId",
         data: formData,
         options: Options(contentType: 'multipart/form-data'),

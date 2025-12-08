@@ -5,7 +5,7 @@ import 'package:sci_fun/features/topic/data/model/topic_model.dart';
 abstract interface class TopicRemoteDatasource {
   Future<List<TopicModel>> getAllTopics(
     String? searchQuery, {
-    required String subjectId,
+    String? subjectId,
     required int page,
     required int limit,
   });
@@ -19,7 +19,7 @@ class TopicRemoteDatasourceImpl implements TopicRemoteDatasource {
   @override
   Future<List<TopicModel>> getAllTopics(
     String? searchQuery, {
-    required String subjectId,
+    String? subjectId,
     required int page,
     required int limit,
   }) async {
