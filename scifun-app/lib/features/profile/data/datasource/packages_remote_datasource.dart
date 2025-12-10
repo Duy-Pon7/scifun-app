@@ -89,7 +89,6 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
         throw ServerException();
       }
 
-      print("Response data: ${res.data}");
 
       final responseData = ResponseModel<List<PackagesModel>>.fromJson(
         res.data,

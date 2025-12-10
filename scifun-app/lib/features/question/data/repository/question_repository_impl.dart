@@ -27,4 +27,40 @@ class QuestionRepositoryImpl implements QuestionRepository {
       return Left(Failure(message: e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> submitQuizAnswers({
+    required String userId,
+    required String quizId,
+    required List<Map<String, dynamic>> answers,
+  }) async {
+    try {
+      final res = await questionRemoteDatasource.submitQuizAnswers(
+        userId: userId,
+        quizId: quizId,
+        answers: answers,
+      );
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getSubmissionDetail({
+    required String submissionId,
+  }) async {
+    try {
+      final res = await questionRemoteDatasource.getSubmissionDetail(
+        submissionId: submissionId,
+      );
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
 }

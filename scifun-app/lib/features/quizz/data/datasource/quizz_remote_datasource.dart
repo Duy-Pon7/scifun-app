@@ -9,6 +9,8 @@ abstract interface class QuizzRemoteDatasource {
     required int page,
     required int limit,
   });
+
+  Future<List<QuizzModel>> getTrendQuizzes();
 }
 
 class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
@@ -40,6 +42,27 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
       }
     } catch (e) {
       throw Exception('Failed to load Quizzes: $e');
+    }
+  }
+
+  @override
+  Future<List<QuizzModel>> getTrendQuizzes() async {
+    try {
+      final res = await dioClient.get(
+        url: QuizApiUrl.getTrendQuizzes,
+      );
+
+      if (res.statusCode == 200) {
+        final List<dynamic> data = res.data['data']['data'];
+        return data
+            .map((quizJson) =>
+                QuizzModel.fromJson(quizJson as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Failed to load Trend Quizzes');
+      }
+    } catch (e) {
+      throw Exception('Failed to load Trend Quizzes: $e');
     }
   }
 }

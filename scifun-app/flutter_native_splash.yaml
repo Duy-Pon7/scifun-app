@@ -1,17 +1,17 @@
 flutter_native_splash:
   color: "#0891B2"
-  image: assets/images/splash.png
+  image: assets/images/logo.png
   color_dark: "#0891B2"
-  image_dark: assets/images/splash.png
+  image_dark: assets/images/logo.png
   android_gravity: center
   fullscreen: true
 
   android_12:
     color: "#0891B2"
-    image: assets/images/splash.png
+    image: assets/images/logo.png
     icon_background_color: "#0891B2"
     color_dark: "#0891B2"
-    image_dark: assets/images/splash.png
+    image_dark: assets/images/logo.png
     icon_background_color_dark: "#0891B2"
 
   web: true

@@ -230,6 +230,9 @@ void _homeInit() {
       () => GetAllQuizzes(quizzRepository: sl<QuizzRepository>()),
     )
     ..registerFactory(
+      () => GetTrendQuizzes(quizzRepository: sl<QuizzRepository>()),
+    )
+    ..registerFactory(
       () => QuizzCubit(sl<GetAllQuizzes>()),
     );
 }
@@ -246,6 +249,12 @@ void _questionInit() {
     )
     ..registerFactory(
       () => GetAllQuestions(questionRepository: sl<QuestionRepository>()),
+    )
+    ..registerFactory(
+      () => SubmitQuiz(questionRepository: sl<QuestionRepository>()),
+    )
+    ..registerFactory(
+      () => GetSubmissionDetail(questionRepository: sl<QuestionRepository>()),
     );
 }
 

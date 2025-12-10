@@ -9,4 +9,6 @@ abstract interface class QuizzRepository {
     required int page,
     required int limit,
   });
+
+  Future<Either<Failure, List<QuizzEntity>>> getTrendQuizzes();
 }

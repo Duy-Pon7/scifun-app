@@ -9,6 +9,7 @@ import 'package:sci_fun/features/home/presentation/components/home/background_ho
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
+import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class HomePage extends StatefulWidget {
@@ -117,7 +118,7 @@ class _HomePageState extends State<HomePage>
                       children: [
                         HeaderHome(),
                         ListSubjects(),
-                        // ListNews(),
+                        TrendQuizzesList(),
                       ],
                     ),
                   ),

@@ -327,15 +327,19 @@ class VideoPlayerPage extends StatefulWidget {
 }
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  late YoutubePlayerController _youtubePlayerController;
+  YoutubePlayerController? _youtubePlayerController;
+  String? _videoId;
 
   @override
   void initState() {
     super.initState();
-    final videoId = _extractYoutubeId(widget.videoUrl);
-    if (videoId != null) {
+
+    // Dùng hàm có sẵn của package
+    _videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
+
+    if (_videoId != null) {
       _youtubePlayerController = YoutubePlayerController(
-        initialVideoId: videoId,
+        initialVideoId: _videoId!,
         flags: const YoutubePlayerFlags(
           autoPlay: true,
           mute: false,
@@ -346,15 +350,14 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   void dispose() {
-    _youtubePlayerController.dispose();
+    _youtubePlayerController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final videoId = _extractYoutubeId(widget.videoUrl);
-
-    if (videoId == null) {
+    // Nếu không lấy được videoId hoặc controller chưa init -> báo lỗi
+    if (_videoId == null || _youtubePlayerController == null) {
       return Scaffold(
         appBar: BasicAppbar(title: widget.title),
         body: Center(
@@ -368,7 +371,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               ),
               SizedBox(height: 16.h),
               Text(
-                'Không thể tải video',
+                'Không thể tải video\nURL: ${widget.videoUrl}',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.red[600],
@@ -383,9 +387,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     return Scaffold(
       appBar: BasicAppbar(title: widget.title),
       body: YoutubePlayer(
-        controller: _youtubePlayerController,
+        controller: _youtubePlayerController!,
         showVideoProgressIndicator: true,
       ),
     );
   }
 }
+

@@ -40,6 +40,8 @@ class QuizApiUrl {
   QuizApiUrl._();
 
   static const String getQuizzes = '/quiz/get-quizzes'; //
+  static const String getTrendQuizzes =
+      '/quiz/get-trend-quizzes'; // new endpoint
 }
 
 class QuestionApiUrl {

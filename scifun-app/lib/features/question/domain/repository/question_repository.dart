@@ -8,4 +8,14 @@ abstract interface class QuestionRepository {
     int page = 1,
     int limit = 10,
   });
+
+  Future<Either<Failure, Map<String, dynamic>>> submitQuizAnswers({
+    required String userId,
+    required String quizId,
+    required List<Map<String, dynamic>> answers,
+  });
+
+  Future<Either<Failure, Map<String, dynamic>>> getSubmissionDetail({
+    required String submissionId,
+  });
 }

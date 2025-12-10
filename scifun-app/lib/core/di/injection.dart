@@ -10,10 +10,12 @@ import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.da
 import 'package:sci_fun/features/profile/domain/usecase/get_info_user.dart';
 import 'package:sci_fun/features/profile/domain/usecase/update_info_user.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/question/domain/usecase/submit_quiz.dart';
 import 'package:sci_fun/features/quizz/data/datasource/quizz_remote_datasource.dart';
 import 'package:sci_fun/features/quizz/data/repository/quizz_repository_impl.dart';
 import 'package:sci_fun/features/quizz/domain/repository/quizz_repository.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_all_quizz.dart';
+import 'package:sci_fun/features/quizz/domain/usecase/get_trend_quizz.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 import 'package:sci_fun/features/topic/data/datasource/topic_remote_datasource.dart';
 import 'package:sci_fun/features/topic/data/repository/topic_repository_impl.dart';
@@ -86,6 +88,7 @@ import 'package:sci_fun/features/question/data/datasource/question_remote_dataso
 import 'package:sci_fun/features/question/data/repository/question_repository_impl.dart';
 import 'package:sci_fun/features/question/domain/repository/question_repository.dart';
 import 'package:sci_fun/features/question/domain/usecase/get_all_question.dart';
+import 'package:sci_fun/features/question/domain/usecase/get_submission_detail.dart';
 import 'package:sci_fun/features/subject/data/datasource/subject_remote_datasource.dart';
 import 'package:sci_fun/features/subject/data/repository/subject_repository_impl.dart';
 import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';

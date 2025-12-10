@@ -29,4 +29,14 @@ class QuizzRepositoryImpl implements QuizzRepository {
       return Left(Failure(message: e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<QuizzEntity>>> getTrendQuizzes() async {
+    try {
+      final res = await quizzRemoteDatasource.getTrendQuizzes();
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    }
+  }
 }

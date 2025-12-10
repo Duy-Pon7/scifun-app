@@ -15,7 +15,7 @@ class QuestionsResponseModel extends QuestionsResponseEntity {
       data: json["data"] == null
           ? []
           : List<QuestionEntity>.from(
-              json["data"]!.map((x) => DatumModel.fromJson(x))),
+              json["data"]!.map((x) => QuestionModel.fromJson(x))),
       limit: json["limit"],
       totalPages: json["totalPages"],
       page: json["page"],

@@ -1,505 +1,294 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:sci_fun/common/helper/custom_math_widget.dart';
-import 'package:sci_fun/common/helper/latex_extension.dart';
-import 'package:sci_fun/common/helper/show_alert_dialog.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/common/widget/basic_button.dart';
-import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/features/home/presentation/cubit/countdown_cubit.dart';
-import 'package:sci_fun/features/home/presentation/cubit/quizz_detail_cubit.dart';
-import 'package:sci_fun/features/home/presentation/page/result_test_page.dart';
-import 'package:sci_fun/features/question/presentation/page/homework_all_ques.dart';
+import 'package:sci_fun/features/question/presentation/cubit/question_cubit.dart';
+import 'package:sci_fun/features/question/domain/entity/question_entity.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/features/question/presentation/cubit/submit_quiz_cubit.dart';
+import 'package:sci_fun/features/question/domain/usecase/submit_quiz.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class TestPage extends StatefulWidget {
-  const TestPage({super.key, required this.quizzId});
   final String quizzId;
+
+  const TestPage({super.key, required this.quizzId});
 
   @override
   State<TestPage> createState() => _TestPageState();
 }
 
 class _TestPageState extends State<TestPage> {
-  late QuizzDetailCubit _quizzDetailCubit;
+  late final QuestionCubit cubit;
+  late final SubmitQuizCubit submitQuizCubit;
+  int currentIndex = 0;
+  String? selectedAnswerId;
+  bool submitted = false;
+  int score = 0;
 
   @override
   void initState() {
     super.initState();
-    _quizzDetailCubit = QuizzDetailCubit(
-      getAllQuestions: sl(),
-    );
-    // Load dữ liệu quiz từ API
-    _quizzDetailCubit.loadQuizzDetail(widget.quizzId);
+    cubit = QuestionCubit(sl());
+    cubit.loadInitial(filterId: widget.quizzId);
+    submitQuizCubit = SubmitQuizCubit(sl<SubmitQuiz>());
   }
 
   @override
   void dispose() {
-    _quizzDetailCubit.close();
+    cubit.close();
+    submitQuizCubit.close();
     super.dispose();
+  }
+
+  void submitAnswer(List<QuestionEntity> questions) {
+    // Chuẩn bị dữ liệu answers cho API
+    final answersPayload = questions
+        .map<Map<String, dynamic>>((q) {
+          final selected =
+              q.answers.where((a) => a.id == selectedAnswerId).toList();
+          if (selected.isEmpty) return <String, dynamic>{};
+          final answer = selected.first;
+          return {
+            "questionId": q.id,
+            "selectedAnswerId": answer.id,
+          };
+        })
+        .where((a) => a.isNotEmpty)
+        .toList();
+
+    if (answersPayload.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui lòng chọn đáp án')),
+      );
+      return;
+    }
+
+    final userState = context.read<UserCubit>().state;
+    String userId = "unknown";
+    if (userState is UserLoaded) {
+      userId = userState.user.data?.id ?? "unknown";
+    }
+
+    submitQuizCubit.submit(
+      userId: userId,
+      quizId: widget.quizzId,
+      answers: answersPayload,
+    );
+  }
+
+  void nextQuestion(int total) {
+    if (currentIndex < total - 1) {
+      setState(() {
+        currentIndex += 1;
+        selectedAnswerId = null;
+        submitted = false;
+      });
+    } else {
+      // finish
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Hoàn thành'),
+          content: Text('Điểm: $score / $total'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Đóng'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => CountdownCubit(totalSeconds: 900), //900
-        ),
-        BlocProvider<QuizzDetailCubit>.value(
-          value: _quizzDetailCubit,
-        ),
+        BlocProvider<QuestionCubit>.value(value: cubit),
+        BlocProvider<SubmitQuizCubit>.value(value: submitQuizCubit),
       ],
       child: Scaffold(
-        appBar: BasicAppbar(
-          title: "Kiểm tra",
-          onBackPress: () => showAlertDialog(
-            context,
-            () {},
-            () => Navigator.pop(context),
-            "Đồng ý thoát khỏi kiểm tra",
-            "Bạn có chắc chắn muốn thoát khỏi bài kiểm tra này?",
-            "Hủy",
-            "Đồng ý",
-          ),
-        ),
-        backgroundColor: AppColor.hurricane50,
-        body: BlocListener<CountdownCubit, CountdownState>(
-          listenWhen: (previous, current) =>
-              current.remainingSecond == 0, // chỉ lắng nghe khi hết giờ
-          listener: (context, state) {
-            Navigator.pushReplacement(
-              context,
-              slidePage(
-                ResultTestPage(
-                  submissionData:
-                      context.read<QuizzDetailCubit>().getSubmissionData(),
-                  timeTaken:
-                      context.read<CountdownCubit>().getFormattedTimeTaken(),
-                  quizzId: widget.quizzId,
-                ),
-              ),
-            );
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              BlocBuilder<CountdownCubit, CountdownState>(
-                builder: (context, state) {
-                  return Container(
-                    margin: EdgeInsets.all(16.w),
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      spacing: 8.w,
+        appBar: const BasicAppbar(title: 'Bài tập tự luyện'),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: BlocBuilder<QuestionCubit, PaginationState<QuestionEntity>>(
+            builder: (context, state) {
+              print('Current Pagination State: $state'); // Debug print
+              if (state is PaginationLoading<QuestionEntity>) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is PaginationError<QuestionEntity> &&
+                  state.items.isEmpty) {
+                print('PaginationError: ${state.error}'); // Debug print
+                return Center(child: Text('Lỗi: ${state.error}'));
+              }
+              final items = state.items;
+              if (items.isEmpty) {
+                return const Center(child: Text('Không có câu hỏi'));
+              }
+              final q = items[currentIndex];
+              final answers = q.answers;
+
+              return BlocListener<SubmitQuizCubit, SubmitQuizState>(
+                listener: (context, submitState) {
+                  if (submitState is SubmitQuizSuccess) {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text('Kết quả'),
+                        content: Text(
+                          'Đúng: ${submitState.result["correctAnswers"]}\nĐiểm: ${submitState.result["score"]}\nTổng số câu: ${submitState.result["totalQuestions"]}',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Đóng'),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (submitState is SubmitQuizError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(submitState.message)),
+                    );
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(Icons.timer_outlined),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back_ios),
+                          onPressed: currentIndex > 0
+                              ? () => setState(() {
+                                    currentIndex -= 1;
+                                    selectedAnswerId = null;
+                                    submitted = false;
+                                  })
+                              : null,
+                        ),
+                        Text('Câu ${currentIndex + 1}/${items.length}',
+                            style: TextStyle(fontSize: 16.sp)),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_forward_ios),
+                          onPressed: currentIndex < items.length - 1
+                              ? () => setState(() {
+                                    currentIndex += 1;
+                                    selectedAnswerId = null;
+                                    submitted = false;
+                                  })
+                              : null,
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      q.text ?? '',
+                      style: TextStyle(fontSize: 16.sp, height: 1.4),
+                    ),
+                    SizedBox(height: 12.h),
+                    Expanded(
+                      child: ListView.separated(
+                        itemCount: answers.length,
+                        separatorBuilder: (_, __) => SizedBox(height: 8.h),
+                        itemBuilder: (context, index) {
+                          final ans = answers[index];
+                          final bool isSelected = ans.id == selectedAnswerId;
+                          Color borderColor = Colors.grey.shade300;
+                          if (submitted) {
+                            if (ans.isCorrect == true) {
+                              borderColor = Colors.green;
+                            } else if (isSelected && ans.isCorrect != true) {
+                              borderColor = Colors.red;
+                            }
+                          } else if (isSelected) {
+                            borderColor = Theme.of(context).primaryColor;
+                          }
+
+                          return InkWell(
+                            onTap: submitted
+                                ? null
+                                : () =>
+                                    setState(() => selectedAnswerId = ans.id),
+                            borderRadius: BorderRadius.circular(24.0),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12.w, vertical: 12.h),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(24.0),
+                                border:
+                                    Border.all(color: borderColor, width: 1.2),
+                              ),
+                              child: Row(
+                                children: [
+                                  Radio<String?>(
+                                    value: ans.id,
+                                    groupValue: selectedAnswerId,
+                                    onChanged: submitted
+                                        ? null
+                                        : (v) => setState(
+                                            () => selectedAnswerId = v),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      ans.text ?? '',
+                                      style: TextStyle(fontSize: 14.sp),
+                                    ),
+                                  ),
+                                  if (submitted && ans.isCorrect == true)
+                                    Icon(Icons.check_circle,
+                                        color: Colors.green, size: 20.sp),
+                                  if (submitted &&
+                                      isSelected &&
+                                      ans.isCorrect != true)
+                                    Icon(Icons.cancel,
+                                        color: Colors.red, size: 20.sp),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    if (submitted && (q.explanation?.isNotEmpty ?? false)) ...[
+                      SizedBox(height: 8.h),
+                      Text('Giải thích:',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4.h),
+                      Text(q.explanation ?? ''),
+                    ],
+                    SizedBox(height: 12.h),
+                    Row(
+                      children: [
                         Expanded(
-                          flex: 7,
-                          child: LinearProgressIndicator(
-                            value: state.progress,
-                            minHeight: 6,
-                            backgroundColor:
-                                Color(0xFF787880).withValues(alpha: 0.16),
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                                Colors.black),
-                            borderRadius: BorderRadius.circular(5.r),
+                          child: OutlinedButton(
+                            onPressed: () {
+                              submitAnswer(items);
+                            },
+                            child: const Text('Nộp bài'),
                           ),
                         ),
+                        SizedBox(width: 12.w),
                         Expanded(
-                          flex: 1,
-                          child: Text(
-                            context
-                                .read<CountdownCubit>()
-                                .formatDuration(state.remainingSecond),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          child: ElevatedButton(
+                            onPressed: () => nextQuestion(items.length),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                            ),
+                            child: const Text('Câu tiếp theo'),
                           ),
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
-              BlocBuilder<QuizzDetailCubit, QuizzDetailState>(
-                builder: (context, state) {
-                  if (state is QuizzDetailLoaded) {
-                    final questions = state.quizzEntity.questions ?? [];
-
-                    // Danh sách index của các câu đã chọn
-                    final answeredQuestionIndexes = questions
-                        .asMap()
-                        .entries
-                        .where((entry) =>
-                            state.selectedAnswers[entry.value.id]?.isNotEmpty ??
-                            false)
-                        .map((entry) => entry.key)
-                        .toList();
-
-                    return GestureDetector(
-                      onTap: () {
-                        final quizzDetailCubit =
-                            context.read<QuizzDetailCubit>();
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BlocProvider.value(
-                              value: quizzDetailCubit,
-                              child: Builder(
-                                builder: (newContext) => HomeworkAllQues(
-                                  totalQuestions: questions.length,
-                                  currentIndex: state.currentIndex,
-                                  answeredQuestionIndexes:
-                                      answeredQuestionIndexes,
-                                  onQuestionTap: (index) {
-                                    newContext
-                                        .read<QuizzDetailCubit>()
-                                        .jumpToQuestion(index);
-                                    Navigator.pop(newContext);
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: EdgeInsets.all(12.w),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Tất cả câu hỏi",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium!
-                                  .copyWith(
-                                    color: AppColor.primary500,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Icon(
-                              Icons.widgets_outlined,
-                              color: AppColor.primary500,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  return SizedBox.shrink(); // Tránh render khi chưa sẵn sàng
-                },
-              ),
-              BlocBuilder<QuizzDetailCubit, QuizzDetailState>(
-                builder: (context, state) {
-                  if (state is QuizzDetailLoaded) {
-                    EasyLoading.dismiss();
-                    final questions = state.quizzEntity.questions ?? [];
-                    if (questions.isEmpty) {
-                      EasyLoading.showToast(
-                        "Chưa có dữ liệu",
-                        toastPosition: EasyLoadingToastPosition.bottom,
-                      );
-                      return SizedBox.shrink();
-                    }
-                    final currentQuestion = questions[state.currentIndex];
-                    final selectedIds =
-                        state.selectedAnswers[currentQuestion.id] ?? [];
-                    final isMultipleChoice =
-                        currentQuestion.answerMode == 'multiple';
-
-                    return Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                            vertical: 24.h, horizontal: 16.w),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(28.w),
-                            topRight: Radius.circular(28.w),
-                          ),
-                        ),
-                        child: Column(
-                          spacing: 20.h,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  onPressed: () => state.currentIndex > 0
-                                      ? context
-                                          .read<QuizzDetailCubit>()
-                                          .preQuestion()
-                                      : null,
-                                  icon: Icon(
-                                    Icons.arrow_back_ios_new_rounded,
-                                    size: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  "Câu ${state.currentIndex + 1}/${questions.length}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .copyWith(
-                                        fontSize: 20.sp,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                ),
-                                IconButton(
-                                  onPressed: () =>
-                                      state.currentIndex < questions.length - 1
-                                          ? context
-                                              .read<QuizzDetailCubit>()
-                                              .nextQuestion()
-                                          : null,
-                                  icon: Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.h),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Html(
-                                      data: preprocessLatex(
-                                          currentQuestion.question ?? ""),
-                                      extensions: [LatexExtension()],
-                                    ),
-                                  ),
-                                  Text(
-                                    "${currentQuestion.score ?? "0"} điểm",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall!
-                                        .copyWith(
-                                          fontSize: 12.sp,
-                                          color: AppColor.primary500,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              itemCount: currentQuestion.answers?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                final answer = currentQuestion.answers![index];
-                                final selected =
-                                    selectedIds.contains(answer.id);
-
-                                return GestureDetector(
-                                  onTap: () => context
-                                      .read<QuizzDetailCubit>()
-                                      .selectAnswer(
-                                        currentQuestion.id!,
-                                        answer.id!,
-                                        isMultipleChoice,
-                                      ),
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16.w, vertical: 12.h),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 0.5,
-                                        color: Color(0xFF413E3E)
-                                            .withValues(alpha: 0.3),
-                                      ),
-                                      borderRadius: BorderRadius.circular(24.r),
-                                      color: selected
-                                          ? AppColor.primary600
-                                              .withValues(alpha: 0.15)
-                                          : Colors.transparent,
-                                    ),
-                                    child: Row(
-                                      spacing: 16.w,
-                                      children: [
-                                        Icon(
-                                          isMultipleChoice
-                                              ? (selected
-                                                  ? Icons.check_box
-                                                  : Icons
-                                                      .check_box_outline_blank)
-                                              : (selected
-                                                  ? Icons.radio_button_checked
-                                                  : Icons.radio_button_off),
-                                          color: selected
-                                              ? AppColor.primary600
-                                              : AppColor.hurricane800
-                                                  .withValues(alpha: 0.6),
-                                        ),
-                                        answer.answer!.startsWith("/public")
-                                            ? CustomNetworkAssetImage(
-                                                imagePath: answer.answer!,
-                                                width: 80.w,
-                                              )
-                                            : CustomMathWidget(
-                                                math: answer.answer,
-                                                displaySize: 18,
-                                                inlineSize: 18,
-                                              ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) => SizedBox(
-                                height: 12.h,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else if (state is QuizzLoading) {
-                    EasyLoading.show(
-                      status: 'Đang tải',
-                      maskType: EasyLoadingMaskType.black,
-                    );
-                  } else if (state is QuizzError) {
-                    EasyLoading.dismiss();
-                    EasyLoading.showToast(
-                      state.message,
-                      toastPosition: EasyLoadingToastPosition.bottom,
-                    );
-                  } else {
-                    EasyLoading.dismiss();
-                  }
-                  return SizedBox.shrink();
-                },
-              ),
-              BlocBuilder<QuizzDetailCubit, QuizzDetailState>(
-                builder: (context, state) {
-                  if (state is! QuizzDetailLoaded) {
-                    return const SizedBox.shrink();
-                  }
-
-                  final questions = state.quizzEntity.questions ?? [];
-                  final isLastQuestion =
-                      state.currentIndex >= questions.length - 1;
-
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      padding: EdgeInsets.all(16.w),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          top: BorderSide(
-                              color: Colors.black.withValues(alpha: 0.3),
-                              width: 0.3),
-                        ),
-                      ),
-                      child: isLastQuestion
-                          ? BasicButton(
-                              text: "Nộp bài",
-                              fontSize: 20.sp,
-                              onPressed: () => showAlertDialog(
-                                context,
-                                () => Navigator.pushReplacement(
-                                    context,
-                                    slidePage(ResultTestPage(
-                                      submissionData: context
-                                          .read<QuizzDetailCubit>()
-                                          .getSubmissionData(),
-                                      timeTaken: context
-                                          .read<CountdownCubit>()
-                                          .getFormattedTimeTaken(),
-                                      quizzId: widget.quizzId,
-                                    ))),
-                                () {},
-                                "Xác nhận nộp bài",
-                                "Bạn có chắc chắn muốn nộp bài kiểm tra không?",
-                                "Đồng ý",
-                                "Hủy",
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 12.w,
-                                vertical: 16.h,
-                              ),
-                              backgroundColor: Colors.black,
-                            )
-                          : Row(
-                              spacing: 12.w,
-                              children: [
-                                Expanded(
-                                  child: BasicButton(
-                                    text: "Nộp bài",
-                                    fontSize: 20.sp,
-                                    onPressed: () {
-                                      showAlertDialog(
-                                        context,
-                                        () => Navigator.pushReplacement(
-                                            context,
-                                            slidePage(ResultTestPage(
-                                              submissionData: context
-                                                  .read<QuizzDetailCubit>()
-                                                  .getSubmissionData(),
-                                              timeTaken: context
-                                                  .read<CountdownCubit>()
-                                                  .getFormattedTimeTaken(),
-                                              quizzId: widget.quizzId,
-                                            ))),
-                                        () {},
-                                        "Xác nhận nộp bài",
-                                        "Bạn có chắc chắn muốn nộp bài kiểm tra không?",
-                                        "Đồng ý",
-                                        "Hủy",
-                                      );
-                                    },
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                      vertical: 16.h,
-                                    ),
-                                    backgroundColor: Colors.transparent,
-                                    border: true,
-                                    borderWidth: 1,
-                                    textColor: Colors.black,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: BasicButton(
-                                    text: "Câu tiếp theo",
-                                    fontSize: 20.sp,
-                                    onPressed: () => context
-                                        .read<QuizzDetailCubit>()
-                                        .nextQuestion(),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w,
-                                      vertical: 16.h,
-                                    ),
-                                    backgroundColor: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                  );
-                },
-              )
-            ],
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),
