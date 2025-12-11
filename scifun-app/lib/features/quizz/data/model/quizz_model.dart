@@ -17,16 +17,19 @@ class QuizzModel extends QuizzEntity {
 
   factory QuizzModel.fromJson(Map<String, dynamic> json) {
     return QuizzModel(
-      duration: json["duration"],
-      questionCount: json["questionCount"],
+      duration: (json["duration"] as num?)?.toInt(),
+      questionCount: (json["questionCount"] as num?)?.toInt(),
       accessTier: json["accessTier"],
       description: json["description"],
       lastAttemptAt: json["lastAttemptAt"],
-      topic: json["topic"] == null ? null : TopicModel.fromJson(json["topic"]),
+      topic: json["topic"] != null &&
+              (json["topic"] as Map<String, dynamic>).isNotEmpty
+          ? TopicModel.fromJson(json["topic"])
+          : null,
       id: json["_id"],
       title: json["title"],
-      uniqueUserCount: json["uniqueUserCount"],
-      favoriteCount: json["favoriteCount"],
+      uniqueUserCount: (json["uniqueUserCount"] as num?)?.toInt(),
+      favoriteCount: (json["favoriteCount"] as num?)?.toInt(),
     );
   }
 

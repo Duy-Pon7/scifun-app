@@ -233,6 +233,13 @@ void _homeInit() {
       () => GetTrendQuizzes(quizzRepository: sl<QuizzRepository>()),
     )
     ..registerFactory(
+      () => quizz_get_submission_detail.GetSubmissionDetail(
+          quizzRepository: sl<QuizzRepository>()),
+    )
+    ..registerFactory(
+      () => TrendQuizzCubit(sl<GetTrendQuizzes>()),
+    )
+    ..registerFactory(
       () => QuizzCubit(sl<GetAllQuizzes>()),
     );
 }

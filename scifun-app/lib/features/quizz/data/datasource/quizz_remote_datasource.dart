@@ -1,6 +1,8 @@
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/features/quizz/data/model/quizz_model.dart';
+import 'package:sci_fun/features/quizz/data/model/quizz_trend_model.dart';
+import 'package:sci_fun/features/quizz/data/model/quizz_result_model.dart';
 
 abstract interface class QuizzRemoteDatasource {
   Future<List<QuizzModel>> getQuizzes(
@@ -10,7 +12,8 @@ abstract interface class QuizzRemoteDatasource {
     required int limit,
   });
 
-  Future<List<QuizzModel>> getTrendQuizzes();
+  Future<QuizzTrendModel> getTrendQuizzes();
+  Future<QuizzResultModel> getSubmissionDetail(String submissionId);
 }
 
 class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
@@ -46,23 +49,36 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
   }
 
   @override
-  Future<List<QuizzModel>> getTrendQuizzes() async {
+  Future<QuizzTrendModel> getTrendQuizzes() async {
     try {
       final res = await dioClient.get(
         url: QuizApiUrl.getTrendQuizzes,
       );
 
       if (res.statusCode == 200) {
-        final List<dynamic> data = res.data['data']['data'];
-        return data
-            .map((quizJson) =>
-                QuizzModel.fromJson(quizJson as Map<String, dynamic>))
-            .toList();
+        return QuizzTrendModel.fromJson(res.data['data']);
       } else {
         throw Exception('Failed to load Trend Quizzes');
       }
     } catch (e) {
       throw Exception('Failed to load Trend Quizzes: $e');
+    }
+  }
+
+  @override
+  Future<QuizzResultModel> getSubmissionDetail(String submissionId) async {
+    try {
+      final res = await dioClient.get(
+        url: "${SubmissionApiUrl.getSubmissionDetail}/$submissionId",
+      );
+
+      if (res.statusCode == 200) {
+        return QuizzResultModel.fromJson(res.data['data']);
+      } else {
+        throw Exception('Failed to load Submission detail');
+      }
+    } catch (e) {
+      throw Exception('Failed to load Submission detail: $e');
     }
   }
 }

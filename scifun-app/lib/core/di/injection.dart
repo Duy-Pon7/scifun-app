@@ -16,7 +16,10 @@ import 'package:sci_fun/features/quizz/data/repository/quizz_repository_impl.dar
 import 'package:sci_fun/features/quizz/domain/repository/quizz_repository.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_all_quizz.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_trend_quizz.dart';
+import 'package:sci_fun/features/quizz/domain/usecase/get_submission_detail.dart'
+    as quizz_get_submission_detail;
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
+import 'package:sci_fun/features/quizz/presentation/cubit/trend_quizz_cubit.dart';
 import 'package:sci_fun/features/topic/data/datasource/topic_remote_datasource.dart';
 import 'package:sci_fun/features/topic/data/repository/topic_repository_impl.dart';
 import 'package:sci_fun/features/topic/domain/usecase/get_all_topics.dart';

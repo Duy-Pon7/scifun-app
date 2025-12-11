@@ -9,6 +9,7 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/question/presentation/cubit/submit_quiz_cubit.dart';
 import 'package:sci_fun/features/question/domain/usecase/submit_quiz.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'quiz_result_page.dart';
 
 class TestPage extends StatefulWidget {
   final String quizzId;
@@ -135,19 +136,10 @@ class _TestPageState extends State<TestPage> {
               return BlocListener<SubmitQuizCubit, SubmitQuizState>(
                 listener: (context, submitState) {
                   if (submitState is SubmitQuizSuccess) {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Kết quả'),
-                        content: Text(
-                          'Đúng: ${submitState.result["correctAnswers"]}\nĐiểm: ${submitState.result["score"]}\nTổng số câu: ${submitState.result["totalQuestions"]}',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Đóng'),
-                          ),
-                        ],
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            QuizResultPage(result: submitState.result),
                       ),
                     );
                   } else if (submitState is SubmitQuizError) {

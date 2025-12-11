@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:sci_fun/core/error/failure.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/quizz/domain/entity/quizz_trend_entity.dart';
+import 'package:sci_fun/features/quizz/domain/entity/quizz_result_entity.dart';
 
 abstract interface class QuizzRepository {
   Future<Either<Failure, List<QuizzEntity>>> getAllQuizzes(
@@ -10,5 +12,7 @@ abstract interface class QuizzRepository {
     required int limit,
   });
 
-  Future<Either<Failure, List<QuizzEntity>>> getTrendQuizzes();
+  Future<Either<Failure, QuizzTrend>> getTrendQuizzes();
+
+  Future<Either<Failure, QuizzResult>> getSubmissionDetail(String submissionId);
 }

@@ -4,6 +4,8 @@ import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/features/quizz/domain/repository/quizz_repository.dart';
 import 'package:sci_fun/features/quizz/data/datasource/quizz_remote_datasource.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/quizz/domain/entity/quizz_trend_entity.dart';
+import 'package:sci_fun/features/quizz/domain/entity/quizz_result_entity.dart';
 
 class QuizzRepositoryImpl implements QuizzRepository {
   final QuizzRemoteDatasource quizzRemoteDatasource;
@@ -31,9 +33,20 @@ class QuizzRepositoryImpl implements QuizzRepository {
   }
 
   @override
-  Future<Either<Failure, List<QuizzEntity>>> getTrendQuizzes() async {
+  Future<Either<Failure, QuizzTrend>> getTrendQuizzes() async {
     try {
       final res = await quizzRemoteDatasource.getTrendQuizzes();
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, QuizzResult>> getSubmissionDetail(
+      String submissionId) async {
+    try {
+      final res = await quizzRemoteDatasource.getSubmissionDetail(submissionId);
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
