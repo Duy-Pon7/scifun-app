@@ -41,7 +41,6 @@ class ListHomeworkAllPage extends StatelessWidget {
     );
   }
 
-  /// Convert user answer list to Map<questionId, List<selectedAnswerIds>>
   Map<int, List<int>> getSelectedAnswerMap(List<UserAnswerEntity> answers) {
     final map = <int, List<int>>{};
     for (var ua in answers) {

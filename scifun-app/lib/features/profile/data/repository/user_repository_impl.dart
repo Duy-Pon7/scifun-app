@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/core/error/failure.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/common/entities/user_entity.dart';
@@ -15,11 +16,10 @@ class UserRepositoryImpl implements UserRepository {
   });
 
   @override
-  Future<Either<Failure, UserEntity?>> getInfoUser(
+  Future<Either<Failure, UserGetEntity?>> getInfoUser(
       {required String token}) async {
     try {
       final res = await userRemoteDatasource.getUser(token: token);
-      print("UserRepositoryImpl getInfoUser result: $res");
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
@@ -42,7 +42,6 @@ class UserRepositoryImpl implements UserRepository {
         sex: sex,
         avatar: avatar,
       );
-      print("UserRepositoryImpl updateInfoUser result: $res");
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));
@@ -58,7 +57,6 @@ class UserRepositoryImpl implements UserRepository {
       required int provinceId,
       required int wardId,
       required String email}) {
-    // TODO: implement changeUser
     throw UnimplementedError();
   }
 }

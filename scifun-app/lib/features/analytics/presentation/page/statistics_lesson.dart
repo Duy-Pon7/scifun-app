@@ -17,6 +17,7 @@ class StatisticsLesson extends StatefulWidget {
 }
 
 class _StatisticsLessonState extends State<StatisticsLesson> {
+  String? _lastFetchedSubjectId;
   @override
   void initState() {
     super.initState();
@@ -30,8 +31,8 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
         BlocProvider(
           create: (context) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
         ),
-        BlocProvider(
-          create: (context) => sl<ProgressCubit>(),
+        BlocProvider.value(
+          value: sl<ProgressCubit>(),
         ),
       ],
       child: Scaffold(
@@ -61,11 +62,16 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
                         final subjectId = selectedSubject.id;
                         print("Selected Subject ID: $subjectId");
 
-                        // Trigger fetchProgress whenever tab changes
-                        if (subjectId != null) {
-                          context
-                              .read<ProgressCubit>()
-                              .fetchProgress(subjectId);
+                        // Trigger fetchProgress whenever tab changes (only when subjectId changes)
+                        if (subjectId != null &&
+                            subjectId != _lastFetchedSubjectId) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (!mounted) return;
+                            context
+                                .read<ProgressCubit>()
+                                .fetchProgress(subjectId);
+                            _lastFetchedSubjectId = subjectId;
+                          });
                         }
 
                         return ListStatisticsLesson(

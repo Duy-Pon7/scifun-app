@@ -10,13 +10,17 @@ class ProgressCubit extends Cubit<ProgressState> {
 
   ProgressCubit({required this.getProgress}) : super(ProgressInitial());
 
+  void _tryEmit(ProgressState state) {
+    if (!isClosed) emit(state);
+  }
+
   Future<void> fetchProgress(String subjectId) async {
-    emit(ProgressLoading());
+    _tryEmit(ProgressLoading());
     final result = await getProgress(ProgressParams(subjectId: subjectId));
 
     result.fold(
-      (failure) => emit(ProgressError(failure.message)),
-      (progress) => emit(ProgressLoaded(progress)),
+      (failure) => _tryEmit(ProgressError(failure.message)),
+      (progress) => _tryEmit(ProgressLoaded(progress)),
     );
   }
 }

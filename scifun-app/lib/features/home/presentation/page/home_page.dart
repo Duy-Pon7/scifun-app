@@ -9,6 +9,7 @@ import 'package:sci_fun/features/home/presentation/components/home/background_ho
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
@@ -40,6 +41,16 @@ class _HomePageState extends State<HomePage>
           },
         ),
         BlocProvider(
+          create: (_) {
+            final token = sl<SharePrefsService>().getUserData();
+            if (token != null) {
+              print("Creating UserCubit with token");
+              return sl<UserCubit>()..getUser(token: token);
+            }
+            return sl<UserCubit>();
+          },
+        ),
+        BlocProvider(
           create: (context) => sl<NewsCubit>()..getNews(),
         ),
         BlocProvider(
@@ -61,6 +72,14 @@ class _HomePageState extends State<HomePage>
                 EasyLoading.dismiss();
                 // Không hiển thị toast error nếu getSession fail vì user có thể chưa login
                 print("AuthBloc Error: ${state.message}");
+              } else if (state is AuthUserLoginSuccess) {
+                // After successful login, refresh user info if available
+                final userId = state.user?.data?.id;
+                if (userId != null && userId.isNotEmpty) {
+                  try {
+                    context.read<UserCubit>().getUser(token: userId);
+                  } catch (_) {}
+                }
               } else {
                 EasyLoading.dismiss();
               }

@@ -48,7 +48,11 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       centerTitle: true,
       actions: [
-        if (rightIcon != null) rightIcon!,
+        if (rightIcon != null)
+          Padding(
+            padding: EdgeInsets.only(right: 12.w), // hoặc 16.w
+            child: rightIcon!,
+          ),
       ],
     );
   }

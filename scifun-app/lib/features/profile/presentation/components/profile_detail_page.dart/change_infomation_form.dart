@@ -4,12 +4,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+// removed unused import
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/common/widget/customize_dropdown.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
+// removed unused import
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 import 'package:intl/intl.dart';
@@ -22,14 +25,15 @@ class ChangeInfomationForm extends StatefulWidget {
 }
 
 class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
-  final _formKey = GlobalKey<FormState>();
+  late final UserCubit _userCubit;
+  late final SharePrefsService _sharePrefsService;
+  late final String token;
+  // Avoid using a shared GlobalKey for the Form to prevent duplicate
+  // GlobalKey problems when widgets are reparented. Use `Form.of(context)`
+  // to access validation instead.
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _fullnameCon = TextEditingController();
-  // final _emailCon = TextEditingController();
   final _birthdayCon = TextEditingController();
-
-  // final _phoneCon = TextEditingController();
-  // int? _selectedProvinceId;
-  // int? _selectedWardId;
 
   DateTime? selectedBirthday;
   bool _isFirstLoad = true;
@@ -37,46 +41,35 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   @override
   void initState() {
     super.initState();
-    final addressCubit = context.read<AddressCubit>();
-    addressCubit.fetchAddresss();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userState = context.read<UserCubit>().state;
-      if (userState is UserLoaded) {
-        // Note: Current API doesn't support province/ward, so commenting out
-        // final user = userState.user.data;
-        // _selectedProvinceId = user?.province?.id;
-        // _selectedWardId = user?.ward?.id;
-        // if (_selectedProvinceId != null) {
-        //   addressCubit.fetchWards(_selectedProvinceId!);
-        // }
-      }
-    });
+    _userCubit = context.read<UserCubit>();
+    // SharePrefsService is provided via service locator, not a widget provider.
+    _sharePrefsService = sl<SharePrefsService>();
+    token = _sharePrefsService.getUserData()!;
   }
 
   @override
   void dispose() {
     _fullnameCon.dispose();
     _birthdayCon.dispose();
-    // _phoneCon.dispose();
-    // _emailCon.dispose();
+
     super.dispose();
   }
 
   void _onChange() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       FocusScope.of(context).unfocus();
       final selectedImage = context.read<SelectImageCubit>().state.image;
       final userState = context.read<UserCubit>().state;
       if (userState is UserLoaded) {
         final userId = userState.user.data?.id ?? '';
-        context.read<UserCubit>().updateUser(
-              userId: userId,
-              fullname: _fullnameCon.text.trim(),
-              dob: selectedBirthday ?? DateTime(2000, 1, 1),
-              sex: _genderFieldValue ?? 1,
-              avatar: selectedImage,
-            );
+        _userCubit.updateUser(
+          token: token,
+          userId: userId,
+          fullname: _fullnameCon.text.trim(),
+          dob: selectedBirthday ?? DateTime(2000, 1, 1),
+          sex: _genderFieldValue ?? 1,
+          avatar: selectedImage,
+        );
       }
     }
   }
@@ -94,10 +87,12 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
             status: 'Đang tải',
             maskType: EasyLoadingMaskType.black,
           );
-        } else if (state is UserLoaded) {
+        } else if (state is UserUpdated) {
           EasyLoading.dismiss();
           EasyLoading.showToast("Cập nhật thông tin thành công",
               toastPosition: EasyLoadingToastPosition.bottom);
+        } else if (state is UserLoaded) {
+          EasyLoading.dismiss();
         }
       },
       builder: (context, state) {
@@ -154,95 +149,6 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-                // _emailnameField(),
-                // Note: Email field not supported by API
-                // SizedBox(height: 16.h),
-                // BlocBuilder<AddressCubit, AddressState>(
-                //   builder: (context, state) {
-                //     if (state is AddressLoading) {
-                //       // return const CircularProgressIndicator();
-                //     } else if (state is AddressLoaded) {
-                //       final provinces = state.provinces;
-                //       final items = {
-                //         for (var p in provinces) p.id: p.name,
-                //       };
-
-                //       return CustomizeDropdown<int?>(
-                //         items: items.cast<int?, String>(),
-                //         onChanged: (int? selectedId) {
-                //           if (selectedId != null) {
-                //             setState(() {
-                //               _selectedProvinceId = selectedId;
-                //               _selectedWardId =
-                //                   null; // reset quận/huyện khi đổi tỉnh
-                //             });
-                //             context.read<AddressCubit>().fetchWards(selectedId);
-                //           }
-                //         },
-                //         hintText: "Chọn tỉnh/thành",
-                //         value: _selectedProvinceId,
-                //       );
-                //     } else if (state is AddressError) {
-                //       return Text("Lỗi: ${state.message}");
-                //     }
-                //     return const SizedBox.shrink();
-                //   },
-                // ),
-                // SizedBox(height: 16.h),
-                // BlocBuilder<AddressCubit, AddressState>(
-                //   builder: (context, state) {
-                //     if (_selectedProvinceId == null)
-                //       return const SizedBox.shrink();
-
-                //     final wards = context.read<AddressCubit>().wards;
-                //     if (wards.isEmpty) {
-                //       return const SizedBox(
-                //           height: 50,
-                //           child: Center(child: CircularProgressIndicator()));
-                //     }
-
-                //     final items = {
-                //       for (var ward in wards) ward.id: ward.name,
-                //     };
-
-                //     return CustomizeDropdown<int?>(
-                //       items: items.cast<int?, String>(),
-                //       onChanged: (int? selectedWardId) {
-                //         setState(() {
-                //           _selectedWardId = selectedWardId;
-                //         });
-                //       },
-                //       hintText: "Chọn quận/huyện",
-                //       value: _selectedWardId,
-                //     );
-                //   },
-                // ),
-                // SizedBox(height: 16.h),
-                // Note: Phone field is not editable as per API
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       flex: 3,
-                //       child: _phoneField(),
-                //     ),
-                //     SizedBox(width: 16.w),
-                //     Expanded(
-                //       flex: 1,
-                //       child: _changePhoneButton(),
-                //     ),
-                //   ],
-                // ),
-                // SizedBox(height: 6.h),
-                // Align(
-                //   alignment: Alignment.centerLeft,
-                //   child: Text(
-                //     'Đổi sđt sẽ đăng nhập lại',
-                //     style: TextStyle(
-                //       fontSize: 12.sp,
-                //       color: const Color(0xFF666666),
-                //     ),
-                //   ),
-                // ),
                 SizedBox(height: 40.h),
                 _changeButton(),
               ],
@@ -292,8 +198,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                 child: Container(
                   width: 28.w,
                   height: 28.w,
-                  decoration: const BoxDecoration(
-                    color: Colors.redAccent,
+                  decoration: BoxDecoration(
+                    color: AppColor.primary400,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -310,19 +216,6 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
     );
   }
 
-  // Email field not supported by API
-  // Widget _emailnameField() => BasicInputField(
-  //       controller: _emailCon,
-  //       validator: (value) {
-  //         if (value == null || value.isEmpty) {
-  //           return 'Nhập email';
-  //         }
-  //         return null;
-  //       },
-  //       hintText: "Nhập email",
-  //       textInputAction: TextInputAction.next,
-  //       suffixIcon: const Icon(Icons.edit),
-  //     );
   Widget _fullnameField() => BasicInputField(
         controller: _fullnameCon,
         validator: (value) {
@@ -379,24 +272,6 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         suffixIcon: const Icon(Icons.calendar_month),
       );
 
-  // Phone field not supported by API
-  // Widget _phoneField() => BasicInputField(
-  //       controller: _phoneCon,
-  //       fillColor: const Color(0xFFF0F0F0),
-  //       readOnly: true,
-  //       validator: (value) {
-  //         if (value == null || value.isEmpty) {
-  //           return 'Số điện thoại không được để trống';
-  //         }
-  //         return null;
-  //       },
-  //       style: TextStyle(
-  //         color: AppColor.hurricane800.withValues(alpha: 0.3),
-  //       ),
-  //       textInputAction: TextInputAction.next,
-  //       keyboardType: TextInputType.phone,
-  //     );
-
   Widget _changeButton() => BasicButton(
         text: "Cập nhật",
         onPressed: _onChange,
@@ -405,16 +280,4 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
         backgroundColor: AppColor.primary600,
       );
-  // Phone change not supported by current API
-  // Widget _changePhoneButton() => BasicButton(
-  //       text: "Đổi",
-  //       textColor: AppColor.primary600,
-  //       onPressed: () {
-  //         Navigator.push(context, slidePage(ChangePhone()));
-  //       },
-  //       width: double.infinity,
-  //       fontSize: 18.sp,
-  //       padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-  //       backgroundColor: AppColor.primary600.withValues(alpha: 0.15),
-  //     );
 }

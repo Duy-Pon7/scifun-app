@@ -48,43 +48,29 @@ class ListStatisticsLesson extends StatelessWidget {
                           final progressValue =
                               progress.toDouble().clamp(0, 100);
                           final barWidth = constraints.maxWidth;
-                          final currentOffset = barWidth * progressValue / 100;
+
+                          double rawOffset = barWidth * progressValue / 100;
+                          double textWidth =
+                              36.w; // ước lượng chiều rộng chữ "100%"
+                          double safeOffset = rawOffset - textWidth / 2;
+
+                          safeOffset =
+                              safeOffset.clamp(0, barWidth - textWidth);
                           return SizedBox(
                             height: 24.h,
                             child: Stack(
                               children: [
-                                // 0% bên trái
-                                Positioned(
-                                  left: 0,
-                                  child: Text(
-                                    "0%",
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-
-                                // 100% bên phải
-                                Positioned(
-                                  right: 0,
-                                  child: Text(
-                                    "100%",
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ),
-
                                 // % hiện tại — chỉ hiển thị khi không phải 0% hoặc 100%
                                 if (progressValue > 0 && progressValue < 100)
                                   Positioned(
-                                    left: currentOffset -
-                                        20.w, // căn giữa tương đối
+                                    left: safeOffset,
                                     child: Text(
                                       "${progressValue.round()}%",
                                       style: TextStyle(
-                                          fontSize: 17.sp,
-                                          fontWeight: FontWeight.w600),
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColor.primary600,
+                                      ),
                                     ),
                                   ),
                               ],

@@ -82,33 +82,23 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String password,
   }) async {
     try {
-      print("🔄 Attempting login for email: $email");
       final res = await dioClient.post(
         url: AuthApiUrls.login,
         data: {"email": email, "password": password, "device_token": "z"},
       );
-      print("✅ Login Response status: ${res.statusCode}");
-      print("✅ Login Response data: ${res.data}");
 
       if (res.statusCode == 200) {
         final userModel = UserModel.fromJson(res.data);
-        print("✅ UserModel created: ${userModel.data?.id}");
         await sharePrefsService.saveAuthToken(userModel.token); // 👈 Lưu token
         await sharePrefsService.saveUserData(userModel.data?.id);
         if (userModel.token == null) {
-          print("❌ Token is null");
           throw ServerException(message: AppErrors.failureLogin);
         }
         return userModel;
       }
 
-      print("❌ Unexpected status code: ${res.statusCode}");
       return null;
     } on DioException catch (e) {
-      print("❌ DioException: ${e.message}");
-      print("❌ Response data: ${e.response?.data}");
-      print("❌ Response status: ${e.response?.statusCode}");
-
       String mess = AppErrors.commonError;
       final errors = e.response?.data;
       if (errors != null) {
@@ -118,7 +108,6 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       }
       throw ServerException(message: mess);
     } catch (e) {
-      print("❌ Unexpected error: $e");
       throw ServerException(message: AppErrors.commonError);
     }
   }
@@ -208,9 +197,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       final res = await dioClient.put(
         url: UserApiUrls.changePassword,
         data: {
-          "old_password": oldPass,
-          "password": newPass,
-          "password_confirmation": newPassConfirm,
+          "oldPassword": oldPass,
+          "newPassword": newPass,
+          "confirmPassword": newPassConfirm,
         },
       );
 

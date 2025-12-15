@@ -35,24 +35,6 @@ class HeaderProfile extends StatelessWidget {
                 color: AppColor.primary500,
               ),
         ),
-        RichText(
-          text: TextSpan(
-            text: "Gói còn lại: ",
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: AppColor.hurricane800.withValues(alpha: 0.6),
-                  fontWeight: FontWeight.w600,
-                ),
-            children: [
-              TextSpan(
-                text: remainingPackage,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium!
-                    .copyWith(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }

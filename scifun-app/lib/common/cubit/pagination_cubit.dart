@@ -106,6 +106,11 @@ abstract class PaginationCubit<T> extends Cubit<PaginationState<T>> {
         filterId: activeFilterId,
       ));
     } catch (e) {
+      try {
+        print(
+            'Pagination loadInitial error: $e (filterId=$activeFilterId, searchQuery=$searchQuery)');
+      } catch (_) {}
+
       emit(PaginationError<T>(
         error: e.toString(),
         currentPage: 0,

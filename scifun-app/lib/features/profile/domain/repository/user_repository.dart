@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/core/error/failure.dart';
 
 abstract interface class UserRepository {
@@ -14,7 +15,7 @@ abstract interface class UserRepository {
     required int wardId,
     required String email,
   });
-  Future<Either<Failure, UserEntity?>> getInfoUser({required String token});
+  Future<Either<Failure, UserGetEntity?>> getInfoUser({required String token});
 
   Future<Either<Failure, UserEntity?>> updateInfoUser({
     required String userId,

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sci_fun/common/entities/user_entity.dart';
+import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/features/profile/domain/usecase/get_info_user.dart';
 import 'package:sci_fun/features/profile/domain/usecase/update_info_user.dart';
 
@@ -16,11 +16,22 @@ class UserInitial extends UserState {}
 class UserLoading extends UserState {}
 
 class UserLoaded extends UserState {
-  final UserEntity user;
+  final UserGetEntity user;
   UserLoaded(this.user);
 
   @override
   List<Object?> get props => [user];
+}
+
+class UserUpdated extends UserLoaded {
+  final DateTime updatedAt;
+
+  UserUpdated(UserGetEntity user, {DateTime? updatedAt})
+      : updatedAt = updatedAt ?? DateTime.now(),
+        super(user);
+
+  @override
+  List<Object?> get props => [user, updatedAt];
 }
 
 class UserError extends UserState {
@@ -41,27 +52,40 @@ class UserCubit extends Cubit<UserState> {
     required this.updateInfoUser,
   }) : super(UserInitial());
 
-  Future<void> getUser({required String token}) async {
-    emit(UserLoading());
+  void _tryEmit(UserState state) {
+    if (!isClosed) emit(state);
+  }
+
+  Future<UserGetEntity?> getUser({required String token}) async {
+    _tryEmit(UserLoading());
     try {
       final res = await getInfoUser.call(token: token);
-      res.fold(
-        (failure) => emit(UserError(failure.message)),
-        (data) => emit(UserLoaded(data!)),
+      return await res.fold(
+        (failure) {
+          _tryEmit(UserError(failure.message));
+          return null;
+        },
+        (data) {
+          final user = data!;
+          _tryEmit(UserLoaded(user));
+          return user;
+        },
       );
     } catch (e) {
-      emit(UserError(e.toString()));
+      _tryEmit(UserError(e.toString()));
+      return null;
     }
   }
 
   Future<void> updateUser({
+    required String token,
     required String userId,
     required String fullname,
     required DateTime dob,
     required int sex,
     File? avatar,
   }) async {
-    emit(UserLoading());
+    _tryEmit(UserLoading());
     try {
       final params = UpdateInfoUserParams(
         userId: userId,
@@ -70,13 +94,20 @@ class UserCubit extends Cubit<UserState> {
         sex: sex,
         avatar: avatar,
       );
+
       final res = await updateInfoUser.call(params);
+
       res.fold(
-        (failure) => emit(UserError(failure.message)),
-        (data) => emit(UserLoaded(data!)),
+        (failure) => _tryEmit(UserError(failure.message)),
+        (_) async {
+          final user = await getUser(token: token);
+          if (user != null) {
+            _tryEmit(UserUpdated(user));
+          }
+        },
       );
     } catch (e) {
-      emit(UserError(e.toString()));
+      _tryEmit(UserError(e.toString()));
     }
   }
 }

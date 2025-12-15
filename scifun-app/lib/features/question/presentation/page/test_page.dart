@@ -23,10 +23,12 @@ class TestPage extends StatefulWidget {
 class _TestPageState extends State<TestPage> {
   late final QuestionCubit cubit;
   late final SubmitQuizCubit submitQuizCubit;
+
   int currentIndex = 0;
-  String? selectedAnswerId;
   bool submitted = false;
-  int score = 0;
+
+  /// ✅ LƯU ĐÁP ÁN THEO QUESTION ID
+  final Map<String, String> selectedAnswers = {};
 
   @override
   void initState() {
@@ -43,28 +45,21 @@ class _TestPageState extends State<TestPage> {
     super.dispose();
   }
 
+  /// ✅ SUBMIT BÀI
   void submitAnswer(List<QuestionEntity> questions) {
-    // Chuẩn bị dữ liệu answers cho API
-    final answersPayload = questions
-        .map<Map<String, dynamic>>((q) {
-          final selected =
-              q.answers.where((a) => a.id == selectedAnswerId).toList();
-          if (selected.isEmpty) return <String, dynamic>{};
-          final answer = selected.first;
-          return {
-            "questionId": q.id,
-            "selectedAnswerId": answer.id,
-          };
-        })
-        .where((a) => a.isNotEmpty)
-        .toList();
-
-    if (answersPayload.isEmpty) {
+    if (selectedAnswers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn đáp án')),
+        const SnackBar(content: Text('Vui lòng chọn ít nhất 1 đáp án')),
       );
       return;
     }
+
+    final answersPayload = selectedAnswers.entries.map((e) {
+      return {
+        "questionId": e.key,
+        "selectedAnswerId": e.value,
+      };
+    }).toList();
 
     final userState = context.read<UserCubit>().state;
     String userId = "unknown";
@@ -77,31 +72,6 @@ class _TestPageState extends State<TestPage> {
       quizId: widget.quizzId,
       answers: answersPayload,
     );
-  }
-
-  void nextQuestion(int total) {
-    if (currentIndex < total - 1) {
-      setState(() {
-        currentIndex += 1;
-        selectedAnswerId = null;
-        submitted = false;
-      });
-    } else {
-      // finish
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Hoàn thành'),
-          content: Text('Điểm: $score / $total'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Đóng'),
-            ),
-          ],
-        ),
-      );
-    }
   }
 
   @override
@@ -117,28 +87,32 @@ class _TestPageState extends State<TestPage> {
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           child: BlocBuilder<QuestionCubit, PaginationState<QuestionEntity>>(
             builder: (context, state) {
-              print('Current Pagination State: $state'); // Debug print
               if (state is PaginationLoading<QuestionEntity>) {
                 return const Center(child: CircularProgressIndicator());
               }
+
               if (state is PaginationError<QuestionEntity> &&
                   state.items.isEmpty) {
-                print('PaginationError: ${state.error}'); // Debug print
                 return Center(child: Text('Lỗi: ${state.error}'));
               }
+
               final items = state.items;
               if (items.isEmpty) {
                 return const Center(child: Text('Không có câu hỏi'));
               }
+
               final q = items[currentIndex];
               final answers = q.answers;
+
+              /// ✅ LẤY ĐÁP ÁN ĐÃ CHỌN TRƯỚC ĐÓ (NẾU CÓ)
+              final selectedAnswerId = selectedAnswers[q.id];
 
               return BlocListener<SubmitQuizCubit, SubmitQuizState>(
                 listener: (context, submitState) {
                   if (submitState is SubmitQuizSuccess) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
+                        builder: (_) =>
                             QuizResultPage(result: submitState.result),
                       ),
                     );
@@ -151,6 +125,7 @@ class _TestPageState extends State<TestPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    /// HEADER
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -158,32 +133,38 @@ class _TestPageState extends State<TestPage> {
                           icon: const Icon(Icons.arrow_back_ios),
                           onPressed: currentIndex > 0
                               ? () => setState(() {
-                                    currentIndex -= 1;
-                                    selectedAnswerId = null;
+                                    currentIndex--;
                                     submitted = false;
                                   })
                               : null,
                         ),
-                        Text('Câu ${currentIndex + 1}/${items.length}',
-                            style: TextStyle(fontSize: 16.sp)),
+                        Text(
+                          'Câu ${currentIndex + 1}/${items.length}',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.arrow_forward_ios),
                           onPressed: currentIndex < items.length - 1
                               ? () => setState(() {
-                                    currentIndex += 1;
-                                    selectedAnswerId = null;
+                                    currentIndex++;
                                     submitted = false;
                                   })
                               : null,
                         ),
                       ],
                     ),
+
                     SizedBox(height: 8.h),
+
+                    /// QUESTION
                     Text(
                       q.text ?? '',
                       style: TextStyle(fontSize: 16.sp, height: 1.4),
                     ),
+
                     SizedBox(height: 12.h),
+
+                    /// ANSWERS
                     Expanded(
                       child: ListView.separated(
                         itemCount: answers.length,
@@ -191,6 +172,7 @@ class _TestPageState extends State<TestPage> {
                         itemBuilder: (context, index) {
                           final ans = answers[index];
                           final bool isSelected = ans.id == selectedAnswerId;
+
                           Color borderColor = Colors.grey.shade300;
                           if (submitted) {
                             if (ans.isCorrect == true) {
@@ -205,14 +187,17 @@ class _TestPageState extends State<TestPage> {
                           return InkWell(
                             onTap: submitted
                                 ? null
-                                : () =>
-                                    setState(() => selectedAnswerId = ans.id),
-                            borderRadius: BorderRadius.circular(24.0),
+                                : () {
+                                    setState(() {
+                                      selectedAnswers[q.id ?? ""] = ans.id!;
+                                    });
+                                  },
+                            borderRadius: BorderRadius.circular(24),
                             child: Container(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 12.w, vertical: 12.h),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24.0),
+                                borderRadius: BorderRadius.circular(24),
                                 border:
                                     Border.all(color: borderColor, width: 1.2),
                               ),
@@ -223,8 +208,11 @@ class _TestPageState extends State<TestPage> {
                                     groupValue: selectedAnswerId,
                                     onChanged: submitted
                                         ? null
-                                        : (v) => setState(
-                                            () => selectedAnswerId = v),
+                                        : (v) {
+                                            setState(() {
+                                              selectedAnswers[q.id ?? ""] = v!;
+                                            });
+                                          },
                                   ),
                                   Expanded(
                                     child: Text(
@@ -247,35 +235,13 @@ class _TestPageState extends State<TestPage> {
                         },
                       ),
                     ),
-                    if (submitted && (q.explanation?.isNotEmpty ?? false)) ...[
-                      SizedBox(height: 8.h),
-                      Text('Giải thích:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      SizedBox(height: 4.h),
-                      Text(q.explanation ?? ''),
-                    ],
+
                     SizedBox(height: 12.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              submitAnswer(items);
-                            },
-                            child: const Text('Nộp bài'),
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () => nextQuestion(items.length),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                            ),
-                            child: const Text('Câu tiếp theo'),
-                          ),
-                        ),
-                      ],
+
+                    /// SUBMIT
+                    OutlinedButton(
+                      onPressed: () => submitAnswer(items),
+                      child: const Text('Nộp bài'),
                     ),
                   ],
                 ),

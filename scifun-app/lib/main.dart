@@ -15,6 +15,7 @@ import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
@@ -37,15 +38,6 @@ void main() async {
               create: (_) => sl<AuthBloc>(),
             ),
             BlocProvider(
-              create: (_) {
-                final token = sl<SharePrefsService>().getUserData();
-                if (token != null) {
-                  return sl<UserCubit>()..getUser(token: token);
-                }
-                return sl<UserCubit>();
-              },
-            ),
-            BlocProvider(
               create: (_) => sl<PackageBloc>(),
             ),
             BlocProvider(
@@ -54,6 +46,7 @@ void main() async {
             BlocProvider(
                 create: (_) => sl<IsAuthorizedCubit>()..isAuthorized()),
             BlocProvider(create: (_) => sl<DashboardCubit>()),
+            BlocProvider(create: (_) => sl<LeaderboardsCubit>()),
             BlocProvider(
               create: (context) => sl<QuizzCubit>(),
             )

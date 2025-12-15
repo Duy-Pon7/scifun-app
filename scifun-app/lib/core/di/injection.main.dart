@@ -55,6 +55,7 @@ Future<void> initializeDependencies() async {
   _homeInit();
   _questionInit();
   _videoInit();
+  _leaderboardInit();
 }
 
 Future<void> _profile() async {
@@ -262,6 +263,31 @@ void _questionInit() {
     )
     ..registerFactory(
       () => GetSubmissionDetail(questionRepository: sl<QuestionRepository>()),
+    );
+}
+
+void _leaderboardInit() {
+  sl
+    ..registerFactory<LeaderboardRemoteDatasource>(
+      () => LeaderboardRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    )
+    ..registerFactory<LeaderboardRepository>(
+      () => LeaderboardRepositoryImpl(
+        leaderboardRemoteDatasource: sl<LeaderboardRemoteDatasource>(),
+      ),
+    )
+    ..registerFactory(
+      () => GetLeaderboard(leaderboardRepository: sl<LeaderboardRepository>()),
+    )
+    ..registerFactory(
+      () => RebuildLeaderboard(
+          leaderboardRepository: sl<LeaderboardRepository>()),
+    )
+    ..registerFactory(
+      () => LeaderboardsCubit(
+        getLeaderboard: sl<GetLeaderboard>(),
+        rebuildLeaderboard: sl<RebuildLeaderboard>(),
+      ),
     );
 }
 

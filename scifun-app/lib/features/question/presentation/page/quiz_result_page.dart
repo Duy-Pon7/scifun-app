@@ -151,6 +151,7 @@ class QuizResultPage extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => SubmissionDetailPage(
                         submissionId: submissionId,
+                        pro: false,
                       ),
                     ),
                   );

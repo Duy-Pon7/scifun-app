@@ -135,6 +135,7 @@ class _SearchPageState extends State<SearchPage> {
                                   child: QuizzPage(
                                     topicId: topic.id ?? '',
                                     topicName: topic.name ?? 'Quizz',
+                                    isProUser: true,
                                   ),
                                 ),
                               ),

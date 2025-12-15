@@ -128,6 +128,7 @@ class _VideoPageState extends State<VideoPage> {
                     child: QuizzPage(
                       topicId: widget.topicId,
                       topicName: widget.topicName,
+                      isProUser: false,
                     ),
                   ),
                 ),
@@ -393,4 +394,3 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 }
-

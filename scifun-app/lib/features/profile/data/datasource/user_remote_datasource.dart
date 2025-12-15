@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:sci_fun/common/models/response_model.dart';
+import 'package:sci_fun/common/models/user_get_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/app_errors.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
@@ -11,7 +12,7 @@ import 'package:sci_fun/core/network/dio_client.dart';
 import '../../../../common/models/user_model.dart';
 
 abstract interface class UserRemoteDatasource {
-  Future<UserModel?> getUser({required String token});
+  Future<UserGetModel?> getUser({required String token});
 
   Future<UserModel?> updateInfoUser({
     required String userId,
@@ -28,38 +29,29 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
   UserRemoteDatasourceImpl({required this.dioClient});
 
   @override
-  Future<UserModel?> getUser({required String token}) async {
+  Future<UserGetModel?> getUser({required String token}) async {
     try {
       print("token in getUser: $token");
+
       final res = await dioClient.get(
         url: "${UserApiUrls.getInfo}$token",
       );
+
       print("Get User Response: ${res.data}");
+
       if (res.statusCode == 200) {
-        final returnedData = ResponseModel<UserModel>.fromJson(
-          res.data,
-          (json) => UserModel.fromJson(
-            {
-              'status': res.data['status'],
-              'message': res.data['message'],
-              'token': res.data['token'],
-              'data': json,
-            },
-          ),
-        );
-        if (returnedData.data == null) {
-          return null;
-        }
-        log(returnedData.data.toString());
-        return returnedData.data!;
+        return UserGetModel.fromJson(res.data);
       }
+
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
       String mess = AppErrors.getAuthFailure;
       final errors = e.response?.data;
-      if (errors != null && errors is Map<String, dynamic>) {
-        mess = errors['message'] ?? AppErrors.getAuthFailure;
+
+      if (errors is Map<String, dynamic>) {
+        mess = errors['message'] ?? mess;
       }
+
       throw ServerException(message: mess);
     }
   }
