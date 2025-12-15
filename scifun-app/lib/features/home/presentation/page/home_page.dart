@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage>
           create: (_) {
             final token = sl<SharePrefsService>().getUserData();
             if (token != null) {
-              print("Creating UserCubit with token");
+              print("Creating UserCubit with token: $token");
               return sl<UserCubit>()..getUser(token: token);
             }
             return sl<UserCubit>();
@@ -63,23 +63,10 @@ class _HomePageState extends State<HomePage>
             listener: (context, state) {
               if (state is AuthUserSuccess) {
                 EasyLoading.dismiss();
-
-                final province = 0;
-                final ward = 0;
-
-                print("province $province ward $ward");
               } else if (state is AuthFailure) {
                 EasyLoading.dismiss();
                 // Không hiển thị toast error nếu getSession fail vì user có thể chưa login
                 print("AuthBloc Error: ${state.message}");
-              } else if (state is AuthUserLoginSuccess) {
-                // After successful login, refresh user info if available
-                final userId = state.user?.data?.id;
-                if (userId != null && userId.isNotEmpty) {
-                  try {
-                    context.read<UserCubit>().getUser(token: userId);
-                  } catch (_) {}
-                }
               } else {
                 EasyLoading.dismiss();
               }

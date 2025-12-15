@@ -6,6 +6,7 @@ import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
 import 'package:sci_fun/features/video/domain/entity/video_entity.dart';
 import 'package:sci_fun/features/video/presentation/cubit/video_pagination_cubit.dart';
+import 'package:sci_fun/features/video/presentation/pages/youtube_page.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideoPage extends StatefulWidget {
@@ -178,7 +179,7 @@ class VideoTile extends StatelessWidget {
           if (video.url != null && video.url!.isNotEmpty) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => VideoPlayerPage(
+                builder: (context) => YoutubePage(
                   videoUrl: video.url!,
                   title: video.title ?? 'Video',
                 ),
@@ -301,16 +302,6 @@ class VideoTile extends StatelessWidget {
       ),
     );
   }
-}
-
-// Helper function to extract YouTube video ID from URL
-String? _extractYoutubeId(String url) {
-  final RegExp regExp = RegExp(
-    r'(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:embed\/|v\/|watch\?v=)?([a-zA-Z0-9_-]{11})',
-    caseSensitive: false,
-  );
-  final match = regExp.firstMatch(url);
-  return match?.group(1);
 }
 
 class VideoPlayerPage extends StatefulWidget {

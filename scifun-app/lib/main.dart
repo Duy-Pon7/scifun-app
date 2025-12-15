@@ -8,7 +8,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tex/flutter_tex.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_theme.dart';
 import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
@@ -36,6 +35,9 @@ void main() async {
           providers: [
             BlocProvider(
               create: (_) => sl<AuthBloc>(),
+            ),
+            BlocProvider(
+              create: (_) => sl<UserCubit>(),
             ),
             BlocProvider(
               create: (_) => sl<PackageBloc>(),
@@ -83,7 +85,7 @@ class MyApp extends StatelessWidget {
           title: 'Sci Fun',
           theme: AppTheme.theme,
           builder: EasyLoading.init(),
-          home: isAuthorized ? const DashboardPage() : const SigninPage(),
+          home: isAuthorized ? DashboardPage() : const SigninPage(),
           // home: AddInfomationPage(),
         ),
       ),

@@ -11,7 +11,6 @@ import 'package:sci_fun/common/widget/basic_text_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/forgot_pass_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signup/signup_page.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
@@ -61,12 +60,6 @@ class _SigninFormState extends State<SigninForm> {
       );
     } else if (state is AuthUserLoginSuccess) {
       EasyLoading.dismiss();
-      // Fetch user info immediately after successful login so the app
-      // doesn't require a full reload to display user data.
-      final userId = state.user?.data?.id;
-      if (userId != null && userId.isNotEmpty) {
-        sl<UserCubit>().getUser(token: userId);
-      }
       Navigator.pushAndRemoveUntil(
         context,
         DashboardPage.route(),
