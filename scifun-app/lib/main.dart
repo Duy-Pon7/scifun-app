@@ -20,7 +20,6 @@ import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 
 void main() async {
-  // debugPaintSizeEnabled = true;
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await initializeDependencies();

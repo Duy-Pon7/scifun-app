@@ -14,7 +14,6 @@ class ListStatisticsLesson extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ProgressCubit, ProgressState>(
       builder: (context, state) {
-        print("ProgressCubit: $state");
         if (state is ProgressLoading) {
           return Center(child: CircularProgressIndicator());
         } else if (state is ProgressLoaded) {

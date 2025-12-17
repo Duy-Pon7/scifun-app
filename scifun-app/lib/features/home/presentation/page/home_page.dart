@@ -1,17 +1,31 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/ws_bootstrap.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
+import 'package:sci_fun/features/home/presentation/widget/comment_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
+
+String wsUrlForEnvironment({int port = 5000}) {
+  if (kIsWeb)
+    return 'wss://localhost:$port/ws'; // web can use localhost and wss if server has cert
+  if (Platform.isAndroid)
+    return 'ws://10.0.2.2:$port/ws'; // Android emulator -> host machine
+  if (Platform.isIOS)
+    return 'ws://localhost:$port/ws'; // iOS simulator can use localhost
+  return 'ws://localhost:$port/ws';
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -125,6 +139,10 @@ class _HomePageState extends State<HomePage>
                         HeaderHome(),
                         ListSubjects(),
                         TrendQuizzesList(),
+                        CommentPage(),
+                        WsBootstrap(
+                          wsUrl: wsUrlForEnvironment(),
+                        ),
                       ],
                     ),
                   ),

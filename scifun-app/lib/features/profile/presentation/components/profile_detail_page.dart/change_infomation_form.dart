@@ -4,15 +4,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
-// removed unused import
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/common/widget/customize_dropdown.dart';
-import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-// removed unused import
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 import 'package:intl/intl.dart';
@@ -28,10 +26,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   late final UserCubit _userCubit;
   late final SharePrefsService _sharePrefsService;
   late final String token;
-  // Avoid using a shared GlobalKey for the Form to prevent duplicate
-  // GlobalKey problems when widgets are reparented. Use `Form.of(context)`
-  // to access validation instead.
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _fullnameCon = TextEditingController();
   final _birthdayCon = TextEditingController();
 
@@ -42,9 +37,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   void initState() {
     super.initState();
     _userCubit = context.read<UserCubit>();
-    // SharePrefsService is provided via service locator, not a widget provider.
     _sharePrefsService = sl<SharePrefsService>();
-    token = _sharePrefsService.getUserData()!;
+    token = _sharePrefsService.getAuthToken()!;
   }
 
   @override
@@ -56,7 +50,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   }
 
   void _onChange() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       final selectedImage = context.read<SelectImageCubit>().state.image;
       final userState = context.read<UserCubit>().state;
@@ -87,12 +81,10 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
             status: 'Đang tải',
             maskType: EasyLoadingMaskType.black,
           );
-        } else if (state is UserUpdated) {
+        } else if (state is UserLoaded) {
           EasyLoading.dismiss();
           EasyLoading.showToast("Cập nhật thông tin thành công",
               toastPosition: EasyLoadingToastPosition.bottom);
-        } else if (state is UserLoaded) {
-          EasyLoading.dismiss();
         }
       },
       builder: (context, state) {
@@ -155,7 +147,12 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
             ),
           );
         }
-        return const SizedBox.shrink();
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 40.h),
+            child: const CircularProgressIndicator(),
+          ),
+        );
       },
     );
   }

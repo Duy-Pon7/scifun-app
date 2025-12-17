@@ -166,31 +166,19 @@ class ListHomeworkAllPage extends StatelessWidget {
 
                   Color borderColor;
                   Color? bgColor;
-                  IconData iconData;
-                  Color iconColor;
 
                   if (selected && correct) {
                     borderColor = Color(0xff34C759);
                     bgColor = Color(0xff34C759); // Nền xanh đậm
-                    iconData = Icons.check_circle;
-                    iconColor = Colors.white;
                   } else if (selected && !correct) {
                     borderColor = AppColor.primary600;
                     bgColor = AppColor.primary600; // Nền đỏ đậm
-                    iconData = Icons.cancel;
-                    iconColor = Colors.white;
                   } else if (!selected && correct) {
                     borderColor = Color(0xff34C759);
                     bgColor = Color(0xff34C759);
-                    iconData = Icons.check;
-                    iconColor = Color(0xff34C759);
                   } else {
                     borderColor = Colors.grey.shade300;
                     bgColor = Colors.transparent;
-                    iconData = isMultipleChoice
-                        ? Icons.check_box_outline_blank
-                        : Icons.radio_button_off;
-                    iconColor = Colors.grey;
                   }
 
                   return Container(

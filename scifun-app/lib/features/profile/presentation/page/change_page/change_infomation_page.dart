@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile_detail_page.dart/change_infomation_form.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
@@ -12,27 +13,30 @@ class ChangeInfomationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: FocusScope.of(context).unfocus,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<SelectImageCubit>(),
+        ),
+        BlocProvider(
+          create: (context) {
+            final token = sl<SharePrefsService>().getUserData();
+            if (token != null) {
+              return sl<UserCubit>()..getUser(token: token);
+            }
+            return sl<UserCubit>();
+          },
+        ),
+      ],
       child: Scaffold(
         appBar: BasicAppbar(
           title: "Thông tin cá nhân",
           showTitle: true,
           showBack: true,
         ),
-        body: MultiBlocProvider(
-          providers: [
-            BlocProvider<SelectImageCubit>(
-              create: (_) => SelectImageCubit(),
-            ),
-            BlocProvider<UserCubit>(
-              create: (_) => sl<UserCubit>(),
-            ),
-          ],
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: ChangeInfomationForm(),
-          ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: ChangeInfomationForm(),
         ),
       ),
     );
