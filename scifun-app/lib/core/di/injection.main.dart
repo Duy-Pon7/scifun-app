@@ -66,7 +66,7 @@ Future<void> _profile() async {
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
     ..registerFactory(() => GetInfoUser(userRepository: sl()))
     ..registerFactory(() => UpdateInfoUser(userRepository: sl()))
-    ..registerFactory(() => UserCubit(
+    ..registerLazySingleton(() => UserCubit(
           getInfoUser: sl(),
           updateInfoUser: sl(),
         ))
@@ -118,10 +118,7 @@ Future<void> _notiInti() async {
     ..registerFactory<NotificationRepository>(
         () => NotificationRepositoryImpl(notificationRemoteDatasource: sl()))
     ..registerFactory(() => GetNotifications(sl()))
-    ..registerFactory(() => GetNotificationDetail(sl()))
-    ..registerFactory(() => MarkAsRead(sl()))
-    ..registerFactory(() => MarkAsReadAll(sl()))
-    ..registerFactory(() => DeleteNotification(sl()));
+    ..registerLazySingleton(() => NotificationCubit(getNotifications: sl()));
 }
 
 Future<void> _addressInti() async {
@@ -152,7 +149,7 @@ Future<void> _authInit() async {
     // ..registerFactory(() => ObscureTextCubit())
     // ..registerFactory(() => SelectGendersCubit())
     ..registerFactory(() => GetAuth(authRepository: sl()))
-    ..registerFactory(() => AuthBloc(
+    ..registerLazySingleton(() => AuthBloc(
           login: sl(),
           signup: sl(),
           sendEmail: sl(),
@@ -196,29 +193,6 @@ void _homeInit() {
       () => GetLessonCategory(
           lessonCategoryRepository: sl<LessonCategoryRepository>()),
     )
-    // ..registerFactory<LessonRemoteDatasource>(
-    //   () => LessonRemoteDatasourceImpl(dioClient: sl<DioClient>()),
-    // )
-    // ..registerFactory<LessonRepository>(
-    //   () => LessonRepositoryImpl(
-    //     lessonRemoteDatasource: sl<LessonRemoteDatasource>(),
-    //   ),
-    // )
-    // ..registerFactory(
-    //   () => GetListLesson(lessonRepository: sl<LessonRepository>()),
-    // )
-    // ..registerFactory(
-    //   () => GetKeyListLesson(lessonRepository: sl<LessonRepository>()),
-    // )
-    // ..registerFactory(
-    //   () => GetSubjectProgress(lessonRepository: sl<LessonRepository>()),
-    // )
-    // ..registerFactory(
-    //   () => GetLessonDetail(lessonRepository: sl<LessonRepository>()),
-    // )
-    // ..registerFactory(
-    //   () => LessonCubit(sl<GetLessonDetail>(), sl<GetLessonCategory>()),
-    // )
     ..registerFactory<QuizzRemoteDatasource>(
       () => QuizzRemoteDatasourceImpl(dioClient: sl<DioClient>()),
     )
@@ -314,6 +288,6 @@ void resetSingleton() {
     ..resetLazySingleton<SharePrefsService>()
     ..resetLazySingleton<NavigatorKeyService>()
     ..resetLazySingleton<DashboardCubit>()
-    // ..resetLazySingleton<IsAuthorizedCubit>()
+    ..resetLazySingleton<IsAuthorizedCubit>()
     ..resetLazySingleton<DioClient>();
 }

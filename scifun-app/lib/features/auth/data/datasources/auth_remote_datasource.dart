@@ -25,55 +25,60 @@ abstract interface class AuthRemoteDatasource {
   });
 
   Future<String> sendEmail({required String email});
-  Future<UserCheckModel> checkEmailPhone(
-      {required String phone, required String email});
+  Future<UserCheckModel> checkEmailPhone({
+    required String phone,
+    required String email,
+  });
 
   Future<String> verificationOtp({
     required String email,
     required String otp,
   });
+
   Future<bool> resendOtp({
     required String email,
   });
+
   Future<String> changePassword({
     required String oldPass,
     required String newPass,
     required String newPassConfirm,
   });
+
   Future<UserModel?> getAuth();
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   final DioClient dioClient;
   final SharePrefsService sharePrefsService;
-  AuthRemoteDatasourceImpl(
-      {required this.dioClient, required this.sharePrefsService});
 
-  String _getErrorMessage(Map<String, dynamic> errors) {
-    String mess = AppErrors.commonError;
-    if (errors.containsKey('message_validate')) {
-      final validates = errors['message_validate'] as Map<String, dynamic>;
-      if (validates.containsKey('email')) {
-        mess = validates['email'].first;
-      } else if (validates.containsKey('password')) {
-        mess = validates['password'].first;
-      } else if (validates.containsKey('old_password')) {
-        mess = validates['old_password'].first;
-      } else if (validates.containsKey('birthday')) {
-        mess = validates['birthday'].first;
-      } else if (validates.containsKey('gender')) {
-        mess = validates['gender'].first;
-      } else if (validates.containsKey('fullname')) {
-        mess = validates['fullname'].first;
-      } else if (validates.containsKey('phone')) {
-        mess = validates['phone'].first;
-      } else if (validates.containsKey('otp')) {
-        mess = validates['otp'].first;
-      }
-    } else if (errors.containsKey('message')) {
-      mess = errors['message'] as String;
+  AuthRemoteDatasourceImpl({
+    required this.dioClient,
+    required this.sharePrefsService,
+  });
+
+  String _extractServerMessage(dynamic data) {
+    if (data == null) return AppErrors.commonError;
+
+    if (data is Map<String, dynamic> && data['message'] is String) {
+      return data['message'];
     }
-    return mess;
+
+    if (data is Map<String, dynamic> && data['message'] is List) {
+      return data['message'].first.toString();
+    }
+
+    if (data is Map<String, dynamic> && data['message'] is Map) {
+      final map = data['message'] as Map;
+      if (map.isNotEmpty) {
+        final firstValue = map.values.first;
+        if (firstValue is List && firstValue.isNotEmpty) {
+          return firstValue.first.toString();
+        }
+      }
+    }
+
+    return AppErrors.commonError;
   }
 
   @override
@@ -84,31 +89,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     try {
       final res = await dioClient.post(
         url: AuthApiUrls.login,
-        data: {"email": email, "password": password, "device_token": "z"},
+        data: {
+          "email": email,
+          "password": password,
+          "device_token": "z",
+        },
       );
 
-      if (res.statusCode == 200) {
-        final userModel = UserModel.fromJson(res.data);
-        await sharePrefsService.saveAuthToken(userModel.token); // 👈 Lưu token
-        await sharePrefsService.saveUserData(userModel.data?.id);
-        if (userModel.token == null) {
-          throw ServerException(message: AppErrors.failureLogin);
-        }
-        return userModel;
-      }
+      final userModel = UserModel.fromJson(res.data);
+      await sharePrefsService.saveAuthToken(userModel.token);
+      await sharePrefsService.saveUserData(userModel.data?.id);
 
-      return null;
+      return userModel;
     } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
-    } catch (e) {
-      throw ServerException(message: AppErrors.commonError);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
@@ -119,72 +115,61 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String fullname,
     required String email,
   }) async {
-    print("🔄 Attempting signup for email: $email");
     try {
       final res = await dioClient.post(
         url: AuthApiUrls.signup,
-        data: {"email": email, "password": password, "fullname": fullname},
+        data: {
+          "email": email,
+          "password": password,
+          "fullname": fullname,
+        },
       );
-      print("✅ Signup Response status: ${res.statusCode}");
-      print("✅ Signup Response data: ${res.data}");
 
-      if (res.statusCode == 200) {
-        final userModel = UserModel.fromJson(res.data);
-        return userModel;
-      }
-
-      throw ServerException(message: AppErrors.getAuthFailure);
+      return UserModel.fromJson(res.data);
     } on DioException catch (e) {
-      print("❌ DioException in signup: ${e.message}");
-      print("❌ Response data: ${e.response?.data}");
-      print("❌ Response status: ${e.response?.statusCode}");
-
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
-    } catch (e) {
-      print("❌ Unexpected error in signup: $e");
-      throw ServerException(message: AppErrors.commonError);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
   @override
   Future<String> sendEmail({required String email}) async {
     try {
-      final res = await dioClient.post(url: AuthApiUrls.sendEmail, data: {
-        "type": "email",
-        "value": email,
-      });
-      if (res.statusCode == 200) {
-        return AppSuccesses.successfullSendEmail;
-      }
-      return AppErrors.failureSendEmail;
+      await dioClient.post(
+        url: AuthApiUrls.sendEmail,
+        data: {
+          "type": "email",
+          "value": email,
+        },
+      );
+      return AppSuccesses.successfullSendEmail;
     } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
   @override
   Future<UserModel?> getAuth() async {
-    // Check if token exists before calling API
-    if (sharePrefsService.getAuthToken() == null) {
-      return null;
+    if (sharePrefsService.getAuthToken() == null) return null;
+
+    try {
+      final res = await dioClient.get(url: AuthApiUrls.getAuth);
+
+      final returnedData = ResponseModel<UserModel>.fromJson(
+        res.data,
+        (json) => UserModel.fromJson(json as Map<String, dynamic>),
+      );
+
+      log(returnedData.data.toString());
+      return returnedData.data;
+    } on DioException catch (e) {
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
-    return await _getUser(
-      () => dioClient.get(url: AuthApiUrls.getAuth),
-    );
   }
 
   @override
@@ -203,53 +188,11 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      if (res.statusCode == 200) {
-        // Trả về message từ backend hoặc gắn cố định nếu bạn muốn
-        return res.data['message'] ?? "Đổi mật khẩu thành công";
-      }
-
-      throw ServerException(message: AppErrors.getAuthFailure);
+      return res.data['message'] ?? "Đổi mật khẩu thành công";
     } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
-    }
-  }
-
-  Future<UserModel?> _getUser(
-    Future<Response<dynamic>> Function() func,
-  ) async {
-    try {
-      final res = await func();
-      print("Get User Response status: ${res}");
-      if (res.statusCode == 200) {
-        final returnedData = ResponseModel<UserModel>.fromJson(
-          res.data,
-          (json) => UserModel.fromJson(
-            json as Map<String, dynamic>,
-          ),
-        );
-        if (returnedData.data == null) {
-          return null;
-        }
-        log(returnedData.data.toString());
-        return returnedData.data!;
-      }
-      throw ServerException(message: AppErrors.getAuthFailure);
-    } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
@@ -266,28 +209,17 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
           "email": email,
         },
       );
-      if (res.statusCode == 200) {
-        final data = res.data['data'];
-        return UserCheckModel.fromJson(data);
-      }
 
-      throw ServerException(message: AppErrors.getAuthFailure);
+      return UserCheckModel.fromJson(res.data['data']);
     } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
   @override
-  Future<bool> resendOtp({
-    required String email,
-  }) async {
+  Future<bool> resendOtp({required String email}) async {
     try {
       final res = await dioClient.post(
         url: AuthApiUrls.resendOtp,
@@ -296,21 +228,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
           "value": email,
         },
       );
-      if (res.statusCode == 200) {
-        final data = res.data['data'];
-        return data as bool;
-      }
 
-      throw ServerException(message: AppErrors.getAuthFailure);
+      return res.data['data'] as bool;
     } on DioException catch (e) {
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 
@@ -320,40 +243,19 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String otp,
   }) async {
     try {
-      print("otp in datasource $otp");
       final res = await dioClient.post(
         url: AuthApiUrls.verificationOtp,
-        data: {"email": email, "otp": otp},
+        data: {
+          "email": email,
+          "otp": otp,
+        },
       );
-      print("Response status: ${res.statusCode}");
-      print("Response data: ${res.data}");
-      if (res.statusCode == 200) {
-        final status = res.data['status'];
-        final message = res.data['message'] ?? AppErrors.commonError;
 
-        if (status == 200) {
-          // OTP đúng
-          return message;
-        } else {
-          // OTP sai hoặc backend báo lỗi
-          throw ServerException(message: message);
-        }
-      }
-
-      throw ServerException(message: AppErrors.getAuthFailure);
+      return res.data['message'];
     } on DioException catch (e) {
-      print("DioException: ${e.message}");
-      print("Response data: ${e.response?.data}");
-      print("Response status: ${e.response?.statusCode}");
-
-      String mess = AppErrors.commonError;
-      final errors = e.response?.data;
-      if (errors != null) {
-        mess = errors is Map<String, dynamic>
-            ? _getErrorMessage(errors)
-            : AppErrors.commonError;
-      }
-      throw ServerException(message: mess);
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
     }
   }
 }

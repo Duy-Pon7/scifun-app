@@ -64,29 +64,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(1.0),
-      ),
-      child: BlocBuilder<IsAuthorizedCubit, bool>(
-        builder: (context, isAuthorized) => MaterialApp(
-          locale: const Locale('vi'),
-          supportedLocales: const [
-            Locale('vi'), // Tiếng Việt
-            Locale('en'), // Tiếng Anh (tuỳ chọn)
-          ],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          debugShowCheckedModeBanner: false,
-          title: 'Sci Fun',
-          theme: AppTheme.theme,
-          builder: EasyLoading.init(),
-          home: isAuthorized ? DashboardPage() : const SigninPage(),
-          // home: AddInfomationPage(),
-        ),
+    return BlocBuilder<IsAuthorizedCubit, bool>(
+      builder: (context, isAuthorized) => MaterialApp(
+        locale: const Locale('vi'),
+        supportedLocales: const [
+          Locale('vi'), // Tiếng Việt
+          Locale('en'), // Tiếng Anh (tuỳ chọn)
+        ],
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        debugShowCheckedModeBanner: false,
+        title: 'Sci Fun',
+        theme: AppTheme.theme,
+        builder: EasyLoading.init(),
+        home: isAuthorized ? DashboardPage() : const SigninPage(),
+        // home: AddInfomationPage(),
       ),
     );
   }

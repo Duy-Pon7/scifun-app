@@ -18,7 +18,6 @@ class YoutubePage extends StatefulWidget {
 
 class _YoutubePageState extends State<YoutubePage> {
   late YoutubePlayerController _controller;
-  bool _isPlayerReady = false;
 
   @override
   void initState() {
@@ -65,9 +64,7 @@ class _YoutubePageState extends State<YoutubePage> {
           RemainingDuration(),
           FullScreenButton(),
         ],
-        onReady: () {
-          _isPlayerReady = true;
-        },
+        onReady: () {},
       ),
       builder: (context, player) => Scaffold(
         appBar: BasicAppbar(

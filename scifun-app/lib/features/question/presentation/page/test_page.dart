@@ -28,7 +28,9 @@ class _TestPageState extends State<TestPage> {
   bool submitted = false;
 
   /// ✅ LƯU ĐÁP ÁN THEO QUESTION ID
-  final Map<String, String> selectedAnswers = {};
+  /// Now supports multiple selections per question. We store a list of selected answer IDs
+  /// for each question ID. For single-choice questions the list will contain one item.
+  final Map<String, List<String>> selectedAnswers = {};
 
   @override
   void initState() {
@@ -55,9 +57,17 @@ class _TestPageState extends State<TestPage> {
     }
 
     final answersPayload = selectedAnswers.entries.map((e) {
+      // If a question has multiple selected answers, send them as `selectedAnswerIds` array
+      if (e.value.length > 1) {
+        return {
+          "questionId": e.key,
+          "selectedAnswerIds": e.value,
+        };
+      }
+
       return {
         "questionId": e.key,
-        "selectedAnswerId": e.value,
+        "selectedAnswerId": e.value.first,
       };
     }).toList();
 
@@ -104,8 +114,12 @@ class _TestPageState extends State<TestPage> {
               final q = items[currentIndex];
               final answers = q.answers;
 
+              // Current submit state (used to disable inputs while submitting)
+              final submitState = context.watch<SubmitQuizCubit>().state;
+              final isSubmitting = submitState is SubmitQuizLoading;
+
               /// ✅ LẤY ĐÁP ÁN ĐÃ CHỌN TRƯỚC ĐÓ (NẾU CÓ)
-              final selectedAnswerId = selectedAnswers[q.id];
+              /// Selection state is handled per-answer below.
 
               return BlocListener<SubmitQuizCubit, SubmitQuizState>(
                 listener: (context, submitState) {
@@ -164,6 +178,15 @@ class _TestPageState extends State<TestPage> {
 
                     SizedBox(height: 12.h),
 
+                    // If the question has more than one correct answer we treat it as multi-select.
+                    if (q.answers.where((a) => a.isCorrect == true).length > 1)
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 8.h),
+                        child: Text('Chọn nhiều đáp án',
+                            style:
+                                TextStyle(fontSize: 12.sp, color: Colors.grey)),
+                      ),
+
                     /// ANSWERS
                     Expanded(
                       child: ListView.separated(
@@ -171,7 +194,14 @@ class _TestPageState extends State<TestPage> {
                         separatorBuilder: (_, __) => SizedBox(height: 8.h),
                         itemBuilder: (context, index) {
                           final ans = answers[index];
-                          final bool isSelected = ans.id == selectedAnswerId;
+                          final selectedAnswerIds =
+                              List<String>.from(selectedAnswers[q.id] ?? []);
+                          final isMultiSelect = q.answers
+                                  .where((a) => a.isCorrect == true)
+                                  .length >
+                              1;
+                          final bool isSelected =
+                              selectedAnswerIds.contains(ans.id);
 
                           Color borderColor = Colors.grey.shade300;
                           if (submitted) {
@@ -185,11 +215,21 @@ class _TestPageState extends State<TestPage> {
                           }
 
                           return InkWell(
-                            onTap: submitted
+                            onTap: (submitted || isSubmitting)
                                 ? null
                                 : () {
                                     setState(() {
-                                      selectedAnswers[q.id ?? ""] = ans.id!;
+                                      if (isMultiSelect) {
+                                        if (isSelected) {
+                                          selectedAnswerIds.remove(ans.id);
+                                        } else {
+                                          selectedAnswerIds.add(ans.id!);
+                                        }
+                                        selectedAnswers[q.id ?? ""] =
+                                            selectedAnswerIds;
+                                      } else {
+                                        selectedAnswers[q.id ?? ""] = [ans.id!];
+                                      }
                                     });
                                   },
                             borderRadius: BorderRadius.circular(24),
@@ -203,17 +243,41 @@ class _TestPageState extends State<TestPage> {
                               ),
                               child: Row(
                                 children: [
-                                  Radio<String?>(
-                                    value: ans.id,
-                                    groupValue: selectedAnswerId,
-                                    onChanged: submitted
-                                        ? null
-                                        : (v) {
-                                            setState(() {
-                                              selectedAnswers[q.id ?? ""] = v!;
-                                            });
-                                          },
-                                  ),
+                                  if (isMultiSelect)
+                                    Checkbox(
+                                      value: isSelected,
+                                      onChanged: (submitted || isSubmitting)
+                                          ? null
+                                          : (v) {
+                                              setState(() {
+                                                if (v == true) {
+                                                  selectedAnswerIds
+                                                      .add(ans.id!);
+                                                } else {
+                                                  selectedAnswerIds
+                                                      .remove(ans.id);
+                                                }
+                                                selectedAnswers[q.id ?? ""] =
+                                                    selectedAnswerIds;
+                                              });
+                                            },
+                                    )
+                                  else
+                                    Radio<String?>(
+                                      value: ans.id,
+                                      groupValue: selectedAnswerIds.isNotEmpty
+                                          ? selectedAnswerIds.first
+                                          : null,
+                                      onChanged: (submitted || isSubmitting)
+                                          ? null
+                                          : (v) {
+                                              setState(() {
+                                                selectedAnswers[q.id ?? ""] = [
+                                                  v!
+                                                ];
+                                              });
+                                            },
+                                    ),
                                   Expanded(
                                     child: Text(
                                       ans.text ?? '',
@@ -239,9 +303,32 @@ class _TestPageState extends State<TestPage> {
                     SizedBox(height: 12.h),
 
                     /// SUBMIT
-                    OutlinedButton(
-                      onPressed: () => submitAnswer(items),
-                      child: const Text('Nộp bài'),
+                    BlocBuilder<SubmitQuizCubit, SubmitQuizState>(
+                      builder: (context, st) {
+                        if (st is SubmitQuizLoading) {
+                          return OutlinedButton(
+                            onPressed: null,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 16.w,
+                                  height: 16.w,
+                                  child: const CircularProgressIndicator(
+                                      strokeWidth: 2),
+                                ),
+                                SizedBox(width: 8.w),
+                                const Text('Đang nộp...'),
+                              ],
+                            ),
+                          );
+                        }
+
+                        return OutlinedButton(
+                          onPressed: () => submitAnswer(items),
+                          child: const Text('Nộp bài'),
+                        );
+                      },
                     ),
                   ],
                 ),

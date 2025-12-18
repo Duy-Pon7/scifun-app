@@ -18,13 +18,16 @@ import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dar
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 String wsUrlForEnvironment({int port = 5000}) {
-  if (kIsWeb)
-    return 'wss://localhost:$port/ws'; // web can use localhost and wss if server has cert
-  if (Platform.isAndroid)
-    return 'ws://10.0.2.2:$port/ws'; // Android emulator -> host machine
-  if (Platform.isIOS)
-    return 'ws://localhost:$port/ws'; // iOS simulator can use localhost
-  return 'ws://localhost:$port/ws';
+  if (kIsWeb) {
+    return 'ws://java-app-9trd.onrender.com/ws'; // web can use localhost and wss if server has cert
+  }
+  if (Platform.isAndroid) {
+    return 'ws://java-app-9trd.onrender.com/ws'; // Android emulator -> host machine
+  }
+  if (Platform.isIOS) {
+    return 'ws://java-app-9trd.onrender.com/ws'; // iOS simulator can use localhost
+  }
+  return 'ws://java-app-9trd.onrender.com/ws';
 }
 
 class HomePage extends StatefulWidget {
@@ -41,24 +44,23 @@ class _HomePageState extends State<HomePage>
     super.build(context);
 
     // Check if user has token before calling AuthGetSession
-    final hasToken = sl<SharePrefsService>().getAuthToken() != null;
+    // final hasToken = sl<SharePrefsService>().getAuthToken() != null;
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) {
-            final authBloc = sl<AuthBloc>();
-            if (hasToken) {
-              authBloc.add(AuthGetSession());
-            }
-            return authBloc;
-          },
-        ),
+        // BlocProvider(
+        //   create: (context) {
+        //     final authBloc = sl<AuthBloc>();
+        //     if (hasToken) {
+        //       authBloc.add(AuthGetSession());
+        //     }
+        //     return authBloc;
+        //   },
+        // ),
         BlocProvider(
           create: (_) {
             final token = sl<SharePrefsService>().getUserData();
             if (token != null) {
-              print("Creating UserCubit with token: $token");
               return sl<UserCubit>()..getUser(token: token);
             }
             return sl<UserCubit>();
@@ -79,10 +81,6 @@ class _HomePageState extends State<HomePage>
                 EasyLoading.dismiss();
               } else if (state is AuthFailure) {
                 EasyLoading.dismiss();
-                // Không hiển thị toast error nếu getSession fail vì user có thể chưa login
-                print("AuthBloc Error: ${state.message}");
-              } else {
-                EasyLoading.dismiss();
               }
             },
           ),
@@ -99,24 +97,6 @@ class _HomePageState extends State<HomePage>
               }
             },
           ),
-          BlocListener<NewsCubit, NewsState>(
-            listener: (context, state) {
-              if (state is NewsLoading) {
-                EasyLoading.show(
-                  status: 'Đang tải',
-                  maskType: EasyLoadingMaskType.black,
-                );
-              } else if (state is NewsLoaded) {
-                EasyLoading.dismiss();
-              } else if (state is NewsError) {
-                EasyLoading.dismiss();
-                EasyLoading.showToast(
-                  state.message,
-                  toastPosition: EasyLoadingToastPosition.bottom,
-                );
-              }
-            },
-          ),
         ],
         child: BackgroundHome(
           child: SafeArea(
@@ -125,9 +105,7 @@ class _HomePageState extends State<HomePage>
                 onRefresh: () async {
                   newcontext.read<NewsCubit>().getNews();
                   newcontext.read<SubjectCubit>().getSubjects(searchQuery: "");
-                  if (hasToken) {
-                    newcontext.read<AuthBloc>().add(AuthGetSession());
-                  }
+                  newcontext.read<AuthBloc>().add(AuthGetSession());
                 },
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -156,6 +134,5 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

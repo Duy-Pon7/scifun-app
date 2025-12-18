@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'realtime_service.dart';
 
 class WsBootstrap extends StatefulWidget {
@@ -15,11 +17,17 @@ class WsBootstrap extends StatefulWidget {
 }
 
 class _WsBootstrapState extends State<WsBootstrap> with WidgetsBindingObserver {
-  final _storage = const FlutterSecureStorage();
-
   Future<String?> _getToken() async {
-    // Bạn chỉnh key theo app bạn
-    return _storage.read(key: 'access_token');
+    // Prefer reading token from shared preferences (where the app stores auth token).
+    // Fall back to secure storage (backward compatibility) if needed.
+    try {
+      final token = sl<SharePrefsService>().getAuthToken();
+      if (token != null && token.isNotEmpty) return token;
+    } catch (_) {
+      // ignore if DI not available
+    }
+    final storage = const FlutterSecureStorage();
+    return await storage.read(key: 'access_token');
   }
 
   @override

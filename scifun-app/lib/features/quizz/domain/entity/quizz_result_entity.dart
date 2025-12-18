@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class QuizzResult extends Equatable {
-  QuizzResult({
+  const QuizzResult({
     required this.quiz,
     required this.score,
     required this.submissionId,
@@ -42,7 +42,7 @@ class QuizzResult extends Equatable {
         "quiz": quiz?.toJson(),
         "score": score,
         "submissionId": submissionId,
-        "answers": answers.map((x) => x?.toJson()).toList(),
+        "answers": answers.map((x) => x.toJson()).toList(),
       };
 
   @override
@@ -55,7 +55,7 @@ class QuizzResult extends Equatable {
 }
 
 class Answer extends Equatable {
-  Answer({
+  const Answer({
     required this.questionId,
     required this.selectedAnswers,
     required this.correctAnswers,
@@ -125,7 +125,7 @@ class Answer extends Equatable {
 }
 
 class Quiz extends Equatable {
-  Quiz({
+  const Quiz({
     required this.duration,
     required this.questionCount,
     required this.accessTier,
