@@ -11,4 +11,10 @@ abstract interface class NotificationRepository {
     required int page,
     required int limit,
   });
+
+  /// Mark a notification as read
+  Future<Either<Failure, bool>> markAsRead({required String id});
+
+  /// Mark all notifications as read
+  Future<Either<Failure, bool>> markAllAsRead();
 }

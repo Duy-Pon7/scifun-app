@@ -19,6 +19,7 @@ import 'package:sci_fun/features/profile/presentation/page/change_page/change_in
 import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/policy/policy_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
+import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -133,6 +134,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                       Navigator.push(
                                         context,
                                         slidePage(const ChangePass()),
+                                      );
+                                    }),
+                                    // Mua gói
+                                    _itemNavigator(
+                                        Icons.shopping_cart, "Mua gói", () {
+                                      Navigator.push(
+                                        context,
+                                        slidePage(const PlanListPage()),
                                       );
                                     }),
                                     _sectionTitle("Liên hệ"),
@@ -399,7 +408,7 @@ Widget subscriptionCard(UserDataEntity user) {
 
         /// Package name
         Text(
-          sub?.tier?.toUpperCase() ?? "NODE",
+          sub?.tier?.toUpperCase() ?? "FREE",
           style: TextStyle(
             color: Colors.white,
             fontSize: 22.sp,

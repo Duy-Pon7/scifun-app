@@ -178,9 +178,14 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
     required String newPass,
     required String newPassConfirm,
   }) async {
+    final userId = sharePrefsService.getUserData();
+    if (userId == null) {
+      throw ServerException(message: AppErrors.commonError);
+    }
+
     try {
       final res = await dioClient.put(
-        url: UserApiUrls.changePassword,
+        url: '${AuthApiUrls.updatePassword}/$userId',
         data: {
           "oldPassword": oldPass,
           "newPassword": newPass,

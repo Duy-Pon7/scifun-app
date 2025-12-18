@@ -44,7 +44,47 @@ Future<void> initializeDependencies() async {
     ..registerFactory(
       () => GetAllSubjects(subjectRepository: sl<SubjectRepository>()),
     )
-    ..registerFactory(() => SubjectCubit(getAllSubjects: sl<GetAllSubjects>()));
+    ..registerFactory(() => SubjectCubit(getAllSubjects: sl<GetAllSubjects>()))
+
+    // Plan feature DI
+    ..registerFactory<PlanRemoteDatasource>(
+      () => PlanRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    )
+    ..registerFactory<PlanRepository>(
+      () =>
+          PlanRepositoryImpl(planRemoteDatasource: sl<PlanRemoteDatasource>()),
+    )
+    ..registerFactory(() => GetAllPlans(planRepository: sl<PlanRepository>()))
+    ..registerFactory(() => PlanCubit(getAllPlans: sl<GetAllPlans>()))
+    ..registerFactory(
+        () => CreateCheckout(planRepository: sl<PlanRepository>()))
+    // Comment feature DI
+    ..registerFactory<CommentRemoteDatasource>(
+      () => CommentRemoteDatasourceImpl(dioClient: sl<DioClient>()),
+    )
+    ..registerFactory<CommentRepository>(
+      () => CommentRepositoryImpl(
+        commentRemoteDatasource: sl<CommentRemoteDatasource>(),
+      ),
+    )
+    ..registerFactory(
+        () => GetComments(commentRepository: sl<CommentRepository>()))
+    ..registerFactory(
+        () => GetReplies(commentRepository: sl<CommentRepository>()))
+    ..registerFactory(
+        () => GetCommentDetail(commentRepository: sl<CommentRepository>()))
+    ..registerFactory(
+      () => CommentCubit(
+        getComments: sl<GetComments>(),
+        getReplies: sl<GetReplies>(),
+        getCommentDetail: sl<GetCommentDetail>(),
+      ),
+    )
+    ..registerFactory(
+      () => CommentPaginationCubit(
+        sl<GetComments>(),
+      ),
+    );
   // Other
   await _authInit();
   await _topicInit();
@@ -118,7 +158,13 @@ Future<void> _notiInti() async {
     ..registerFactory<NotificationRepository>(
         () => NotificationRepositoryImpl(notificationRemoteDatasource: sl()))
     ..registerFactory(() => GetNotifications(sl()))
-    ..registerLazySingleton(() => NotificationCubit(getNotifications: sl()));
+    ..registerFactory(() => MarkNotificationAsRead(sl()))
+    ..registerFactory(() => MarkAllNotificationsAsRead(sl()))
+    ..registerLazySingleton(() => NotificationCubit(
+          getNotifications: sl(),
+          markNotificationAsRead: sl(),
+          markAllNotificationsAsRead: sl(),
+        ));
 }
 
 Future<void> _addressInti() async {

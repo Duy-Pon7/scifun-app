@@ -8,6 +8,7 @@ class PaginationListView<T> extends StatefulWidget {
   final Widget Function(BuildContext, T) itemBuilder;
   final Widget? emptyWidget;
   final Widget? errorWidget;
+  final ScrollController? controller;
 
   const PaginationListView({
     super.key,
@@ -15,6 +16,7 @@ class PaginationListView<T> extends StatefulWidget {
     required this.itemBuilder,
     this.emptyWidget,
     this.errorWidget,
+    this.controller,
   });
 
   @override
@@ -22,12 +24,14 @@ class PaginationListView<T> extends StatefulWidget {
 }
 
 class _PaginationListViewState<T> extends State<PaginationListView<T>> {
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _internalController = ScrollController();
+  late final ScrollController _controller;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _controller = widget.controller ?? _internalController;
+    _controller.addListener(_onScroll);
     // Không gọi loadInitial() ở đây - để parent/cubit xử lý
   }
 
@@ -38,9 +42,9 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
   }
 
   bool get _isBottom {
-    if (!_scrollController.hasClients) return false;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
+    if (!_controller.hasClients) return false;
+    final maxScroll = _controller.position.maxScrollExtent;
+    final currentScroll = _controller.offset;
     return currentScroll >= (maxScroll * 0.9);
   }
 
@@ -81,7 +85,7 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
         return RefreshIndicator(
           onRefresh: () => widget.cubit.refresh(),
           child: ListView.builder(
-            controller: _scrollController,
+            controller: _controller,
             itemCount: state.items.length + (state.hasReachedEnd ? 0 : 1),
             itemBuilder: (context, index) {
               if (index >= state.items.length) {
@@ -103,7 +107,11 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _controller.removeListener(_onScroll);
+    if (widget.controller == null) {
+      // Only dispose the internal controller
+      _internalController.dispose();
+    }
     super.dispose();
   }
 }

@@ -31,6 +31,24 @@ class SubjectApiUrl {
   static const String getSubjects = '/subject/get-subjects'; //
 }
 
+class PlansApiUrl {
+  PlansApiUrl._();
+  static const String getPlansList = '/plans/list';
+}
+
+class CommentApiUrl {
+  CommentApiUrl._();
+
+  /// GET /comments?page=1&limit=10
+  static const String getComments = '/comments';
+
+  /// GET /comments/{id}/replies?page=1&limit=10
+  static String getReplies(String id) => '/comments/$id/replies';
+
+  /// GET /comments/{id}
+  static String getCommentById(String id) => '/comments/$id';
+}
+
 class TopicApiUrl {
   TopicApiUrl._();
   static const String getTopics = '/topic/get-topics'; //
@@ -64,7 +82,8 @@ class SubmissionApiUrl {
 class NotificationApiUrls {
   NotificationApiUrls._();
 
-  static const String getAllNotifications = '/notifications/get-all';
+  // Use standard endpoint for listing notifications
+  static const String getAllNotifications = '/notifications';
   static const String getNotifications = '/notifications';
   static const String deleteNoti = '/notifications';
   static const String markAsRead = '/notifications/read';

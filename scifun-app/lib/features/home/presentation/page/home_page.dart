@@ -12,7 +12,7 @@ import 'package:sci_fun/features/home/presentation/components/home/background_ho
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
-import 'package:sci_fun/features/home/presentation/widget/comment_page.dart';
+import 'package:sci_fun/features/comment/presentation/pages/comment_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
@@ -42,9 +42,6 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    // Check if user has token before calling AuthGetSession
-    // final hasToken = sl<SharePrefsService>().getAuthToken() != null;
 
     return MultiBlocProvider(
       providers: [

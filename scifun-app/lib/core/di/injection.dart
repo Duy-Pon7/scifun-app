@@ -7,6 +7,14 @@ import 'package:get_it/get_it.dart';
 import 'package:sci_fun/features/Topic/domain/repository/Topic_repository.dart';
 import 'package:sci_fun/features/analytics/domain/usecase/get_progress.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
+import 'package:sci_fun/features/comment/data/datasource/comment_remote_datasource.dart';
+import 'package:sci_fun/features/comment/data/repository/comment_repository_impl.dart';
+import 'package:sci_fun/features/comment/domain/repository/comment_repository.dart';
+import 'package:sci_fun/features/comment/domain/usecase/get_all_comment.dart';
+import 'package:sci_fun/features/comment/domain/usecase/get_comment_detail.dart';
+import 'package:sci_fun/features/comment/domain/usecase/get_replies.dart';
+import 'package:sci_fun/features/comment/presentation/cubit/comment_cubit.dart';
+import 'package:sci_fun/features/comment/presentation/cubit/comment_pagination_cubit.dart';
 import 'package:sci_fun/features/leaderboards/data/datasource/leaderboards_remote_datasource.dart';
 import 'package:sci_fun/features/leaderboards/data/repository/leaderboards_repository_impl.dart';
 import 'package:sci_fun/features/leaderboards/domain/repository/leaderboards_repository.dart';
@@ -79,6 +87,8 @@ import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
 import 'package:sci_fun/features/home/presentation/cubit/select_tab_cubit.dart';
 import 'package:sci_fun/features/notification/domain/usecase/get_notification.dart';
+import 'package:sci_fun/features/notification/domain/usecase/mark_notification_as_read.dart';
+import 'package:sci_fun/features/notification/domain/usecase/mark_all_notifications_as_read.dart';
 import 'package:sci_fun/features/profile/data/datasource/packages_remote_datasource.dart';
 import 'package:sci_fun/features/profile/data/datasource/user_remote_datasource.dart';
 import 'package:sci_fun/features/profile/data/repository/packages_repository_impl.dart';
@@ -100,6 +110,15 @@ import 'package:sci_fun/features/subject/data/repository/subject_repository_impl
 import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';
 import 'package:sci_fun/features/subject/domain/usecase/get_all_subjects.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
+
+// Plan feature
+import 'package:sci_fun/features/plan/data/datasource/plan_remote_datasource.dart';
+import 'package:sci_fun/features/plan/data/repository/plan_repository_impl.dart';
+import 'package:sci_fun/features/plan/domain/repository/plan_repository.dart';
+import 'package:sci_fun/features/plan/domain/usecase/get_all_plan.dart';
+import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
+import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
+
 import 'package:sci_fun/features/video/data/datasource/video_remote_datasource.dart';
 import 'package:sci_fun/features/video/data/repository/video_repository_impl.dart';
 import 'package:sci_fun/features/video/domain/repository/video_repository.dart';
