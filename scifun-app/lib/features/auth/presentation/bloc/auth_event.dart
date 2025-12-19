@@ -32,7 +32,7 @@ final class AuthSendEmail extends AuthEvent {
   AuthSendEmail({required this.email});
 }
 
-final class AuthSendResetEmail extends AuthInitial {
+final class AuthSendResetEmail extends AuthEvent {
   final String email;
 
   AuthSendResetEmail({required this.email});

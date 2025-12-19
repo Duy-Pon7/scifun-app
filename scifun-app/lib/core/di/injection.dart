@@ -70,6 +70,7 @@ import 'package:sci_fun/features/auth/domain/usecases/resend_otp.dart';
 import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
 import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
+import 'package:sci_fun/features/auth/domain/usecases/forgot_password.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/checked_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';

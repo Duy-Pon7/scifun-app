@@ -9,6 +9,7 @@ import 'package:sci_fun/features/auth/domain/usecases/get_auth.dart';
 import 'package:sci_fun/features/auth/domain/usecases/login.dart';
 import 'package:sci_fun/features/auth/domain/usecases/resend_otp.dart';
 import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
+import 'package:sci_fun/features/auth/domain/usecases/forgot_password.dart';
 import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
 
@@ -21,6 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login _login;
   final Signup _signup;
   final SendEmail _sendEmail;
+  final ForgotPassword _forgotPassword;
   final GetAuth _getAuth;
   final ChangePassword _changPass;
   final ResendOtp _resendOtp;
@@ -29,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required Login login,
     required Signup signup,
     required SendEmail sendEmail,
+    required ForgotPassword forgotPassword,
     required GetAuth getAuth,
     required ChangePassword changPass,
     required CheckEmailPhone checkEmailPhone,
@@ -37,6 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _login = login,
         _signup = signup,
         _sendEmail = sendEmail,
+        _forgotPassword = forgotPassword,
         _getAuth = getAuth,
         _changPass = changPass,
         _resendOtp = resendOtp,
@@ -46,12 +50,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogin>(_onAuthLogin);
     on<AuthSignup>(_onAuthSignup);
     on<AuthSendEmail>(_onAuthSendEmail);
+    on<AuthSendResetEmail>(_onAuthSendResetEmail);
     on<AuthGetSession>(_onAuthGetSession);
     on<AuthUpdateSession>(_onAuthUpdateSession);
     on<AuthChangePass>(_onChangePass);
     on<AuthResendOtp>(_onAuthResendOtp);
     on<AuthVerificationOtp>(_onAuthVerificationOtp);
   }
+
+  void _onAuthSendResetEmail(
+      AuthSendResetEmail event, Emitter<AuthState> emit) async {
+    final res = await _forgotPassword.call(event.email);
+    res.fold((failure) => emit(AuthFailure(message: failure.message)),
+        (message) async => emit(AuthMessageSuccess(message: message)));
+  }
+
   void _onAuthVerificationOtp(
       AuthVerificationOtp event, Emitter<AuthState> emit) async {
     final res = await _verificationOtp.call(VerificationOtpParams(
@@ -104,8 +117,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     res.fold((failure) => emit(AuthFailure(message: failure.message)),
         (message) => emit(AuthMessageSuccess(message: message)));
   }
-
-
 
   void _onChangePass(AuthChangePass event, Emitter<AuthState> emit) async {
     final res = await _changPass.call(ChangePasswordParams(

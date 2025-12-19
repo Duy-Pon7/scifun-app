@@ -25,6 +25,7 @@ abstract interface class AuthRemoteDatasource {
   });
 
   Future<String> sendEmail({required String email});
+  Future<String> forgotPassword({required String email});
   Future<UserCheckModel> checkEmailPhone({
     required String phone,
     required String email,
@@ -144,6 +145,24 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
       return AppSuccesses.successfullSendEmail;
+    } on DioException catch (e) {
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
+    }
+  }
+
+  @override
+  Future<String> forgotPassword({required String email}) async {
+    try {
+      final res = await dioClient.post(
+        url: AuthApiUrls.forgotPassword,
+        data: {
+          "email": email,
+        },
+      );
+
+      return res.data['message'];
     } on DioException catch (e) {
       throw ServerException(
         message: _extractServerMessage(e.response?.data),

@@ -30,7 +30,11 @@ class _OtpPageState extends State<OtpPage> {
   late final blocAuth = context.read<AuthBloc>();
   @override
   void initState() {
-    blocAuth.add(AuthResendOtp(email: widget.email));
+    if (widget.flag == true) {
+      blocAuth.add(AuthSendResetEmail(email: widget.email));
+    } else {
+      blocAuth.add(AuthResendOtp(email: widget.email));
+    }
     super.initState();
   }
 
@@ -50,16 +54,10 @@ class _OtpPageState extends State<OtpPage> {
               listener: (context, state) {
                 print("stateauth $state");
                 if (state is AuthMessageSuccess) {
-                  if (state.message == "true") {
-                    EasyLoading.showToast(
-                        "Đã gửi mã OTP vào email đã nhập: ${widget.email}",
-                        toastPosition: EasyLoadingToastPosition.bottom);
-                  } else {
-                    EasyLoading.showToast("Lỗi gửi mã Otp",
-                        toastPosition: EasyLoadingToastPosition.bottom);
-                  }
+                  EasyLoading.showToast(state.message,
+                      toastPosition: EasyLoadingToastPosition.bottom);
                 } else if (state is AuthFailure) {
-                  EasyLoading.showToast("Lỗi gửi mã Otp",
+                  EasyLoading.showToast(state.message,
                       toastPosition: EasyLoadingToastPosition.bottom);
                 }
               },

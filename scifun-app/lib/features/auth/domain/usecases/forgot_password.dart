@@ -1,0 +1,15 @@
+import 'package:dartz/dartz.dart';
+import 'package:sci_fun/core/error/failure.dart';
+import 'package:sci_fun/core/utils/usecase.dart';
+import 'package:sci_fun/features/auth/domain/repositories/auth_repository.dart';
+
+class ForgotPassword implements Usecase<String, String> {
+  final AuthRepository authRepository;
+
+  ForgotPassword({required this.authRepository});
+
+  @override
+  Future<Either<Failure, String>> call(String param) async {
+    return await authRepository.forgotPassword(email: param);
+  }
+}

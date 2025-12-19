@@ -187,6 +187,7 @@ Future<void> _authInit() async {
     ..registerFactory(() => Login(authRepository: sl()))
     ..registerFactory(() => Signup(authRepository: sl()))
     ..registerFactory(() => SendEmail(authRepository: sl()))
+    ..registerFactory(() => ForgotPassword(authRepository: sl()))
     ..registerFactory(() => ChangePassword(authRepository: sl()))
     ..registerFactory(() => CheckEmailPhone(authRepository: sl()))
     ..registerFactory(() => ResendOtp(authRepository: sl()))
@@ -199,6 +200,7 @@ Future<void> _authInit() async {
           login: sl(),
           signup: sl(),
           sendEmail: sl(),
+          forgotPassword: sl(),
           resendOtp: sl(),
           verificationOtp: sl(),
           checkEmailPhone: sl(),
