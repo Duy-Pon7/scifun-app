@@ -7,6 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/ws_bootstrap.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sci_fun/features/chat/user_chat_page.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
@@ -70,61 +73,90 @@ class _HomePageState extends State<HomePage>
           create: (context) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
         ),
       ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state is AuthUserSuccess) {
-                EasyLoading.dismiss();
-              } else if (state is AuthFailure) {
-                EasyLoading.dismiss();
-              }
-            },
-          ),
-          BlocListener<SubjectCubit, SubjectState>(
-            listener: (context, state) {
-              if (state is SubjectsLoaded) {
-                EasyLoading.dismiss();
-              } else if (state is SubjectError) {
-                EasyLoading.dismiss();
-                EasyLoading.showToast(state.message,
-                    toastPosition: EasyLoadingToastPosition.bottom);
-              } else {
-                EasyLoading.dismiss();
-              }
-            },
-          ),
-        ],
-        child: BackgroundHome(
-          child: SafeArea(
-            child: Builder(builder: (newcontext) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  newcontext.read<NewsCubit>().getNews();
-                  newcontext.read<SubjectCubit>().getSubjects(searchQuery: "");
-                  newcontext.read<AuthBloc>().add(AuthGetSession());
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Column(
-                      spacing: 16.h,
-                      children: [
-                        HeaderHome(),
-                        ListSubjects(),
-                        TrendQuizzesList(),
-                        CommentPage(),
-                        WsBootstrap(
-                          wsUrl: wsUrlForEnvironment(),
-                        ),
-                      ],
+      child: Scaffold(
+        body: MultiBlocListener(
+          listeners: [
+            BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthUserSuccess) {
+                  EasyLoading.dismiss();
+                } else if (state is AuthFailure) {
+                  EasyLoading.dismiss();
+                }
+              },
+            ),
+            BlocListener<SubjectCubit, SubjectState>(
+              listener: (context, state) {
+                if (state is SubjectsLoaded) {
+                  EasyLoading.dismiss();
+                } else if (state is SubjectError) {
+                  EasyLoading.dismiss();
+                  EasyLoading.showToast(state.message,
+                      toastPosition: EasyLoadingToastPosition.bottom);
+                } else {
+                  EasyLoading.dismiss();
+                }
+              },
+            ),
+          ],
+          child: BackgroundHome(
+            child: SafeArea(
+              child: Builder(builder: (newcontext) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    newcontext.read<NewsCubit>().getNews();
+                    newcontext
+                        .read<SubjectCubit>()
+                        .getSubjects(searchQuery: "");
+                    newcontext.read<AuthBloc>().add(AuthGetSession());
+                  },
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        spacing: 16.h,
+                        children: [
+                          HeaderHome(),
+                          ListSubjects(),
+                          TrendQuizzesList(),
+                          CommentPage(),
+                          WsBootstrap(
+                            wsUrl: wsUrlForEnvironment(),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }),
+                );
+              }),
+            ),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            // Prepare api base and token getter
+            final apiBase =
+                dotenv.get('BASE_URL').replaceAll(RegExp(r'/+$'), '');
+            Future<String?> getToken() async {
+              try {
+                final t = sl<SharePrefsService>().getAuthToken();
+                if (t != null && t.isNotEmpty) return t;
+              } catch (_) {}
+              final storage = const FlutterSecureStorage();
+              return await storage.read(key: 'access_token');
+            }
+
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => UserChatPage(
+                apiBaseUrl: apiBase,
+                wsUrl: wsUrlForEnvironment(),
+                getToken: getToken,
+              ),
+            ));
+          },
+          tooltip: 'Chat',
+          child: const Icon(Icons.chat),
         ),
       ),
     );
