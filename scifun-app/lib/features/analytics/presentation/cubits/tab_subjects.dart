@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/home/presentation/cubit/select_tab_cubit.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/selected_subject_cubit.dart';
 
-class TabSubjects extends StatefulWidget {
-  const TabSubjects({super.key});
 
-  @override
-  State<TabSubjects> createState() => _TabSubjectsState();
-}
 
-class _TabSubjectsState extends State<TabSubjects> {
+class TabSubjects extends StatelessWidget {
+  final List subjects; // đổi thành List<Subject> nếu em có model
+
+  const TabSubjects({
+    super.key,
+    required this.subjects,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SelectTabCubit, int>(
-      builder: (context, selectedIndex) {
+    return BlocBuilder<SelectedSubjectCubit, String?>(
+      builder: (context, selectedId) {
         return Container(
           padding: EdgeInsets.all(3.w),
           decoration: BoxDecoration(
@@ -23,53 +25,41 @@ class _TabSubjectsState extends State<TabSubjects> {
             borderRadius: BorderRadius.circular(9.r),
           ),
           child: Row(
-            children: [
-              _buildTab(0, 'Vật Lý', selectedIndex),
-              _buildTab(1, 'Hóa Học', selectedIndex),
-              _buildTab(2, 'Sinh học', selectedIndex),
-            ],
+            children: subjects.map((subject) {
+              final String id = subject.id;
+              final String name = subject.name; // đúng field API
+              final bool isSelected = id == selectedId;
+
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    context.read<SelectedSubjectCubit>().selectSubject(id);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected ? AppColor.primary600 : Colors.transparent,
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    child: Center(
+                      child: Text(
+                        name,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              color: isSelected ? Colors.white : null,
+                              fontWeight:
+                                  isSelected ? FontWeight.w600 : null,
+                            ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         );
       },
     );
   }
-
-  Widget _buildTab(
-    int index,
-    String text,
-    int selectedIndex,
-  ) {
-    bool isSelected = index == selectedIndex;
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => context.read<SelectTabCubit>().selectTab(index),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 8.h),
-          decoration: BoxDecoration(
-            color: isSelected ? AppColor.primary600 : Colors.transparent,
-            borderRadius: BorderRadius.circular(8.r),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 4,
-                      offset: Offset(0, 2),
-                    )
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: isSelected ? Colors.white : null,
-                    fontWeight: isSelected ? FontWeight.w600 : null,
-                  ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
+

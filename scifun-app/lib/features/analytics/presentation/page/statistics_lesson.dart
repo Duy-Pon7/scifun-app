@@ -5,8 +5,8 @@ import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/features/analytics/presentation/components/list_statistics_lesson.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/selected_subject_cubit.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/tab_subjects.dart';
-import 'package:sci_fun/features/home/presentation/cubit/select_tab_cubit.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class StatisticsLesson extends StatefulWidget {
@@ -17,75 +17,101 @@ class StatisticsLesson extends StatefulWidget {
 }
 
 class _StatisticsLessonState extends State<StatisticsLesson> {
-  String? _lastFetchedSubjectId;
-  @override
-  void initState() {
-    super.initState();
+  bool _didInitDefaultSubject = false;
+
+  String? _firstNonNullSubjectId(List subjects) {
+    for (final s in subjects) {
+      final id = s.id; // SubjectEntity/SubjectModel của em
+      if (id != null) return id as String;
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => SelectTabCubit()),
         BlocProvider(
-          create: (context) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
+          create: (_) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
         ),
         BlocProvider.value(
           value: sl<ProgressCubit>(),
         ),
+        BlocProvider(
+          create: (_) => SelectedSubjectCubit(),
+        ),
       ],
       child: Scaffold(
-        appBar: BasicAppbar(title: 'Thống kê', showBack: false),
+        appBar: const BasicAppbar(title: 'Thống kê', showBack: false),
         body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-                child: TabSubjects(), // Tab chọn subject
-              ),
-              BlocBuilder<SubjectCubit, SubjectState>(
-                builder: (context, subjectState) {
-                  if (subjectState is SubjectLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (subjectState is SubjectsLoaded) {
-                    final subjects = subjectState.subjectList;
-                    print("Subjects: $subjects");
-                    return BlocBuilder<SelectTabCubit, int>(
-                      builder: (context, selectedIndex) {
-                        if (selectedIndex >= subjects.length) {
-                          return Center(child: Text("Không có môn học"));
-                        }
+          child: BlocBuilder<SubjectCubit, SubjectState>(
+            builder: (context, subjectState) {
+              if (subjectState is SubjectLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                        final selectedSubject = subjects[selectedIndex];
-                        final subjectId = selectedSubject.id;
-                        print("Selected Subject ID: $subjectId");
+              if (subjectState is SubjectError) {
+                return Center(child: Text("Lỗi: ${subjectState.message}"));
+              }
 
-                        // Trigger fetchProgress whenever tab changes (only when subjectId changes)
-                        if (subjectId != null &&
-                            subjectId != _lastFetchedSubjectId) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (!mounted) return;
-                            context
-                                .read<ProgressCubit>()
-                                .fetchProgress(subjectId);
-                            _lastFetchedSubjectId = subjectId;
-                          });
-                        }
+              if (subjectState is SubjectsLoaded) {
+                final subjects = subjectState.subjectList;
 
-                        return ListStatisticsLesson(
-                          subjectId: subjectId,
-                        );
-                      },
-                    );
-                  } else if (subjectState is SubjectError) {
-                    return Center(child: Text("Lỗi: ${subjectState.message}"));
+                if (subjects.isEmpty) {
+                  return const Center(child: Text("Không có môn học"));
+                }
+
+                // Set default subjectId đúng 1 lần (sau khi có subjects)
+                if (!_didInitDefaultSubject) {
+                  final defaultId = _firstNonNullSubjectId(subjects);
+                  if (defaultId != null) {
+                    _didInitDefaultSubject = true;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (!mounted) return;
+                      // chỉ set state mặc định, không fetch ở đây
+                      context
+                          .read<SelectedSubjectCubit>()
+                          .selectSubject(defaultId);
+                    });
                   }
-                  return SizedBox.shrink();
-                },
-              ),
-            ],
+                }
+
+                return BlocListener<SelectedSubjectCubit, String?>(
+                  listenWhen: (prev, curr) => prev != curr && curr != null,
+                  listener: (context, subjectId) {
+                    // ✅ fetchProgress chạy ở listener, không chạy trong build
+                    context.read<ProgressCubit>().fetchProgress(subjectId!);
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
+                        ),
+                        child: TabSubjects(subjects: subjects),
+                      ),
+
+                      BlocBuilder<SelectedSubjectCubit, String?>(
+                        builder: (context, selectedId) {
+                          final String? subjectId =
+                              selectedId ?? _firstNonNullSubjectId(subjects);
+
+                          if (subjectId == null) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return ListStatisticsLesson(subjectId: subjectId);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
           ),
         ),
       ),
