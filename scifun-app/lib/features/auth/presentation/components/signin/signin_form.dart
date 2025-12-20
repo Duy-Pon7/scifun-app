@@ -9,6 +9,8 @@ import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/basic_text_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/forgot_pass_page.dart';
@@ -41,7 +43,7 @@ class _SigninFormState extends State<SigninForm> {
     _emailCon.dispose();
   }
 
-  void _listener(BuildContext context, AuthState state) {
+  void _listener(BuildContext context, AuthState state) async {
     print("statesignin $state");
     if (state is AuthLoading) {
       EasyLoading.show(
@@ -60,6 +62,11 @@ class _SigninFormState extends State<SigninForm> {
       );
     } else if (state is AuthUserLoginSuccess) {
       EasyLoading.dismiss();
+      // Ensure UserCubit refreshes with the newly logged-in user's id
+      final token = sl<SharePrefsService>().getUserData();
+      if (token != null && token.isNotEmpty) {
+        await sl<UserCubit>().getUser(token: token);
+      }
       Navigator.pushAndRemoveUntil(
         context,
         DashboardPage.route(),

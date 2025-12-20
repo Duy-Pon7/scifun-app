@@ -27,6 +27,7 @@ import 'package:sci_fun/features/notification/domain/repository/notification_rep
 import 'package:sci_fun/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:sci_fun/features/profile/domain/usecase/get_info_user.dart';
 import 'package:sci_fun/features/profile/domain/usecase/update_info_user.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/question/domain/usecase/submit_quiz.dart';
 import 'package:sci_fun/features/quizz/data/datasource/quizz_remote_datasource.dart';

@@ -8,6 +8,7 @@ import 'package:sci_fun/common/helper/show_alert_dialog.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
@@ -29,6 +30,14 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  late final UserCubit _userCubit;
+  @override
+  void initState() {
+    super.initState();
+    _userCubit = context.read<UserCubit>();
+    _userCubit.getUser(token: sl<SharePrefsService>().getUserData()!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -93,8 +102,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       child: BlocBuilder<UserCubit, UserState>(
                         builder: (context, state) {
+                          print(
+                              'ProfilePage BlocBuilder state: ${state.runtimeType}');
                           if (state is UserLoaded) {
                             final user = state.user.data;
+
+                            print(
+                                'ProfilePage displaying user: ${user?.id} ${user?.fullname}');
 
                             return Column(
                               spacing: 16.h,
@@ -182,8 +196,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                           () async {
                                             await sl<SharePrefsService>()
                                                 .clear();
-                                            sl<IsAuthorizedCubit>()
-                                                .isAuthorized();
+                                            final storage =
+                                                const FlutterSecureStorage();
+                                            await storage.delete(
+                                                key: 'access_token');
+                                            await sl<IsAuthorizedCubit>()
+                                                .logout();
+                                            // Clear user state so UI updates immediately
+                                            sl<UserCubit>().clear();
                                             resetSingleton();
                                             Navigator.of(context)
                                                 .pushAndRemoveUntil(
@@ -231,7 +251,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 context,
                                 () async {
                                   await sl<SharePrefsService>().clear();
-                                  sl<IsAuthorizedCubit>().isAuthorized();
+                                  final storage = const FlutterSecureStorage();
+                                  await storage.delete(key: 'access_token');
+                                  await sl<IsAuthorizedCubit>().logout();
                                   resetSingleton();
                                   Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(

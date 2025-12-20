@@ -106,9 +106,12 @@ Future<void> _profile() async {
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
     ..registerFactory(() => GetInfoUser(userRepository: sl()))
     ..registerFactory(() => UpdateInfoUser(userRepository: sl()))
-    ..registerLazySingleton(() => UserCubit(
+    ..registerFactory(() => UserCubit(
           getInfoUser: sl(),
           updateInfoUser: sl(),
+        ))
+    ..registerLazySingleton(() => ProCubit(
+          getInfoUser: sl(),
         ))
     // ..registerFactory(() => Changes(userRepository: sl()))
     // ..registerLazySingleton(() => UserBloc(

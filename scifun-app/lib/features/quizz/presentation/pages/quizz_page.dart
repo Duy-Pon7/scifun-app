@@ -5,7 +5,9 @@ import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
 import 'package:sci_fun/features/question/presentation/page/test_page.dart';
@@ -13,13 +15,11 @@ import 'package:sci_fun/features/question/presentation/page/test_page.dart';
 class QuizzPage extends StatefulWidget {
   final String topicId;
   final String topicName;
-  final bool isProUser; // 👈 user đã mua PRO hay chưa
 
   const QuizzPage({
     super.key,
     required this.topicId,
     required this.topicName,
-    required this.isProUser,
   });
 
   @override
@@ -28,11 +28,32 @@ class QuizzPage extends StatefulWidget {
 
 class _QuizzPageState extends State<QuizzPage> {
   late final QuizzCubit cubit;
+  late final ProCubit proCubit;
+  bool isProUser = false;
 
   @override
   void initState() {
     super.initState();
     cubit = sl<QuizzCubit>();
+    proCubit = context.read<ProCubit>();
+    _initStateAsync();
+  }
+
+  Future<void> _initStateAsync() async {
+    final token = sl<SharePrefsService>().getUserData();
+    bool pro = false;
+    try {
+      if (token != null && token.isNotEmpty) {
+        pro = await proCubit.isCheckPro(token: token);
+      }
+    } catch (_) {
+      pro = false;
+    }
+    if (!mounted) return;
+    setState(() {
+      isProUser = pro;
+    });
+
     cubit.loadInitial(filterId: widget.topicId);
   }
 
@@ -61,7 +82,7 @@ class _QuizzPageState extends State<QuizzPage> {
             ),
             itemBuilder: (context, quizz) {
               final bool isQuizPro = quizz.accessTier == 'PRO';
-              final bool isLocked = isQuizPro && !widget.isProUser;
+              final bool isLocked = isQuizPro && !isProUser;
 
               return Card(
                 shape: RoundedRectangleBorder(

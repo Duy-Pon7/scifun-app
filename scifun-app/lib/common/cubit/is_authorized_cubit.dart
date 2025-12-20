@@ -14,7 +14,7 @@ class IsAuthorizedCubit extends Cubit<bool> {
     emit(token != null);
   }
 
-  void logout() async {
+  Future<void> logout() async {
     await _sharePrefsService.clear();
     emit(false); // đảm bảo tự quay lại login luôn
   }

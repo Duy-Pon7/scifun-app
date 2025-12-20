@@ -126,11 +126,32 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
+      // Debug log: inspect server response for signup
+      log('Signup response: ${res.data}');
+
+      final data = res.data;
+
+      if (data is Map<String, dynamic>) {
+        // If backend returns an explicit status field, treat 200 as success
+        final status = data['status'];
+        if (status == null || status == 200) {
+          return UserModel.fromJson(data);
+        }
+
+        // Non-success status -> throw with server message
+        throw ServerException(message: _extractServerMessage(data));
+      }
+
+      // Fallback: try to parse whatever we got
       return UserModel.fromJson(res.data);
     } on DioException catch (e) {
       throw ServerException(
         message: _extractServerMessage(e.response?.data),
       );
+    } catch (e) {
+      // Parsing or unexpected errors -> wrap and surface friendly message
+      log('Signup parsing error: $e');
+      throw ServerException(message: AppErrors.commonError);
     }
   }
 

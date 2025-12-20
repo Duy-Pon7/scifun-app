@@ -16,6 +16,7 @@ import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 
@@ -23,7 +24,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await initializeDependencies();
-  await TeXRenderingServer.start();
+  // await TeXRenderingServer.start();
   runApp(
     ScreenUtilInit(
       designSize: const Size(473, 932),
@@ -37,6 +38,9 @@ void main() async {
             ),
             BlocProvider(
               create: (_) => sl<UserCubit>(),
+            ),
+            BlocProvider(
+              create: (_) => sl<ProCubit>(),
             ),
             BlocProvider(
               create: (_) => sl<PackageBloc>(),

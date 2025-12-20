@@ -73,6 +73,8 @@ class _SignupFormState extends State<SignupForm> {
                 phone: _phoneCon.text.replaceAll(' ', '').trim(),
                 password: _passCon.text.trim(),
                 confirmPassword: _confirmPassCon.text.trim(),
+                // Server already sends OTP on successful signup; avoid re-sending
+                otpAlreadySent: true,
               ),
             ),
           );

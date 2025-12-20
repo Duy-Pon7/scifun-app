@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/features/quizz/data/model/quizz_model.dart';
 import 'package:sci_fun/features/quizz/data/model/quizz_trend_model.dart';
 import 'package:sci_fun/features/quizz/data/model/quizz_result_model.dart';
@@ -41,10 +43,30 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
                 QuizzModel.fromJson(quizJson as Map<String, dynamic>))
             .toList();
       } else {
-        throw Exception('Failed to load Quizzes');
+        throw ServerException(
+            message:
+                'Không thể tải danh sách bài tập (HTTP ${res.statusCode})');
       }
-    } catch (e) {
-      throw Exception('Failed to load Quizzes: $e');
+    } on DioException catch (e) {
+      String msg;
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          msg = 'Yêu cầu tới máy chủ quá lâu, vui lòng thử lại.';
+          break;
+        case DioExceptionType.badResponse:
+          msg = 'Máy chủ trả về lỗi (${e.response?.statusCode}).';
+          break;
+        case DioExceptionType.cancel:
+          msg = 'Yêu cầu đã bị huỷ.';
+          break;
+        default:
+          msg = 'Không thể kết nối tới máy chủ. Kiểm tra kết nối mạng.';
+      }
+      throw ServerException(message: msg);
+    } catch (_) {
+      throw ServerException(message: 'Có lỗi xảy ra khi tải dữ liệu bài tập.');
     }
   }
 
@@ -58,10 +80,29 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
       if (res.statusCode == 200) {
         return QuizzTrendModel.fromJson(res.data['data']);
       } else {
-        throw Exception('Failed to load Trend Quizzes');
+        throw ServerException(
+            message: 'Không thể tải Trend Quizzes (HTTP ${res.statusCode})');
       }
-    } catch (e) {
-      throw Exception('Failed to load Trend Quizzes: $e');
+    } on DioException catch (e) {
+      String msg;
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          msg = 'Yêu cầu tới máy chủ quá lâu, vui lòng thử lại.';
+          break;
+        case DioExceptionType.badResponse:
+          msg = 'Máy chủ trả về lỗi (${e.response?.statusCode}).';
+          break;
+        case DioExceptionType.cancel:
+          msg = 'Yêu cầu đã bị huỷ.';
+          break;
+        default:
+          msg = 'Không thể kết nối tới máy chủ. Kiểm tra kết nối mạng.';
+      }
+      throw ServerException(message: msg);
+    } catch (_) {
+      throw ServerException(message: 'Có lỗi xảy ra khi tải Trend Quizzes.');
     }
   }
 
@@ -75,10 +116,29 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
       if (res.statusCode == 200) {
         return QuizzResultModel.fromJson(res.data['data']);
       } else {
-        throw Exception('Failed to load Submission detail');
+        throw ServerException(
+            message: 'Không thể tải chi tiết bài nộp (HTTP ${res.statusCode})');
       }
-    } catch (e) {
-      throw Exception('Failed to load Submission detail: $e');
+    } on DioException catch (e) {
+      String msg;
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          msg = 'Yêu cầu tới máy chủ quá lâu, vui lòng thử lại.';
+          break;
+        case DioExceptionType.badResponse:
+          msg = 'Máy chủ trả về lỗi (${e.response?.statusCode}).';
+          break;
+        case DioExceptionType.cancel:
+          msg = 'Yêu cầu đã bị huỷ.';
+          break;
+        default:
+          msg = 'Không thể kết nối tới máy chủ. Kiểm tra kết nối mạng.';
+      }
+      throw ServerException(message: msg);
+    } catch (_) {
+      throw ServerException(message: 'Có lỗi xảy ra khi tải chi tiết bài nộp.');
     }
   }
 }

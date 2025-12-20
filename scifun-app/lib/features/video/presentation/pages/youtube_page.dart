@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
@@ -20,7 +18,7 @@ class YoutubePage extends StatefulWidget {
 }
 
 class _YoutubePageState extends State<YoutubePage> {
-  YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
   bool _hasError = false;
   String? _errorMessage;
 
@@ -33,14 +31,13 @@ class _YoutubePageState extends State<YoutubePage> {
     if (videoId == null || videoId.isEmpty) {
       _hasError = true;
       _errorMessage = 'Không thể phát video: URL không hợp lệ';
-      log('Invalid Youtube URL: ${widget.videoUrl}');
       return;
     }
 
     _controller = YoutubePlayerController(
       initialVideoId: videoId,
       flags: const YoutubePlayerFlags(
-        autoPlay: false, // ❌ đừng tin autoplay
+        autoPlay: true,
         mute: false,
         disableDragSeek: false,
         loop: false,
@@ -49,16 +46,38 @@ class _YoutubePageState extends State<YoutubePage> {
         enableCaption: true,
       ),
     );
+
+    /// Lắng nghe sự thay đổi fullscreen
+    _controller.addListener(() {
+      if (_controller.value.isFullScreen) {
+        _enableLandscape();
+      } else {
+        _enablePortrait();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _enablePortrait();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _enableLandscape() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  void _enablePortrait() {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    super.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   }
 
   @override
@@ -67,45 +86,15 @@ class _YoutubePageState extends State<YoutubePage> {
       return Scaffold(
         appBar: BasicAppbar(title: widget.title),
         body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline,
-                    size: 48, color: Colors.redAccent),
-                const SizedBox(height: 12),
-                Text(
-                  _errorMessage ?? 'Lỗi không xác định',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Quay lại'),
-                ),
-              ],
-            ),
-          ),
+          child: Text(_errorMessage ?? 'Lỗi không xác định'),
         ),
       );
     }
 
-    return YoutubePlayerBuilder(
-      onEnterFullScreen: () {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeLeft,
-          DeviceOrientation.landscapeRight,
-        ]);
-      },
-      onExitFullScreen: () {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-      },
-      player: YoutubePlayer(
-        controller: _controller!,
+    return Scaffold(
+      appBar: BasicAppbar(title: widget.title),
+      body: YoutubePlayer(
+        controller: _controller,
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.blueAccent,
         bottomActions: const [
@@ -114,16 +103,6 @@ class _YoutubePageState extends State<YoutubePage> {
           RemainingDuration(),
           FullScreenButton(),
         ],
-        onReady: () {
-          // 🔥 AUTOPLAY THẬT
-          _controller?.play();
-        },
-      ),
-      builder: (context, player) => Scaffold(
-        appBar: BasicAppbar(title: widget.title),
-        body: Center(
-          child: player,
-        ),
       ),
     );
   }

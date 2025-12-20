@@ -26,9 +26,8 @@ class UserLoaded extends UserState {
 class UserUpdated extends UserLoaded {
   final DateTime updatedAt;
 
-  UserUpdated(UserGetEntity user, {DateTime? updatedAt})
-      : updatedAt = updatedAt ?? DateTime.now(),
-        super(user);
+  UserUpdated(super.user, {DateTime? updatedAt})
+      : updatedAt = updatedAt ?? DateTime.now();
 
   @override
   List<Object?> get props => [user, updatedAt];
@@ -57,22 +56,36 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<UserGetEntity?> getUser({required String token}) async {
+    print('UserCubit.getUser: token=$token');
     _tryEmit(UserLoading());
     try {
       final res = await getInfoUser.call(token: token);
       return await res.fold(
         (failure) {
+          print('UserCubit.getUser failure: ${failure.message}');
           _tryEmit(UserError(failure.message));
           return null;
         },
         (data) {
           final user = data!;
+          print(
+              'UserCubit.getUser success: id=${user.data?.id} fullname=${user.data?.fullname}');
           _tryEmit(UserLoaded(user));
           return user;
         },
       );
     } catch (e) {
+      print('UserCubit.getUser exception: $e');
       _tryEmit(UserError(e.toString()));
+      return null;
+    }
+  }
+
+  Future<UserGetEntity?> _fetchUserSilent({required String userId}) async {
+    try {
+      final res = await getInfoUser.call(token: userId);
+      return await res.fold((failure) => null, (data) => data);
+    } catch (e) {
       return null;
     }
   }
@@ -85,6 +98,8 @@ class UserCubit extends Cubit<UserState> {
     required int sex,
     File? avatar,
   }) async {
+    // Capture previous state before emitting loading so we can fallback to it later
+    final prevState = state;
     _tryEmit(UserLoading());
     try {
       final params = UpdateInfoUserParams(
@@ -99,15 +114,71 @@ class UserCubit extends Cubit<UserState> {
 
       res.fold(
         (failure) => _tryEmit(UserError(failure.message)),
-        (_) async {
-          final user = await getUser(token: token);
+        (returned) async {
+          // If the update usecase returned the updated user entity, use it directly
+          if (returned != null) {
+            final updatedEntity = returned;
+            final data = updatedEntity.data;
+            final userGet = UserGetEntity(
+              status: updatedEntity.status,
+              message: updatedEntity.message,
+              data: data == null
+                  ? null
+                  : UserDataEntity(
+                      id: data.id,
+                      email: data.email,
+                      fullname: data.fullname,
+                      avatar: data.avatar,
+                      sex: data.sex,
+                      dob: data.dob,
+                      role: data.role,
+                      subscription: data.subscription == null
+                          ? null
+                          : SubscriptionEntity(
+                              status: data.subscription!.status,
+                              tier: data.subscription!.tier,
+                              currentPeriodEnd:
+                                  data.subscription!.currentPeriodEnd,
+                              provider: data.subscription!.provider,
+                            ),
+                    ),
+            );
+            _tryEmit(UserUpdated(userGet));
+            return;
+          }
+
+          // Otherwise try a silent refresh and fallback to previous state as before
+          final user = await _fetchUserSilent(userId: userId);
           if (user != null) {
             _tryEmit(UserUpdated(user));
+          } else {
+            if (prevState is UserLoaded) {
+              final prevUser = prevState.user;
+              final updatedData = prevUser.data?.copyWith(
+                fullname: fullname,
+                sex: sex,
+                dob: dob,
+              );
+              final updatedUser = prevUser.copyWith(data: updatedData);
+              _tryEmit(UserUpdated(updatedUser));
+            } else {
+              final fallback = UserGetEntity(
+                status: 200,
+                message: 'Cập nhật thành công',
+                data: null,
+              );
+              _tryEmit(UserUpdated(fallback));
+            }
           }
         },
       );
     } catch (e) {
       _tryEmit(UserError(e.toString()));
     }
+  }
+
+  /// Clear current user state (used on logout)
+  void clear() {
+    _tryEmit(UserInitial());
   }
 }

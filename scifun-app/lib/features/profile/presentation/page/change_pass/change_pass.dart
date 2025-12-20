@@ -9,10 +9,12 @@ import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class ChangePass extends StatefulWidget {
   const ChangePass({super.key});
@@ -62,7 +64,11 @@ class _ChangePassState extends State<ChangePass> {
         toastPosition: EasyLoadingToastPosition.bottom,
       );
       await sl<SharePrefsService>().clear();
-      sl<IsAuthorizedCubit>().isAuthorized();
+      final storage = const FlutterSecureStorage();
+      await storage.delete(key: 'access_token');
+      await sl<IsAuthorizedCubit>().logout();
+      // Clear UserCubit to ensure other UI pieces don't show old info
+      sl<UserCubit>().clear();
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const SigninPage()),
         (route) => false,

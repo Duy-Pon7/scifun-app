@@ -13,7 +13,7 @@ class ForgotPassPage extends StatelessWidget {
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: BasicAppbar(
-          title: "Chi tiết lịch sử gói cước",
+          title: "Quên mật khẩu",
           showTitle: true,
           showBack: true,
         ),

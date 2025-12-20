@@ -14,13 +14,15 @@ class OtpPage extends StatefulWidget {
   final String password;
   final String confirmPassword;
   final bool? flag;
+  final bool otpAlreadySent;
   const OtpPage(
       {super.key,
       this.flag,
       required this.email,
       required this.phone,
       required this.password,
-      required this.confirmPassword});
+      required this.confirmPassword,
+      this.otpAlreadySent = false});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -30,11 +32,17 @@ class _OtpPageState extends State<OtpPage> {
   late final blocAuth = context.read<AuthBloc>();
   @override
   void initState() {
-    if (widget.flag == true) {
-      blocAuth.add(AuthSendResetEmail(email: widget.email));
-    } else {
-      blocAuth.add(AuthResendOtp(email: widget.email));
+    // If OTP was already sent (flow from ForgotPassForm / ConfirmContent sent it), skip sending again
+    if (!widget.otpAlreadySent) {
+      if (widget.flag == true) {
+        blocAuth.add(AuthSendResetEmail(email: widget.email));
+      } else {
+        // For signup flow we should send the initial OTP using SendEmail
+        // instead of calling ResendOtp which is intended for subsequent sends
+        blocAuth.add(AuthSendEmail(email: widget.email));
+      }
     }
+
     super.initState();
   }
 

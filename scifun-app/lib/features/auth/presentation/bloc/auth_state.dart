@@ -25,12 +25,16 @@ final class AuthUserSuccess extends AuthInitial {
   AuthUserSuccess({required this.user});
 }
 
-
-
 final class AuthUserLoginSuccess extends AuthInitial {
   final UserEntity? user;
 
   AuthUserLoginSuccess({required this.user});
+}
+
+final class AuthCheckEmailSuccess extends AuthInitial {
+  final UserCheckEntity userCheck;
+
+  AuthCheckEmailSuccess({required this.userCheck});
 }
 
 final class AuthSuccess extends AuthInitial {}

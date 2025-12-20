@@ -2,6 +2,10 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:intl/intl.dart';
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/common/models/user_get_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
@@ -43,10 +47,15 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
         return UserGetModel.fromJson(res.data);
       }
 
+      // Log unexpected status
+      log('getUser unexpected status: ${res.statusCode} ${res.data}');
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
       String mess = AppErrors.getAuthFailure;
       final errors = e.response?.data;
+
+      // Log the DioException details for diagnosis
+      log('getUser DioException: status=${e.response?.statusCode} data=${e.response?.data} message=${e.message}');
 
       if (errors is Map<String, dynamic>) {
         mess = errors['message'] ?? mess;
@@ -68,16 +77,29 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
       log("PUT ${UserApiUrls.updateInfo}$userId");
       log("BODY => fullname: $fullname, dob: $dob, sex: $sex");
 
-      final formData = FormData.fromMap({
+      MultipartFile? avatarMultipart;
+      if (avatar != null) {
+        final fileName = p.basename(avatar.path);
+        final mimeType =
+            lookupMimeType(avatar.path) ?? 'application/octet-stream';
+        final parts = mimeType.split('/');
+
+        avatarMultipart = await MultipartFile.fromFile(
+          avatar.path,
+          filename: fileName,
+          contentType: MediaType(parts[0], parts[1]),
+        );
+      }
+
+      FormData formData = FormData.fromMap({
         "fullname": fullname,
-        "dob": dob.toIso8601String().split('T').first,
         "sex": sex,
-        if (avatar != null)
-          "avatar": await MultipartFile.fromFile(
-            avatar.path,
-            filename: avatar.path.split('/').last,
-          ),
+        "dob": DateFormat("yyyy-MM-dd").format(dob),
+        if (avatarMultipart != null) "avatar": avatarMultipart,
       });
+
+      // Log a short summary of the outgoing form (do NOT log binary content)
+      log('Sending updateInfoUser request: userId=$userId, fullname=$fullname, dob=${DateFormat("yyyy-MM-dd").format(dob)}, sex=$sex, hasAvatar=${avatar != null}');
 
       final res = await dioClient.put(
         url: "${UserApiUrls.updateInfo}$userId",
@@ -86,7 +108,10 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
       );
 
       print("Update User Response: ${res.data}");
+
       if (res.statusCode == 200) {
+        // Prefer using ResponseModel parser to handle different response shapes reliably
+        log('Update status 200, response: ${res.data}');
         final returnedData = ResponseModel<UserModel>.fromJson(
           res.data,
           (json) => UserModel.fromJson(
@@ -98,18 +123,25 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
             },
           ),
         );
+
         if (returnedData.data == null) {
+          log('Update returned no data');
           return null;
         }
-        log(returnedData.data.toString());
+        log('Update returned user: ${returnedData.data}');
         return returnedData.data!;
       }
+
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
-      String mess = AppErrors.getAuthFailure;
       final errors = e.response?.data;
-      if (errors != null && errors is Map<String, dynamic>) {
-        mess = errors['message'] ?? AppErrors.getAuthFailure;
+      String mess = AppErrors.getAuthFailure;
+
+      // Extra logs for diagnosis
+      log('updateInfoUser DioException: status=${e.response?.statusCode} data=${e.response?.data} message=${e.message}');
+
+      if (errors is Map<String, dynamic>) {
+        mess = errors['message'] ?? mess;
       }
       throw ServerException(message: mess);
     }

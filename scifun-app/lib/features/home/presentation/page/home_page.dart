@@ -48,15 +48,6 @@ class _HomePageState extends State<HomePage>
 
     return MultiBlocProvider(
       providers: [
-        // BlocProvider(
-        //   create: (context) {
-        //     final authBloc = sl<AuthBloc>();
-        //     if (hasToken) {
-        //       authBloc.add(AuthGetSession());
-        //     }
-        //     return authBloc;
-        //   },
-        // ),
         BlocProvider(
           create: (_) {
             final token = sl<SharePrefsService>().getUserData();
@@ -78,8 +69,13 @@ class _HomePageState extends State<HomePage>
           listeners: [
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                if (state is AuthUserSuccess) {
+                // When a user logs in or session is refreshed, reload user info
+                if (state is AuthUserSuccess || state is AuthUserLoginSuccess) {
                   EasyLoading.dismiss();
+                  final token = sl<SharePrefsService>().getUserData();
+                  if (token != null && token.isNotEmpty) {
+                    sl<UserCubit>().getUser(token: token);
+                  }
                 } else if (state is AuthFailure) {
                   EasyLoading.dismiss();
                 }
@@ -113,7 +109,12 @@ class _HomePageState extends State<HomePage>
                   child: SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: Padding(
-                      padding: EdgeInsets.all(16.w),
+                      padding: EdgeInsets.only(
+                        left: 16.w,
+                        right: 16.w,
+                        top: 16.w,
+                        bottom: MediaQuery.of(newcontext).padding.bottom + 96.h,
+                      ),
                       child: Column(
                         spacing: 16.h,
                         children: [

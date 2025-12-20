@@ -15,8 +15,9 @@ class DioClient {
               'Accept': 'application/json',
             },
             responseType: ResponseType.json,
-            sendTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
+            // Increase timeouts to handle slow networks / cold starts
+            sendTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 30),
           ),
         )..interceptors.addAll(
             [checkTokenInterceptor],
