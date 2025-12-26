@@ -81,15 +81,6 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  Future<UserGetEntity?> _fetchUserSilent({required String userId}) async {
-    try {
-      final res = await getInfoUser.call(token: userId);
-      return await res.fold((failure) => null, (data) => data);
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<void> updateUser({
     required String token,
     required String userId,
@@ -98,8 +89,7 @@ class UserCubit extends Cubit<UserState> {
     required int sex,
     File? avatar,
   }) async {
-    // Capture previous state before emitting loading so we can fallback to it later
-    final prevState = state;
+    print('UserCubit.updateUser: userId=$userId, fullname=$fullname');
     _tryEmit(UserLoading());
     try {
       final params = UpdateInfoUserParams(
@@ -111,69 +101,53 @@ class UserCubit extends Cubit<UserState> {
       );
 
       final res = await updateInfoUser.call(params);
+      print('UserCubit.updateUser: got response');
 
       res.fold(
-        (failure) => _tryEmit(UserError(failure.message)),
-        (returned) async {
-          // If the update usecase returned the updated user entity, use it directly
-          if (returned != null) {
-            final updatedEntity = returned;
-            final data = updatedEntity.data;
-            final userGet = UserGetEntity(
-              status: updatedEntity.status,
-              message: updatedEntity.message,
-              data: data == null
-                  ? null
-                  : UserDataEntity(
-                      id: data.id,
-                      email: data.email,
-                      fullname: data.fullname,
-                      avatar: data.avatar,
-                      sex: data.sex,
-                      dob: data.dob,
-                      role: data.role,
-                      subscription: data.subscription == null
-                          ? null
-                          : SubscriptionEntity(
-                              status: data.subscription!.status,
-                              tier: data.subscription!.tier,
-                              currentPeriodEnd:
-                                  data.subscription!.currentPeriodEnd,
-                              provider: data.subscription!.provider,
-                            ),
-                    ),
+        (failure) {
+          print('UserCubit.updateUser failure: ${failure.message}');
+          _tryEmit(UserError(failure.message));
+        },
+        (returned) {
+          print('UserCubit.updateUser success: returned=$returned');
+          // Nếu update thành công, dùng dữ liệu trả về từ API trực tiếp
+          if (returned != null && returned.data != null) {
+            // Convert UserModel data to UserGetEntity
+            final updatedUser = UserGetEntity(
+              status: returned.status,
+              message: returned.message,
+              data: UserDataEntity(
+                id: returned.data!.id,
+                email: returned.data!.email,
+                fullname: returned.data!.fullname,
+                avatar: returned.data!.avatar,
+                sex: returned.data!.sex,
+                dob: returned.data!.dob,
+                role: returned.data!.role,
+                subscription: returned.data!.subscription != null
+                    ? SubscriptionEntity(
+                        status: returned.data!.subscription!.status,
+                        tier: returned.data!.subscription!.tier,
+                        currentPeriodEnd:
+                            returned.data!.subscription!.currentPeriodEnd,
+                        provider: returned.data!.subscription!.provider,
+                      )
+                    : null,
+              ),
             );
-            _tryEmit(UserUpdated(userGet));
+            print('UserCubit.updateUser: emitting UserUpdated');
+            _tryEmit(UserUpdated(updatedUser));
             return;
           }
 
-          // Otherwise try a silent refresh and fallback to previous state as before
-          final user = await _fetchUserSilent(userId: userId);
-          if (user != null) {
-            _tryEmit(UserUpdated(user));
-          } else {
-            if (prevState is UserLoaded) {
-              final prevUser = prevState.user;
-              final updatedData = prevUser.data?.copyWith(
-                fullname: fullname,
-                sex: sex,
-                dob: dob,
-              );
-              final updatedUser = prevUser.copyWith(data: updatedData);
-              _tryEmit(UserUpdated(updatedUser));
-            } else {
-              final fallback = UserGetEntity(
-                status: 200,
-                message: 'Cập nhật thành công',
-                data: null,
-              );
-              _tryEmit(UserUpdated(fallback));
-            }
-          }
+          // Fallback nếu không có dữ liệu trả về
+          print('UserCubit.updateUser: no data returned');
+          _tryEmit(UserError('Cập nhật thất bại: Không có dữ liệu trả về'));
         },
       );
     } catch (e) {
-      _tryEmit(UserError(e.toString()));
+      print('UserCubit.updateUser exception: $e');
+      _tryEmit(UserError('Lỗi: ${e.toString()}'));
     }
   }
 

@@ -42,4 +42,18 @@ class PlanRepositoryImpl implements PlanRepository {
       return Left(Failure(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> verifyPayment(
+      {required String appTransId, required int durationDays}) async {
+    try {
+      final res = await planRemoteDatasource.verifyPayment(
+          appTransId: appTransId, durationDays: durationDays);
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    } catch (e) {
+      return Left(Failure(message: e.toString()));
+    }
+  }
 }

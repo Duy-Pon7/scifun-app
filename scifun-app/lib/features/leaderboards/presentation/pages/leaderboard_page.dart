@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/domain/usecase/get_progress.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 import 'package:sci_fun/features/leaderboards/domain/entity/leaderboards_entity.dart';
 import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 
@@ -31,24 +33,16 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       subjectId: widget.subjectId,
       period: 'alltime',
     );
+
+    // Load progress cho môn học này
+    context
+        .read<ProgressCubit>()
+        .getProgress(ProgressParams(subjectId: widget.subjectId));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('🏆 Bảng xếp hạng'),
-      //   actions: [
-      //     IconButton(
-      //       icon: const Icon(Icons.refresh),
-      //       onPressed: () {
-      //         _cubit.rebuildAndRefresh(
-      //           subjectId: widget.subjectId,
-      //         );
-      //       },
-      //     ),
-      //   ],
-      // ),
       appBar: BasicAppbar(
         title: '🏆 Bảng xếp hạng',
         rightIcon: GestureDetector(
@@ -58,7 +52,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               color: AppColor.primary600,
               size: 24,
             )),
-        showBack: false,
+        showBack: true,
       ),
       body: PaginationListView<LeaderboardsEntity>(
         cubit: _cubit,
@@ -90,7 +84,33 @@ class _LeaderboardItem extends StatelessWidget {
           item.userName ?? 'Người dùng ẩn danh',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text('Điểm: ${item.totalScore}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Text(
+                  'Điểm: ${item.totalScore}',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (item.progress != null)
+                  Text(
+                    'Tiến độ: ${item.progress}%',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColor.primary600,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
         trailing: Text(
           '#${item.rank}',
           style: TextStyle(

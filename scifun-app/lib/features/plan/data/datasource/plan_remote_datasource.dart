@@ -7,6 +7,10 @@ abstract interface class PlanRemoteDatasource {
 
   /// Create a checkout session and return the payUrl
   Future<String> createCheckout({required int price});
+
+  /// Verify ZaloPay payment with appTransId and grant the plan for durationDays
+  Future<String> verifyPayment(
+      {required String appTransId, required int durationDays});
 }
 
 class PlanRemoteDatasourceImpl implements PlanRemoteDatasource {
@@ -50,6 +54,29 @@ class PlanRemoteDatasourceImpl implements PlanRemoteDatasource {
       throw Exception('Failed to create checkout');
     } catch (e) {
       throw Exception('Failed to create checkout: $e');
+    }
+  }
+
+  @override
+  Future<String> verifyPayment(
+      {required String appTransId, required int durationDays}) async {
+    try {
+      const verifyUrl =
+          'https://java-app-9trd.onrender.com/api/v1/zalopay/verifyPayment';
+      final res = await dioClient.post(
+        url: verifyUrl,
+        data: {'appTransId': appTransId, 'durationDays': durationDays},
+      );
+
+      if (res.statusCode == 200 || res.statusCode == 201) {
+        final data = res.data as Map<String, dynamic>;
+        final message = data['message'] as String? ?? 'Xác thực thành công';
+        return message;
+      }
+
+      throw Exception('Failed to verify payment');
+    } catch (e) {
+      throw Exception('Failed to verify payment: $e');
     }
   }
 }

@@ -11,6 +11,7 @@ import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
 import 'package:sci_fun/features/question/presentation/page/test_page.dart';
+import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 
 class QuizzPage extends StatefulWidget {
   final String topicId;
@@ -42,6 +43,7 @@ class _QuizzPageState extends State<QuizzPage> {
   Future<void> _initStateAsync() async {
     final token = sl<SharePrefsService>().getUserData();
     bool pro = false;
+
     try {
       if (token != null && token.isNotEmpty) {
         pro = await proCubit.isCheckPro(token: token);
@@ -49,10 +51,9 @@ class _QuizzPageState extends State<QuizzPage> {
     } catch (_) {
       pro = false;
     }
+
     if (!mounted) return;
-    setState(() {
-      isProUser = pro;
-    });
+    setState(() => isProUser = pro);
 
     cubit.loadInitial(filterId: widget.topicId);
   }
@@ -96,16 +97,20 @@ class _QuizzPageState extends State<QuizzPage> {
                 child: Stack(
                   children: [
                     ListTile(
-                      enabled: !isLocked,
                       leading: _buildLeading(quizz),
                       title: _buildTitle(quizz, isQuizPro),
                       subtitle: _buildSubtitle(quizz),
                       onTap: () {
+                        // ✅ Không PRO: vẫn tap được nhưng chuyển sang page mua
                         if (isLocked) {
-                          _showProDialog(context);
+                          Navigator.push(
+                            context,
+                            slidePage(const PlanListPage()),
+                          );
                           return;
                         }
 
+                        // ✅ PRO hoặc FREE: vào bài test bình thường
                         Navigator.push(
                           context,
                           slidePage(
@@ -129,19 +134,22 @@ class _QuizzPageState extends State<QuizzPage> {
                         ),
                       ),
 
-                    /// 🔒 Lock overlay
+                    /// 🔒 Lock overlay (không chặn tap)
                     if (isLocked)
                       Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.lock,
-                              size: 36,
-                              color: Colors.grey,
+                        child: IgnorePointer(
+                          ignoring: true, // ✅ cho phép tap xuyên qua overlay
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                Icons.lock,
+                                size: 36,
+                                color: Colors.grey,
+                              ),
                             ),
                           ),
                         ),
@@ -245,37 +253,6 @@ class _QuizzPageState extends State<QuizzPage> {
           ],
         ),
       ],
-    );
-  }
-
-  /// ===================== DIALOG =====================
-
-  void _showProDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: const Text('Nội dung PRO'),
-        content: const Text(
-          'Bài kiểm tra này dành cho tài khoản PRO.\n'
-          'Vui lòng nâng cấp để tiếp tục.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Navigate to PRO purchase page
-            },
-            child: const Text('Mua PRO'),
-          ),
-        ],
-      ),
     );
   }
 }

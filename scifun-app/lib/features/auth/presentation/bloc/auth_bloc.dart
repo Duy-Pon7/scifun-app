@@ -12,6 +12,7 @@ import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
 import 'package:sci_fun/features/auth/domain/usecases/forgot_password.dart';
 import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
+import 'package:sci_fun/features/auth/domain/usecases/reset_password.dart';
 
 import '../../../../common/entities/user_entity.dart';
 import '../../../../common/entities/user_check_entity.dart';
@@ -29,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CheckEmailPhone _checkEmailPhone;
   final ResendOtp _resendOtp;
   final VerificationOtp _verificationOtp;
+  final ResetPassword _resetPassword;
   AuthBloc({
     required Login login,
     required Signup signup,
@@ -39,6 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required CheckEmailPhone checkEmailPhone,
     required ResendOtp resendOtp,
     required VerificationOtp verificationOtp,
+    required ResetPassword resetPassword,
   })  : _login = login,
         _signup = signup,
         _sendEmail = sendEmail,
@@ -48,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _checkEmailPhone = checkEmailPhone,
         _resendOtp = resendOtp,
         _verificationOtp = verificationOtp,
+        _resetPassword = resetPassword,
         super(AuthInitial()) {
     on<AuthEvent>((event, emit) => emit(AuthLoading()));
     on<AuthLogin>(_onAuthLogin);
@@ -60,6 +64,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckEmailPhone>(_onAuthCheckEmailPhone);
     on<AuthResendOtp>(_onAuthResendOtp);
     on<AuthVerificationOtp>(_onAuthVerificationOtp);
+    on<AuthResetPassword>(_onAuthResetPassword);
   }
 
   void _onAuthSendResetEmail(
@@ -132,6 +137,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     res.fold(
       (failure) => emit(AuthFailure(message: failure.message)),
       (message) => emit(AuthMessageSuccess(message: message)),
+    );
+  }
+
+  void _onAuthResetPassword(
+      AuthResetPassword event, Emitter<AuthState> emit) async {
+    final res = await _resetPassword.call(ResetPasswordParams(
+      email: event.email,
+      newPassword: event.newPass,
+    ));
+
+    res.fold(
+      (failure) => emit(AuthFailure(message: failure.message)),
+      (message) async => emit(AuthUserSuccess(user: null)),
     );
   }
 

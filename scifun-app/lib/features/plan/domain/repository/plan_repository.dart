@@ -7,4 +7,8 @@ abstract interface class PlanRepository {
 
   /// Create a checkout session and return the payUrl
   Future<Either<Failure, String>> createCheckout({required int price});
+
+  /// Verify ZaloPay payment and grant the plan
+  Future<Either<Failure, String>> verifyPayment(
+      {required String appTransId, required int durationDays});
 }

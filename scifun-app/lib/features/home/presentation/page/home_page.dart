@@ -18,6 +18,8 @@ import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
 import 'package:sci_fun/features/comment/presentation/pages/comment_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 String wsUrlForEnvironment({int port = 5000}) {
@@ -81,13 +83,13 @@ class _HomePageState extends State<HomePage>
                 }
               },
             ),
-            BlocListener<SubjectCubit, SubjectState>(
+            BlocListener<SubjectCubit, PaginationState<SubjectEntity>>(
               listener: (context, state) {
-                if (state is SubjectsLoaded) {
+                if (state is PaginationSuccess<SubjectEntity>) {
                   EasyLoading.dismiss();
-                } else if (state is SubjectError) {
+                } else if (state is PaginationError<SubjectEntity>) {
                   EasyLoading.dismiss();
-                  EasyLoading.showToast(state.message,
+                  EasyLoading.showToast(state.error ?? 'Lỗi',
                       toastPosition: EasyLoadingToastPosition.bottom);
                 } else {
                   EasyLoading.dismiss();

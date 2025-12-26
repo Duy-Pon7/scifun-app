@@ -110,26 +110,20 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
       print("Update User Response: ${res.data}");
 
       if (res.statusCode == 200) {
-        // Prefer using ResponseModel parser to handle different response shapes reliably
+        // Parse API response directly using UserModel.fromJson
         log('Update status 200, response: ${res.data}');
-        final returnedData = ResponseModel<UserModel>.fromJson(
-          res.data,
-          (json) => UserModel.fromJson(
-            {
-              'status': res.data['status'],
-              'message': res.data['message'],
-              'token': res.data['token'],
-              'data': json,
-            },
-          ),
-        );
 
-        if (returnedData.data == null) {
+        // API returns data directly, convert to UserModel
+        final userData = res.data is Map<String, dynamic>
+            ? UserModel.fromJson(res.data)
+            : null;
+
+        if (userData == null) {
           log('Update returned no data');
           return null;
         }
-        log('Update returned user: ${returnedData.data}');
-        return returnedData.data!;
+        log('Update returned user: $userData');
+        return userData;
       }
 
       throw ServerException(message: AppErrors.getAuthFailure);

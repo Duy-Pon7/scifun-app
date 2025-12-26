@@ -7,11 +7,130 @@ import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
 import 'package:sci_fun/features/plan/domain/entity/plan_entity.dart';
 import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
+import 'package:sci_fun/features/plan/domain/usecase/verify_payment.dart';
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class PlanListPage extends StatelessWidget {
+class PlanListPage extends StatefulWidget {
   const PlanListPage({super.key});
+
+  @override
+  State<PlanListPage> createState() => _PlanListPageState();
+}
+
+class _PlanListPageState extends State<PlanListPage> {
+  late final AppLinks _appLinks;
+  StreamSubscription<Uri>? _uriSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  void _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Khi app mở lại từ ZaloPay
+    _uriSub = _appLinks.uriLinkStream.listen((Uri uri) async {
+      if (uri.scheme == "myapp" && uri.host == "payment") {
+        print("Return from ZaloPay: $uri");
+
+        final status = uri.queryParameters["status"];
+        final appTransId = uri.queryParameters["appTransId"];
+        final durationDaysStr = uri.queryParameters["durationDays"];
+        final durationDays =
+            durationDaysStr != null ? int.tryParse(durationDaysStr) : null;
+
+        if (appTransId != null && durationDays != null) {
+          // show loading
+          if (mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          final res = await sl<VerifyPayment>().call(VerifyPaymentParams(
+              appTransId: appTransId, durationDays: durationDays));
+
+          // close loading
+          if (mounted) Navigator.of(context).pop();
+
+          res.fold(
+            (failure) => ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(failure.message))),
+            (message) async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Thanh toán xác thực: $message')),
+              );
+            },
+          );
+        } else {
+          // fallback: show status only
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Kết quả thanh toán: status=$status')),
+            );
+          }
+        }
+      }
+    });
+
+    // App được mở từ trạng thái terminated
+    final initialUri = await _appLinks.getInitialLink();
+    if (initialUri != null &&
+        initialUri.scheme == "myapp" &&
+        initialUri.host == "payment") {
+      print("Initial link from ZaloPay: $initialUri");
+
+      final status = initialUri.queryParameters["status"];
+      final appTransId = initialUri.queryParameters["appTransId"];
+      final durationDaysStr = initialUri.queryParameters["durationDays"];
+      final durationDays =
+          durationDaysStr != null ? int.tryParse(durationDaysStr) : null;
+
+      if (appTransId != null && durationDays != null) {
+        // show loading
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final res = await sl<VerifyPayment>().call(VerifyPaymentParams(
+            appTransId: appTransId, durationDays: durationDays));
+
+        // close loading
+        if (mounted) Navigator.of(context).pop();
+
+        res.fold(
+          (failure) => ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(failure.message))),
+          (message) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Initial link: thanh toán xác thực: $message')),
+          ),
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Initial link: status=$status')),
+          );
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _uriSub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

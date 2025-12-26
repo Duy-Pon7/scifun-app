@@ -39,7 +39,7 @@ class ContactPage extends StatelessWidget {
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
         appBar: BasicAppbar(
-          title: "Về chúng tôi",
+          title: "Liên hệ",
           showTitle: true,
           showBack: true,
         ),
@@ -62,7 +62,7 @@ class ContactPage extends StatelessWidget {
                     ),
                     SizedBox(height: 16.h),
                     Text(
-                      "Ôn thi lớp 10",
+                      "SciFun - Học tập khoa học thú vị",
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontSize: 20.sp,
                             fontWeight: FontWeight.w600,
@@ -72,7 +72,7 @@ class ContactPage extends StatelessWidget {
                     Html(
                       data: getSettingValue('address').isNotEmpty
                           ? getSettingValue('address')
-                          : "<p>Không có nội dung giới thiệu.</p>",
+                          : '''<p>Chào mừng bạn đến với SciFun!<br>Chúng tôi luôn sẵn sàng lắng nghe ý kiến, phản hồi và hỗ trợ bạn trong quá trình học tập. Nếu có bất kỳ thắc mắc hoặc góp ý nào, hãy liên hệ với chúng tôi qua các kênh bên dưới hoặc gửi email về địa chỉ: <b>support@scifun.vn</b>.</p><p>Địa chỉ: 123 Đường Khoa Học, Quận Tri Thức, TP. Học Tập<br>Hotline: 0123 456 789</p>''',
                       style: {
                         "body": Style(
                           fontSize: FontSize(16.sp),
@@ -147,3 +147,77 @@ class ContactPage extends StatelessWidget {
     );
   }
 }
+
+final List<SettingsEntity> mockContactSettings = [
+  SettingsEntity(
+    id: 1,
+    settingKey: 'address',
+    settingName: 'Địa chỉ liên hệ',
+    plainValue: '''
+<p>
+<b>SciFun – Học tập khoa học thú vị</b><br>
+Chúng tôi luôn sẵn sàng hỗ trợ bạn trong quá trình học tập.
+Nếu có bất kỳ thắc mắc hoặc góp ý nào, vui lòng liên hệ qua các kênh bên dưới.
+</p>
+<p>
+📍 Địa chỉ: 123 Đường Khoa Học, Quận Tri Thức, TP. Học Tập<br>
+📞 Hotline: 0123 456 789<br>
+📧 Email: support@scifun.vn
+</p>
+''',
+    desc: '',
+    typeInput: 0,
+    typeData: null,
+    group: 0,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ),
+  SettingsEntity(
+    id: 2,
+    settingKey: 'hotline',
+    settingName: 'Hotline',
+    plainValue: '0123 456 789',
+    desc: '',
+    typeInput: 0,
+    typeData: null,
+    group: 0,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ),
+  SettingsEntity(
+    id: 3,
+    settingKey: 'email',
+    settingName: 'Email hỗ trợ',
+    plainValue: 'support@scifun.vn',
+    desc: '',
+    typeInput: 0,
+    typeData: null,
+    group: 0,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ),
+  SettingsEntity(
+    id: 4,
+    settingKey: 'facebook',
+    settingName: 'Facebook',
+    plainValue: 'https://www.facebook.com/scifun',
+    desc: '',
+    typeInput: 0,
+    typeData: null,
+    group: 0,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ),
+  SettingsEntity(
+    id: 5,
+    settingKey: 'zalo',
+    settingName: 'Zalo',
+    plainValue: '0123 456 789',
+    desc: '',
+    typeInput: 0,
+    typeData: null,
+    group: 0,
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  ),
+];

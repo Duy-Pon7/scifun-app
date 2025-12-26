@@ -51,12 +51,6 @@ import 'package:sci_fun/core/network/check_token_interceptor.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/navigator_key_service.dart';
-import 'package:sci_fun/features/address/data/datasource/address_remote_datasource.dart';
-import 'package:sci_fun/features/address/data/repository/address_repository_impl.dart';
-import 'package:sci_fun/features/address/domain/repository/address_repository.dart';
-import 'package:sci_fun/features/address/domain/usecase/get_provinces.dart';
-import 'package:sci_fun/features/address/domain/usecase/get_wards.dart';
-import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
 import 'package:sci_fun/features/analytics/data/datasource/progress_remote_datasource.dart';
 import 'package:sci_fun/features/analytics/data/repository/progress_repository_impl.dart';
 import 'package:sci_fun/features/analytics/domain/repository/progress_repository.dart';
@@ -72,6 +66,7 @@ import 'package:sci_fun/features/auth/domain/usecases/send_email.dart';
 import 'package:sci_fun/features/auth/domain/usecases/signup.dart';
 import 'package:sci_fun/features/auth/domain/usecases/verification_otp.dart';
 import 'package:sci_fun/features/auth/domain/usecases/forgot_password.dart';
+import 'package:sci_fun/features/auth/domain/usecases/reset_password.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/checked_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
@@ -119,6 +114,7 @@ import 'package:sci_fun/features/plan/data/repository/plan_repository_impl.dart'
 import 'package:sci_fun/features/plan/domain/repository/plan_repository.dart';
 import 'package:sci_fun/features/plan/domain/usecase/get_all_plan.dart';
 import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
+import 'package:sci_fun/features/plan/domain/usecase/verify_payment.dart';
 import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
 
 import 'package:sci_fun/features/video/data/datasource/video_remote_datasource.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/helper/get_category_score.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/submission_detail_page.dart';
 
 class QuizResultPage extends StatelessWidget {
@@ -18,18 +19,25 @@ class QuizResultPage extends StatelessWidget {
     final double score =
         scoreValue is int ? scoreValue.toDouble() : scoreValue as double;
 
-    // Determine performance level
-    final String performanceTitle;
+    // Determine performance level using getCategoryScore
+    final String performanceTitle = getCategoryScore(score.toInt());
+
     final Color performanceColor;
-    if (score >= 8.0) {
-      performanceTitle = 'Xuất sắc';
-      performanceColor = const Color(0xFF17A2B8);
-    } else if (score >= 6.0) {
-      performanceTitle = 'Tốt';
-      performanceColor = const Color(0xFF28A745);
-    } else {
-      performanceTitle = 'Cần cố gắng';
-      performanceColor = const Color(0xFFDC3545);
+    switch (performanceTitle) {
+      case 'Xuất sắc':
+        performanceColor = const Color(0xFF17A2B8);
+        break;
+      case 'Giỏi':
+        performanceColor = const Color(0xFF28A745);
+        break;
+      case 'Khá':
+        performanceColor = const Color(0xFF0066CC);
+        break;
+      case 'Trung bình':
+        performanceColor = const Color(0xFFFF9800);
+        break;
+      default: // Chưa đạt
+        performanceColor = const Color(0xFFDC3545);
     }
 
     return Scaffold(

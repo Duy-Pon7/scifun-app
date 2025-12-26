@@ -40,6 +40,11 @@ abstract interface class AuthRemoteDatasource {
     required String email,
   });
 
+  Future<String> resetPassword({
+    required String email,
+    required String newPassword,
+  });
+
   Future<String> changePassword({
     required String oldPass,
     required String newPass,
@@ -297,6 +302,28 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       );
 
       return res.data['message'];
+    } on DioException catch (e) {
+      throw ServerException(
+        message: _extractServerMessage(e.response?.data),
+      );
+    }
+  }
+
+  @override
+  Future<String> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      final res = await dioClient.post(
+        url: AuthApiUrls.resetPassword,
+        data: {
+          "email": email,
+          "newPassword": newPassword,
+        },
+      );
+
+      return res.data['message'] ?? AppSuccesses.resetPasswordSuccess;
     } on DioException catch (e) {
       throw ServerException(
         message: _extractServerMessage(e.response?.data),

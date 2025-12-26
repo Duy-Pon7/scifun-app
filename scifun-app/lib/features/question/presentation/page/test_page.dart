@@ -324,9 +324,12 @@ class _TestPageState extends State<TestPage> {
                           );
                         }
 
-                        return OutlinedButton(
-                          onPressed: () => submitAnswer(items),
-                          child: const Text('Nộp bài'),
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: OutlinedButton(
+                            onPressed: () => submitAnswer(items),
+                            child: const Text('Nộp bài'),
+                          ),
                         );
                       },
                     ),

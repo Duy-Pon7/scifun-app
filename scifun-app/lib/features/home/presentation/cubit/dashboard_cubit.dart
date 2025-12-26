@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/features/analytics/presentation/page/statistics_lesson.dart';
 import 'package:sci_fun/features/home/presentation/page/home_page.dart';
-import 'package:sci_fun/features/leaderboards/presentation/pages/leaderboard_page.dart';
+import 'package:sci_fun/features/leaderboards/presentation/pages/subjects_leaderboard_page.dart';
 import 'package:sci_fun/features/notification/presentation/page/notification_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/profile_page.dart';
 
@@ -12,7 +12,7 @@ class DashboardCubit extends Cubit<int> {
   final List<Widget> pages = [
     HomePage(),
     StatisticsLesson(),
-    LeaderboardPage(subjectId: '693443de3ad457141c52aedf'),
+    SubjectsLeaderboardPage(),
 
     // ExamPage(),
     NotificationPage(),

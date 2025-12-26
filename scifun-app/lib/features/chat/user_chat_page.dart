@@ -34,7 +34,6 @@ class _UserChatPageState extends State<UserChatPage> {
   String? _token;
   String? _conversationId;
   bool _loading = true;
-  bool _connected = false;
 
   @override
   void initState() {
@@ -61,7 +60,7 @@ class _UserChatPageState extends State<UserChatPage> {
 
       _connSub = RealtimeService.I.connectionStream.listen((v) {
         if (!mounted) return;
-        setState(() => _connected = v);
+        // Connection state is now handled internally by RealtimeService
       });
 
       RealtimeService.I.setActiveConversation(convId);

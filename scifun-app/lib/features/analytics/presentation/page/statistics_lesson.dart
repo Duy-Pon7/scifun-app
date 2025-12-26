@@ -7,6 +7,8 @@ import 'package:sci_fun/features/analytics/presentation/components/list_statisti
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/selected_subject_cubit.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/tab_subjects.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 
 class StatisticsLesson extends StatefulWidget {
@@ -44,18 +46,19 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
       child: Scaffold(
         appBar: const BasicAppbar(title: 'Thống kê', showBack: false),
         body: SingleChildScrollView(
-          child: BlocBuilder<SubjectCubit, SubjectState>(
+          child: BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
             builder: (context, subjectState) {
-              if (subjectState is SubjectLoading) {
+              if (subjectState is PaginationLoading<SubjectEntity>) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (subjectState is SubjectError) {
-                return Center(child: Text("Lỗi: ${subjectState.message}"));
+              if (subjectState is PaginationError<SubjectEntity>) {
+                return Center(
+                    child: Text("Lỗi: ${subjectState.error ?? 'Không rõ'}"));
               }
 
-              if (subjectState is SubjectsLoaded) {
-                final subjects = subjectState.subjectList;
+              if (subjectState is PaginationSuccess<SubjectEntity>) {
+                final subjects = subjectState.items;
 
                 if (subjects.isEmpty) {
                   return const Center(child: Text("Không có môn học"));
@@ -92,7 +95,6 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
                         ),
                         child: TabSubjects(subjects: subjects),
                       ),
-
                       BlocBuilder<SelectedSubjectCubit, String?>(
                         builder: (context, selectedId) {
                           final String? subjectId =

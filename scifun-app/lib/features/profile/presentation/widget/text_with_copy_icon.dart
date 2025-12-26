@@ -67,3 +67,51 @@ class TextWithCopyIcon extends StatelessWidget {
     );
   }
 }
+
+// --- Dưới đây là ví dụ sử dụng TextWithCopyIcon để hiển thị dữ liệu mẫu ---
+// Chỉ dùng cho mục đích kiểm tra giao diện, không ảnh hưởng logic chính
+class TextWithCopyIconDemo extends StatelessWidget {
+  const TextWithCopyIconDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Demo TextWithCopyIcon')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextWithCopyIcon(
+              label: 'Sđt:',
+              value: '0912 345 678',
+              copyValue: '0912 345 678',
+              dividerColor: Colors.blueGrey,
+            ),
+            SizedBox(height: 16),
+            TextWithCopyIcon(
+              label: 'Email:',
+              value: 'test@example.com',
+              copyValue: 'test@example.com',
+              dividerColor: Colors.blueGrey,
+            ),
+            SizedBox(height: 16),
+            TextWithCopyIcon(
+              label: 'Zalo:',
+              value: 'zalo_user_123',
+              copyValue: 'zalo_user_123',
+              dividerColor: Colors.blueGrey,
+            ),
+            SizedBox(height: 16),
+            TextWithCopyIcon(
+              label: 'Facebook:',
+              value: 'Tên Facebook',
+              copyValue: 'https://facebook.com/tenfacebook',
+              dividerColor: Colors.blueGrey,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

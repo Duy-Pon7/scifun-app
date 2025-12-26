@@ -44,7 +44,7 @@ Future<void> initializeDependencies() async {
     ..registerFactory(
       () => GetAllSubjects(subjectRepository: sl<SubjectRepository>()),
     )
-    ..registerFactory(() => SubjectCubit(getAllSubjects: sl<GetAllSubjects>()))
+    ..registerFactory(() => SubjectCubit(sl<SubjectRepository>()))
 
     // Plan feature DI
     ..registerFactory<PlanRemoteDatasource>(
@@ -58,6 +58,7 @@ Future<void> initializeDependencies() async {
     ..registerFactory(() => PlanCubit(getAllPlans: sl<GetAllPlans>()))
     ..registerFactory(
         () => CreateCheckout(planRepository: sl<PlanRepository>()))
+    ..registerFactory(() => VerifyPayment(planRepository: sl<PlanRepository>()))
     // Comment feature DI
     ..registerFactory<CommentRemoteDatasource>(
       () => CommentRemoteDatasourceImpl(dioClient: sl<DioClient>()),
@@ -88,7 +89,6 @@ Future<void> initializeDependencies() async {
   // Other
   await _authInit();
   await _topicInit();
-  await _addressInti();
   await _notiInti();
   await _statisticsInti();
   await _profile();
@@ -106,17 +106,13 @@ Future<void> _profile() async {
         () => UserRepositoryImpl(userRemoteDatasource: sl()))
     ..registerFactory(() => GetInfoUser(userRepository: sl()))
     ..registerFactory(() => UpdateInfoUser(userRepository: sl()))
-    ..registerFactory(() => UserCubit(
+    ..registerLazySingleton(() => UserCubit(
           getInfoUser: sl(),
           updateInfoUser: sl(),
         ))
     ..registerLazySingleton(() => ProCubit(
           getInfoUser: sl(),
         ))
-    // ..registerFactory(() => Changes(userRepository: sl()))
-    // ..registerLazySingleton(() => UserBloc(
-    //       change: sl(),
-    //     ))
 
     //Packages
     ..registerFactory<PackagesRemoteDatasource>(
@@ -170,17 +166,6 @@ Future<void> _notiInti() async {
         ));
 }
 
-Future<void> _addressInti() async {
-  sl
-    ..registerFactory<AddressRemoteDatasource>(
-        () => AddressRemoteDatasourceImpl(dioClient: sl()))
-    ..registerFactory<AddressRepository>(
-        () => AddressRepositoryImpl(addressRemoteDatasource: sl()))
-    ..registerFactory(() => GetProvinces(sl()))
-    ..registerFactory(() => GetWards(sl()))
-    ..registerLazySingleton(() => AddressCubit(sl(), sl()));
-}
-
 Future<void> _authInit() async {
   sl
     ..registerFactory<AuthRemoteDatasource>(() =>
@@ -191,6 +176,7 @@ Future<void> _authInit() async {
     ..registerFactory(() => Signup(authRepository: sl()))
     ..registerFactory(() => SendEmail(authRepository: sl()))
     ..registerFactory(() => ForgotPassword(authRepository: sl()))
+    ..registerFactory(() => ResetPassword(authRepository: sl()))
     ..registerFactory(() => ChangePassword(authRepository: sl()))
     ..registerFactory(() => CheckEmailPhone(authRepository: sl()))
     ..registerFactory(() => ResendOtp(authRepository: sl()))
@@ -204,12 +190,12 @@ Future<void> _authInit() async {
           signup: sl(),
           sendEmail: sl(),
           forgotPassword: sl(),
+          resetPassword: sl(),
           resendOtp: sl(),
           verificationOtp: sl(),
           checkEmailPhone: sl(),
           getAuth: sl(),
           changPass: sl(),
-          // change: sl(),
         ));
 }
 
@@ -308,7 +294,7 @@ void _leaderboardInit() {
       () => RebuildLeaderboard(
           leaderboardRepository: sl<LeaderboardRepository>()),
     )
-    ..registerFactory(
+    ..registerLazySingleton(
       () => LeaderboardsCubit(
         getLeaderboard: sl<GetLeaderboard>(),
         rebuildLeaderboard: sl<RebuildLeaderboard>(),
@@ -340,5 +326,13 @@ void resetSingleton() {
     ..resetLazySingleton<NavigatorKeyService>()
     ..resetLazySingleton<DashboardCubit>()
     ..resetLazySingleton<IsAuthorizedCubit>()
-    ..resetLazySingleton<DioClient>();
+    ..resetLazySingleton<DioClient>()
+    ..resetLazySingleton<AuthBloc>()
+    ..resetLazySingleton<UserCubit>()
+    ..resetLazySingleton<ProCubit>()
+    ..resetLazySingleton<PackageBloc>()
+    ..resetLazySingleton<ProgressCubit>()
+    ..resetLazySingleton<TopicCubit>()
+    ..resetLazySingleton<NotificationCubit>()
+    ..resetLazySingleton<LeaderboardsCubit>();
 }

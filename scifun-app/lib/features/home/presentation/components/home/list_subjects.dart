@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/home/presentation/widget/subject_item.dart';
+import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 
@@ -31,18 +33,17 @@ class ListSubjects extends StatelessWidget {
             ],
           ),
         ),
-        BlocBuilder<SubjectCubit, SubjectState>(
+        BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
           builder: (context, state) {
-            print("SubjectState: $state");
-            if (state is SubjectLoading) {
+            if (state is PaginationLoading<SubjectEntity>) {
               return SizedBox(
                 height: 150.h,
                 child: const Center(child: CircularProgressIndicator()),
               );
             }
 
-            if (state is SubjectsLoaded) {
-              final items = state.subjectList;
+            if (state is PaginationSuccess<SubjectEntity>) {
+              final items = state.items;
               if (items.isEmpty) {
                 return SizedBox(
                   height: 150.h,
@@ -78,14 +79,14 @@ class ListSubjects extends StatelessWidget {
               );
             }
 
-            if (state is SubjectError) {
+            if (state is PaginationError<SubjectEntity>) {
               return SizedBox(
                 height: 150.h,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Lỗi khi tải môn học: ${state.message}'),
+                      Text('Lỗi khi tải môn học: ${state.error}'),
                       ElevatedButton(
                         onPressed: () => context
                             .read<SubjectCubit>()

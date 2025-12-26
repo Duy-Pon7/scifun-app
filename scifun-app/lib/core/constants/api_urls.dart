@@ -9,6 +9,7 @@ class AuthApiUrls {
   static const String verificationOtp = '/user/verify-otp'; //
 
   static const String forgotPassword = '/user/forgot-password'; //!
+  static const String resetPassword = '/user/reset-password'; //!
   static const String updatePassword = '/user/update-password'; //!
   static const String sendEmail = '/user/resend-otp';
   static const String resendOtp = '/user/resend-otp';

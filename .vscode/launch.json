@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "scifun-app",
+            "cwd": "scifun-app",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "scifun-app (profile mode)",
+            "cwd": "scifun-app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "scifun-app (release mode)",
+            "cwd": "scifun-app",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

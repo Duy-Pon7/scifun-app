@@ -72,7 +72,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, state) {
-        print("UserCubit state: $state");
+        print(
+            "ChangeInfomationForm listener state: ${state.runtimeType} - $state");
         if (state is UserError) {
           EasyLoading.dismiss();
           EasyLoading.showToast(state.message);
@@ -81,7 +82,9 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
             status: 'Đang tải',
             maskType: EasyLoadingMaskType.black,
           );
-        } else if (state is UserLoaded) {
+        } else if (state is UserUpdated) {
+          // Chỉ báo thành công khi là UserUpdated (cập nhật thực), không phải UserLoaded thường
+          print("ChangeInfomationForm: showing success toast");
           EasyLoading.dismiss();
           EasyLoading.showToast("Cập nhật thông tin thành công",
               toastPosition: EasyLoadingToastPosition.bottom);

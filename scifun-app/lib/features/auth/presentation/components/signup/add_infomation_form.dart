@@ -4,10 +4,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
-import 'package:sci_fun/common/widget/customize_dropdown.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/address/presentation/cubit/address_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 
 import 'package:intl/intl.dart';
@@ -43,8 +41,6 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
   @override
   void initState() {
     super.initState();
-    final addressCubit = context.read<AddressCubit>();
-    addressCubit.fetchAddresss();
 
     // WidgetsBinding.instance.addPostFrameCallback((_) {
     //   final authState = context.read<AuthBloc>().state;
@@ -130,68 +126,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
                 children: [
                   _fullnameField(),
                   _birthdayField(),
-                  BlocBuilder<AddressCubit, AddressState>(
-                    builder: (context, state) {
-                      if (state is AddressLoading) {
-                        // return const CircularProgressIndicator();
-                      } else if (state is AddressLoaded) {
-                        final provinces = state.provinces;
-                        final items = {
-                          for (var p in provinces) p.id: p.name,
-                        };
-
-                        return CustomizeDropdown<int?>(
-                            items: items.cast<int?, String>(),
-                            onChanged: (int? selectedId) {
-                              if (selectedId != null) {
-                                setState(() {
-                                  _selectedProvinceId = selectedId;
-                                  _selectedWardId =
-                                      null; // reset quận/huyện khi đổi tỉnh
-                                });
-                                context
-                                    .read<AddressCubit>()
-                                    .fetchWards(selectedId);
-                              }
-                            },
-                            hintText: "Tỉnh / Thành phố",
-                            value: _selectedProvinceId,
-                            hasError: _provinceError // ✅ Sửa chỗ này
-                            );
-                      } else if (state is AddressError) {
-                        return Text("Lỗi: ${state.message}");
-                      }
-                      return const SizedBox.shrink();
-                    },
-                  ),
-                  BlocBuilder<AddressCubit, AddressState>(
-                    builder: (context, state) {
-                      if (_selectedProvinceId == null)
-                        return const SizedBox.shrink();
-
-                      final wards = context.read<AddressCubit>().wards;
-                      if (wards.isEmpty) {
-                        return const SizedBox(
-                            height: 50,
-                            child: Center(child: CircularProgressIndicator()));
-                      }
-
-                      final items = {
-                        for (var ward in wards) ward.id: ward.name,
-                      };
-
-                      return CustomizeDropdown<int?>(
-                          items: items.cast<int?, String>(),
-                          onChanged: (int? selectedWardId) {
-                            setState(() {
-                              _selectedWardId = selectedWardId;
-                            });
-                          },
-                          hintText: "Huyện / Quận",
-                          value: _selectedWardId,
-                          hasError: _provinceError);
-                    },
-                  ),
+                 
                   SizedBox(height: 20.h),
                   _changeButton(),
                 ],

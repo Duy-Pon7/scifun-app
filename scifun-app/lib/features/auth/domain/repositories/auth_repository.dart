@@ -20,6 +20,11 @@ abstract interface class AuthRepository {
 
   Future<Either<Failure, String>> forgotPassword({required String email});
 
+  Future<Either<Failure, String>> resetPassword({
+    required String email,
+    required String newPassword,
+  });
+
   Future<Either<Failure, bool>> resendOtp({
     required String email,
   });

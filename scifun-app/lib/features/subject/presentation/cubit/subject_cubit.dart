@@ -1,63 +1,31 @@
-import 'package:equatable/equatable.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// Cubit
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
-import 'package:sci_fun/features/subject/domain/usecase/get_all_subjects.dart';
+import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';
 
-sealed class SubjectState extends Equatable {
-  @override
-  List<Object?> get props => [];
-}
+class SubjectCubit extends PaginationCubit<SubjectEntity> {
+  final SubjectRepository repository;
 
-class SubjectInitial extends SubjectState {}
-
-class SubjectLoading extends SubjectState {}
-
-class SubjectsLoaded extends SubjectState {
-  final List<SubjectEntity> subjectList;
-
-  SubjectsLoaded(this.subjectList);
+  SubjectCubit(this.repository);
 
   @override
-  List<Object?> get props => [subjectList];
-}
+  Future<List<SubjectEntity>> fetchData(
+    int page,
+    int limit, {
+    String? searchQuery,
+    String? filterId,
+  }) async {
+    // Call the repository's getAllSubjects (which returns Either).
+    // Pass the searchQuery parameter and convert the Either result.
+    final result = await repository.getAllSubjects(searchQuery);
 
-class SubjectDetailLoaded extends SubjectState {
-  final SubjectEntity subjectDetail;
+    // Convert Either<Failure, List<SubjectEntity>> into List<SubjectEntity>.
+    // On failure return an empty list, on success return the list as-is.
+    return result.fold((failure) => [], (subjects) => subjects);
+  }
 
-  SubjectDetailLoaded(this.subjectDetail);
-
-  @override
-  List<Object?> get props => [subjectDetail];
-}
-
-class SubjectError extends SubjectState {
-  final String message;
-
-  SubjectError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
-
-class SubjectCubit extends Cubit<SubjectState> {
-  final GetAllSubjects getAllSubjects;
-
-  SubjectCubit({required this.getAllSubjects}) : super(SubjectInitial());
-
-  Future<void> getSubjects({required String searchQuery}) async {
-    emit(SubjectLoading());
-
-    try {
-      final res = await getAllSubjects(
-        SubjectsParams(searchQuery),
-      );
-
-      res.fold(
-        (failure) => emit(SubjectError(failure.message)),
-        (data) => emit(SubjectsLoaded(data)),
-      );
-    } catch (e) {
-      emit(SubjectError(e.toString()));
-    }
+  // Convenience method for compatibility with existing code
+  Future<void> getSubjects({String searchQuery = ''}) async {
+    await loadInitial(searchQuery: searchQuery);
   }
 }
