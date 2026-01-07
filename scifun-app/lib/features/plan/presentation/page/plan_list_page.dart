@@ -11,6 +11,9 @@ import 'package:sci_fun/features/plan/domain/usecase/verify_payment.dart';
 import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sci_fun/features/plan/presentation/page/verify_payment_page.dart';
 
 class PlanListPage extends StatefulWidget {
   const PlanListPage({super.key});
@@ -38,10 +41,11 @@ class _PlanListPageState extends State<PlanListPage> {
         print("Return from ZaloPay: $uri");
 
         final status = uri.queryParameters["status"];
-        final appTransId = uri.queryParameters["appTransId"];
-        final durationDaysStr = uri.queryParameters["durationDays"];
-        final durationDays =
-            durationDaysStr != null ? int.tryParse(durationDaysStr) : null;
+
+        // Lấy appTransId và durationDays đã lưu từ SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final appTransId = prefs.getString('pending_appTransId');
+        final durationDays = prefs.getInt('pending_durationDays');
 
         if (appTransId != null && durationDays != null) {
           // show loading
@@ -58,6 +62,10 @@ class _PlanListPageState extends State<PlanListPage> {
 
           // close loading
           if (mounted) Navigator.of(context).pop();
+
+          // Xóa dữ liệu pending sau khi xác thực
+          await prefs.remove('pending_appTransId');
+          await prefs.remove('pending_durationDays');
 
           res.fold(
             (failure) => ScaffoldMessenger.of(context)
@@ -87,10 +95,11 @@ class _PlanListPageState extends State<PlanListPage> {
       print("Initial link from ZaloPay: $initialUri");
 
       final status = initialUri.queryParameters["status"];
-      final appTransId = initialUri.queryParameters["appTransId"];
-      final durationDaysStr = initialUri.queryParameters["durationDays"];
-      final durationDays =
-          durationDaysStr != null ? int.tryParse(durationDaysStr) : null;
+
+      // Lấy appTransId và durationDays đã lưu từ SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final appTransId = prefs.getString('pending_appTransId');
+      final durationDays = prefs.getInt('pending_durationDays');
 
       if (appTransId != null && durationDays != null) {
         // show loading
@@ -107,6 +116,10 @@ class _PlanListPageState extends State<PlanListPage> {
 
         // close loading
         if (mounted) Navigator.of(context).pop();
+
+        // Xóa dữ liệu pending sau khi xác thực
+        await prefs.remove('pending_appTransId');
+        await prefs.remove('pending_durationDays');
 
         res.fold(
           (failure) => ScaffoldMessenger.of(context)
@@ -140,6 +153,22 @@ class _PlanListPageState extends State<PlanListPage> {
         backgroundColor: const Color(0xFFF6F7FB),
         appBar: const BasicAppbar(
           title: 'Gói dịch vụ',
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const VerifyPaymentPage(),
+              ),
+            );
+          },
+          backgroundColor: AppColor.primary500,
+          icon: const Icon(Icons.verified_outlined, color: Colors.white),
+          label: const Text(
+            'Xác nhận thanh toán',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -261,6 +290,7 @@ class _PlanCard extends StatelessWidget {
               ),
               onPressed: () async {
                 final price = plan.price ?? 0;
+                final durationDays = plan.durationDays ?? 7;
 
                 // show loading
                 showDialog(
@@ -270,8 +300,9 @@ class _PlanCard extends StatelessWidget {
                       const Center(child: CircularProgressIndicator()),
                 );
 
-                final res = await sl<CreateCheckout>()
-                    .call(CreateCheckoutParams(price: price));
+                final res = await sl<CreateCheckout>().call(
+                    CreateCheckoutParams(
+                        price: price, durationDays: durationDays));
 
                 // close loading
                 Navigator.of(context).pop();
@@ -279,11 +310,43 @@ class _PlanCard extends StatelessWidget {
                 res.fold(
                   (failure) => ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text(failure.message))),
-                  (payUrl) async {
+                  (checkoutResponse) async {
                     try {
-                      await launchUrlString(payUrl,
-                          mode: LaunchMode.externalApplication);
+                      // Lưu appTransId và durationDays vào SharedPreferences
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setString(
+                          'pending_appTransId', checkoutResponse.appTransId);
+                      await prefs.setInt('pending_durationDays',
+                          checkoutResponse.durationDays);
+
+                      final payUrl = checkoutResponse.payUrl;
+
+                      // Debug: in ra payUrl để kiểm tra
+                      print("PayUrl from server: $payUrl");
+                      print("AppTransId: ${checkoutResponse.appTransId}");
+                      print("DurationDays: ${checkoutResponse.durationDays}");
+
+                      // Thử mở app ZaloPay Sandbox trước
+                      // ZaloPay Sandbox có scheme: zalopay-sandbox-ca://
+                      // ZaloPay production có scheme: zalopay://
+                      final zaloPaySandboxUrl = payUrl.replaceFirst(
+                          'https://', 'zalopay-sandbox-ca://');
+
+                      bool launched = false;
+                      if (await canLaunchUrlString(zaloPaySandboxUrl)) {
+                        launched = await launchUrlString(zaloPaySandboxUrl,
+                            mode: LaunchMode.externalApplication);
+                        print("Launched ZaloPay Sandbox app: $launched");
+                      }
+
+                      // Nếu không mở được app ZaloPay, fallback mở trình duyệt
+                      if (!launched) {
+                        print("Fallback to browser: $payUrl");
+                        await launchUrlString(payUrl,
+                            mode: LaunchMode.externalApplication);
+                      }
                     } catch (e) {
+                      print("Error launching payment: $e");
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                             content: Text('Không thể mở đường dẫn thanh toán')),

@@ -164,84 +164,10 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              // Progress bar
-              _ProgressSection(maxTopics: subject.maxTopics ?? 0),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ProgressSection extends StatelessWidget {
-  final int maxTopics;
-
-  const _ProgressSection({required this.maxTopics});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<ProgressCubit, ProgressState>(
-      builder: (context, state) {
-        // Lấy progress từ cubit
-        int completedTopics = 0;
-        double progressPercent = 0;
-
-        if (state is ProgressLoaded) {
-          // Nếu có dữ liệu progress, tính toán dựa trên dữ liệu đó
-          completedTopics = state.progress.completedTopics ?? 0;
-          progressPercent =
-              maxTopics > 0 ? (completedTopics / maxTopics).clamp(0.0, 1.0) : 0;
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Tiến độ học tập',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                Text(
-                  '$completedTopics/$maxTopics',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.primary600,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Progress bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: progressPercent,
-                minHeight: 8,
-                backgroundColor: Colors.grey[300],
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColor.primary600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${(progressPercent * 100).toStringAsFixed(0)}%',
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[500],
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

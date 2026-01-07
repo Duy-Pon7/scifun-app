@@ -22,12 +22,12 @@ class ProgressEntity extends Equatable {
   final String? userId;
   final String? subjectId;
   final String? subjectName;
-  final int? progress;
+  final double? progress;
   final int? totalTopics;
   final int? completedTopics;
   final int? totalQuizzes;
   final int? completedQuizzes;
-  final int? averageScore;
+  final double? averageScore;
   final List<TopicEntity> topics;
   final DateTime? lastUpdatedAt;
   final DateTime? createdAt;
@@ -38,12 +38,12 @@ class ProgressEntity extends Equatable {
     String? userId,
     String? subjectId,
     String? subjectName,
-    int? progress,
+    double? progress,
     int? totalTopics,
     int? completedTopics,
     int? totalQuizzes,
     int? completedQuizzes,
-    int? averageScore,
+    double? averageScore,
     List<TopicEntity>? topics,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
@@ -73,12 +73,12 @@ class ProgressEntity extends Equatable {
       userId: json["userId"],
       subjectId: json["subjectId"],
       subjectName: json["subjectName"],
-      progress: json["progress"],
+      progress: (json["progress"] as num?)?.toDouble(),
       totalTopics: json["totalTopics"],
       completedTopics: json["completedTopics"],
       totalQuizzes: json["totalQuizzes"],
       completedQuizzes: json["completedQuizzes"],
-      averageScore: json["averageScore"],
+      averageScore: (json["averageScore"] as num?)?.toDouble(),
       topics: json["topics"] == null
           ? []
           : List<TopicEntity>.from(
@@ -138,20 +138,20 @@ class TopicEntity extends Equatable {
 
   final String? topicId;
   final String? name;
-  final int? progress;
+  final double? progress;
   final int? totalQuizzes;
   final int? completedQuizzes;
-  final int? averageScore;
-  final List<dynamic> quizzes;
+  final double? averageScore;
+  final List<QuizEntity> quizzes;
 
   TopicEntity copyWith({
     String? topicId,
     String? name,
-    int? progress,
+    double? progress,
     int? totalQuizzes,
     int? completedQuizzes,
-    int? averageScore,
-    List<dynamic>? quizzes,
+    double? averageScore,
+    List<QuizEntity>? quizzes,
   }) {
     return TopicEntity(
       topicId: topicId ?? this.topicId,
@@ -168,13 +168,14 @@ class TopicEntity extends Equatable {
     return TopicEntity(
       topicId: json["topicId"],
       name: json["name"],
-      progress: json["progress"],
+      progress: (json["progress"] as num?)?.toDouble(),
       totalQuizzes: json["totalQuizzes"],
       completedQuizzes: json["completedQuizzes"],
-      averageScore: json["averageScore"],
+      averageScore: (json["averageScore"] as num?)?.toDouble(),
       quizzes: json["quizzes"] == null
           ? []
-          : List<dynamic>.from(json["quizzes"]!.map((x) => x)),
+          : List<QuizEntity>.from(
+              json["quizzes"]!.map((x) => QuizEntity.fromJson(x))),
     );
   }
 
@@ -185,7 +186,7 @@ class TopicEntity extends Equatable {
         "totalQuizzes": totalQuizzes,
         "completedQuizzes": completedQuizzes,
         "averageScore": averageScore,
-        "quizzes": quizzes.map((x) => x).toList(),
+        "quizzes": quizzes.map((x) => x.toJson()).toList(),
       };
 
   @override
@@ -197,5 +198,73 @@ class TopicEntity extends Equatable {
         completedQuizzes,
         averageScore,
         quizzes,
+      ];
+}
+
+class QuizEntity extends Equatable {
+  const QuizEntity({
+    required this.quizId,
+    required this.name,
+    required this.score,
+    required this.bestScore,
+    required this.attempts,
+    required this.lastSubmissionAt,
+  });
+
+  final String? quizId;
+  final String? name;
+  final double? score;
+  final double? bestScore;
+  final int? attempts;
+  final DateTime? lastSubmissionAt;
+
+  QuizEntity copyWith({
+    String? quizId,
+    String? name,
+    double? score,
+    double? bestScore,
+    int? attempts,
+    DateTime? lastSubmissionAt,
+  }) {
+    return QuizEntity(
+      quizId: quizId ?? this.quizId,
+      name: name ?? this.name,
+      score: score ?? this.score,
+      bestScore: bestScore ?? this.bestScore,
+      attempts: attempts ?? this.attempts,
+      lastSubmissionAt: lastSubmissionAt ?? this.lastSubmissionAt,
+    );
+  }
+
+  factory QuizEntity.fromJson(Map<String, dynamic> json) {
+    return QuizEntity(
+      quizId: json["quizId"],
+      name: json["name"],
+      score: (json["score"] as num?)?.toDouble(),
+      bestScore: (json["bestScore"] as num?)?.toDouble(),
+      attempts: json["attempts"],
+      lastSubmissionAt: json["lastSubmissionAt"] != null
+          ? DateTime.tryParse(json["lastSubmissionAt"])
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "quizId": quizId,
+        "name": name,
+        "score": score,
+        "bestScore": bestScore,
+        "attempts": attempts,
+        "lastSubmissionAt": lastSubmissionAt?.toIso8601String(),
+      };
+
+  @override
+  List<Object?> get props => [
+        quizId,
+        name,
+        score,
+        bestScore,
+        attempts,
+        lastSubmissionAt,
       ];
 }

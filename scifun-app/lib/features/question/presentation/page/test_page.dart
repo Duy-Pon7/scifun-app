@@ -49,9 +49,18 @@ class _TestPageState extends State<TestPage> {
 
   /// ✅ SUBMIT BÀI
   void submitAnswer(List<QuestionEntity> questions) {
-    if (selectedAnswers.isEmpty) {
+    // Kiểm tra đã trả lời đủ tất cả các câu hỏi chưa
+    final totalQuestions = questions.length;
+    final answeredQuestions = selectedAnswers.length;
+
+    if (answeredQuestions < totalQuestions) {
+      final unansweredCount = totalQuestions - answeredQuestions;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn ít nhất 1 đáp án')),
+        SnackBar(
+          content: Text(
+            'Bạn cần trả lời tất cả $totalQuestions câu hỏi. Còn $unansweredCount câu chưa trả lời.',
+          ),
+        ),
       );
       return;
     }
@@ -305,6 +314,10 @@ class _TestPageState extends State<TestPage> {
                     /// SUBMIT
                     BlocBuilder<SubmitQuizCubit, SubmitQuizState>(
                       builder: (context, st) {
+                        final totalQuestions = items.length;
+                        final answeredQuestions = selectedAnswers.length;
+                        final canSubmit = answeredQuestions >= totalQuestions;
+
                         if (st is SubmitQuizLoading) {
                           return OutlinedButton(
                             onPressed: null,
@@ -326,9 +339,26 @@ class _TestPageState extends State<TestPage> {
 
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: OutlinedButton(
-                            onPressed: () => submitAnswer(items),
-                            child: const Text('Nộp bài'),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Đã trả lời: $answeredQuestions/$totalQuestions câu',
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color:
+                                      canSubmit ? Colors.green : Colors.orange,
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              OutlinedButton(
+                                onPressed: canSubmit
+                                    ? () => submitAnswer(items)
+                                    : null,
+                                child: Text(canSubmit
+                                    ? 'Nộp bài'
+                                    : 'Trả lời đủ câu hỏi để nộp'),
+                              ),
+                            ],
                           ),
                         );
                       },

@@ -242,36 +242,6 @@ class _CommentPageState extends State<CommentPage> {
                   ),
 
                   const SizedBox(height: 8),
-
-                  // actions / metadata
-                  Row(
-                    children: [
-                      if (hasReplies)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Text('${c.repliesCount} trả lời',
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.blue)),
-                        ),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {
-                          // open reply flow (not implemented)
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Trả lời...')));
-                        },
-                        child: const Text('Trả lời'),
-                        style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4)),
-                      ),
-                    ],
-                  )
                 ],
               ),
             ),

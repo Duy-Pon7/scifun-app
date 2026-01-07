@@ -51,9 +51,8 @@ void main() async {
             BlocProvider.value(
               value: sl<DashboardCubit>(),
             ),
-            BlocProvider.value(
-              value: sl<LeaderboardsCubit>(),
-            ),
+            // LeaderboardsCubit được tạo riêng cho mỗi LeaderboardPage
+            // không cần global provider ở đây
             BlocProvider(
               create: (context) => sl<QuizzCubit>(),
             ),

@@ -194,25 +194,75 @@ class SubmissionDetailPage extends StatelessWidget {
 
                                         SizedBox(height: 6.h),
 
-                                        /// Correct answers
-                                        Wrap(
-                                          spacing: 8.w,
-                                          runSpacing: 6.h,
-                                          children: answer.correctAnswers
-                                              .map<Widget>(
-                                                (s) => Chip(
-                                                  label: Text(
-                                                    s,
-                                                    style: TextStyle(
-                                                      fontSize: 12.sp,
-                                                      color: Colors.green[800],
+                                        /// Correct answers (blur if not pro)
+                                        Stack(
+                                          children: [
+                                            Wrap(
+                                              spacing: 8.w,
+                                              runSpacing: 6.h,
+                                              children: answer.correctAnswers
+                                                  .map<Widget>(
+                                                    (s) => Chip(
+                                                      label: Text(
+                                                        s,
+                                                        style: TextStyle(
+                                                          fontSize: 12.sp,
+                                                          color:
+                                                              Colors.green[800],
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors.green.shade50,
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                            ),
+                                            if (!pro)
+                                              Positioned.fill(
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          6.r),
+                                                  child: BackdropFilter(
+                                                    filter: ImageFilter.blur(
+                                                      sigmaX: 5,
+                                                      sigmaY: 5,
+                                                    ),
+                                                    child: Container(
+                                                      color: Colors.white
+                                                          .withOpacity(0.7),
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          const Icon(
+                                                            Icons.lock,
+                                                            size: 16,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          SizedBox(width: 6.w),
+                                                          Flexible(
+                                                            child: Text(
+                                                              'Pro để xem đáp án',
+                                                              style: TextStyle(
+                                                                fontSize: 12.sp,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
-                                                  backgroundColor:
-                                                      Colors.green.shade50,
                                                 ),
-                                              )
-                                              .toList(),
+                                              ),
+                                          ],
                                         ),
 
                                         /// ===== Explanation (blur if not pro) =====
@@ -258,14 +308,19 @@ class SubmissionDetailPage extends StatelessWidget {
                                                               ),
                                                               SizedBox(
                                                                   width: 6.w),
-                                                              Text(
-                                                                'Pro để xem giải thích',
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize:
-                                                                      12.sp,
-                                                                  color: Colors
-                                                                      .grey,
+                                                              Flexible(
+                                                                child: Text(
+                                                                  'Pro để xem giải thích',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        12.sp,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
                                                                 ),
                                                               ),
                                                             ],

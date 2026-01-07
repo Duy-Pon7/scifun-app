@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/analytics/domain/entities/progress_entity.dart';
 import 'package:sci_fun/features/analytics/presentation/widget/custom_expansion_tile_lesson.dart';
 import 'package:sci_fun/features/analytics/presentation/widget/lesson_item.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
@@ -9,6 +10,30 @@ import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.da
 class ListStatisticsLesson extends StatelessWidget {
   final String? subjectId;
   const ListStatisticsLesson({super.key, required this.subjectId});
+
+  String _getLastSubmissionTime(QuizEntity quiz) {
+    if (quiz.lastSubmissionAt == null) return '---';
+
+    final now = DateTime.now();
+    final difference = now.difference(quiz.lastSubmissionAt!);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays} ngày trước';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} giờ trước';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} phút trước';
+    } else {
+      return 'Vừa xong';
+    }
+  }
+
+  String _getScoreDisplay(QuizEntity quiz) {
+    if (quiz.attempts == 0 || quiz.score == null) {
+      return '---';
+    }
+    return '${quiz.score!.toStringAsFixed(2)} điểm';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,16 +116,15 @@ class ListStatisticsLesson extends StatelessWidget {
                         borderColor: AppColor.primary300,
                         iconColor: AppColor.primary600,
                         titleFontSize: 18.sp,
-                        children: [
-                          LessonItem(
-                            title: topic.name ?? "Không có tên",
-                            completedTime:
-                                '${topic.completedQuizzes}/${topic.totalQuizzes} bài',
-                            score: topic.averageScore != null
-                                ? "${topic.averageScore} điểm"
-                                : "---",
-                          ),
-                        ],
+                        children: topic.quizzes.map((quiz) {
+                          return LessonItem(
+                            title: quiz.name ?? "Không có tên",
+                            completedTime: _getLastSubmissionTime(quiz),
+                            score: _getScoreDisplay(quiz),
+                            bestScore: quiz.bestScore,
+                            attempts: quiz.attempts ?? 0,
+                          );
+                        }).toList(),
                       ),
                       SizedBox(height: 16.h),
                     ],

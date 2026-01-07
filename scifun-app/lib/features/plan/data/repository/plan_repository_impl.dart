@@ -3,6 +3,7 @@ import 'package:sci_fun/core/error/failure.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/features/plan/data/datasource/plan_remote_datasource.dart';
 import 'package:sci_fun/features/plan/domain/entity/plan_entity.dart';
+import 'package:sci_fun/features/plan/domain/entity/checkout_response.dart';
 import 'package:sci_fun/features/plan/domain/repository/plan_repository.dart';
 
 class PlanRepositoryImpl implements PlanRepository {
@@ -32,9 +33,11 @@ class PlanRepositoryImpl implements PlanRepository {
   }
 
   @override
-  Future<Either<Failure, String>> createCheckout({required int price}) async {
+  Future<Either<Failure, CheckoutResponse>> createCheckout(
+      {required int price, required int durationDays}) async {
     try {
-      final res = await planRemoteDatasource.createCheckout(price: price);
+      final res = await planRemoteDatasource.createCheckout(
+          price: price, durationDays: durationDays);
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));

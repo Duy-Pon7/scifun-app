@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/helper/get_category_score.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/submission_detail_page.dart';
 
 class QuizResultPage extends StatelessWidget {
@@ -41,7 +43,14 @@ class QuizResultPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: const BasicAppbar(title: 'Kết quả bài làm'),
+      appBar: BasicAppbar(
+        title: 'Kết quả bài làm',
+        onBackPress: () {
+          // Pop cả QuizResultPage và TestPage để ra ngoài
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        },
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
@@ -155,11 +164,12 @@ class QuizResultPage extends StatelessWidget {
                     Navigator.of(context).pop();
                     return;
                   }
+                  final isPro = context.read<ProCubit>().state;
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => SubmissionDetailPage(
                         submissionId: submissionId,
-                        pro: false,
+                        pro: isPro,
                       ),
                     ),
                   );
@@ -183,6 +193,8 @@ class QuizResultPage extends StatelessWidget {
               SizedBox(height: 12.h),
               ElevatedButton(
                 onPressed: () {
+                  // Pop cả QuizResultPage và TestPage để ra ngoài
+                  Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(
@@ -193,7 +205,7 @@ class QuizResultPage extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Bài học tiếp theo',
+                  'Quay về',
                   style: TextStyle(
                     fontSize: 16.sp,
                     color: Colors.white,

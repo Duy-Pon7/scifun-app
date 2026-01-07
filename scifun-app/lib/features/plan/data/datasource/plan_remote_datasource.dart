@@ -1,12 +1,14 @@
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/features/plan/data/model/plan_model.dart' as plan_model;
+import 'package:sci_fun/features/plan/domain/entity/checkout_response.dart';
 
 abstract interface class PlanRemoteDatasource {
   Future<List<plan_model.Plan>> getAllPlans();
 
-  /// Create a checkout session and return the payUrl
-  Future<String> createCheckout({required int price});
+  /// Create a checkout session and return CheckoutResponse
+  Future<CheckoutResponse> createCheckout(
+      {required int price, required int durationDays});
 
   /// Verify ZaloPay payment with appTransId and grant the plan for durationDays
   Future<String> verifyPayment(
@@ -37,19 +39,17 @@ class PlanRemoteDatasourceImpl implements PlanRemoteDatasource {
   }
 
   @override
-  Future<String> createCheckout({required int price}) async {
+  Future<CheckoutResponse> createCheckout(
+      {required int price, required int durationDays}) async {
     try {
       // External checkout service
       const checkoutUrl = 'https://java-app-9trd.onrender.com/api/v1/checkout';
-      final res =
-          await dioClient.post(url: checkoutUrl, data: {'price': price});
+      final res = await dioClient.post(
+          url: checkoutUrl,
+          data: {'price': price, 'durationDays': durationDays});
       if (res.statusCode == 200 || res.statusCode == 201) {
         final data = res.data as Map<String, dynamic>;
-        final payUrl = data['payUrl'] as String?;
-        if (payUrl != null && payUrl.isNotEmpty) {
-          return payUrl;
-        }
-        throw Exception('payUrl not found in response');
+        return CheckoutResponse.fromJson(data);
       }
       throw Exception('Failed to create checkout');
     } catch (e) {
@@ -60,6 +60,8 @@ class PlanRemoteDatasourceImpl implements PlanRemoteDatasource {
   @override
   Future<String> verifyPayment(
       {required String appTransId, required int durationDays}) async {
+    print(
+        'Verifying payment with appTransId: $appTransId for $durationDays days');
     try {
       const verifyUrl =
           'https://java-app-9trd.onrender.com/api/v1/zalopay/verifyPayment';
@@ -67,6 +69,8 @@ class PlanRemoteDatasourceImpl implements PlanRemoteDatasource {
         url: verifyUrl,
         data: {'appTransId': appTransId, 'durationDays': durationDays},
       );
+      print('Verify payment response status: ${res.statusCode}');
+      print('Verify payment response data: ${res.data}');
 
       if (res.statusCode == 200 || res.statusCode == 201) {
         final data = res.data as Map<String, dynamic>;

@@ -24,12 +24,12 @@ class ProgressModel extends ProgressEntity {
       userId: json["userId"],
       subjectId: json["subjectId"],
       subjectName: json["subjectName"],
-      progress: (json["progress"] as num?)?.toInt(),
+      progress: (json["progress"] as num?)?.toDouble(),
       totalTopics: json["totalTopics"],
       completedTopics: json["completedTopics"],
       totalQuizzes: json["totalQuizzes"],
       completedQuizzes: json["completedQuizzes"],
-      averageScore: (json["averageScore"] as num?)?.toInt(),
+      averageScore: (json["averageScore"] as num?)?.toDouble(),
       topics: json["topics"] == null
           ? []
           : List<TopicModel>.from(
@@ -92,13 +92,14 @@ class TopicModel extends TopicEntity {
     return TopicModel(
       topicId: json["topicId"],
       name: json["name"],
-      progress: (json["progress"] as num?)?.toInt(),
+      progress: (json["progress"] as num?)?.toDouble(),
       totalQuizzes: json["totalQuizzes"],
       completedQuizzes: json["completedQuizzes"],
-      averageScore: (json["averageScore"] as num?)?.toInt(),
+      averageScore: (json["averageScore"] as num?)?.toDouble(),
       quizzes: json["quizzes"] == null
           ? []
-          : List<dynamic>.from(json["quizzes"]!.map((x) => x)),
+          : List<QuizModel>.from(
+              json["quizzes"]!.map((x) => QuizModel.fromJson(x))),
     );
   }
 
@@ -110,7 +111,7 @@ class TopicModel extends TopicEntity {
         "totalQuizzes": totalQuizzes,
         "completedQuizzes": completedQuizzes,
         "averageScore": averageScore,
-        "quizzes": quizzes.map((x) => x).toList(),
+        "quizzes": quizzes.map((x) => x.toJson()).toList(),
       };
 
   @override
@@ -122,5 +123,49 @@ class TopicModel extends TopicEntity {
         completedQuizzes,
         averageScore,
         quizzes,
+      ];
+}
+
+class QuizModel extends QuizEntity {
+  const QuizModel({
+    required super.quizId,
+    required super.name,
+    required super.score,
+    required super.bestScore,
+    required super.attempts,
+    required super.lastSubmissionAt,
+  });
+
+  factory QuizModel.fromJson(Map<String, dynamic> json) {
+    return QuizModel(
+      quizId: json["quizId"],
+      name: json["name"],
+      score: (json["score"] as num?)?.toDouble(),
+      bestScore: (json["bestScore"] as num?)?.toDouble(),
+      attempts: json["attempts"],
+      lastSubmissionAt: json["lastSubmissionAt"] != null
+          ? DateTime.tryParse(json["lastSubmissionAt"])
+          : null,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "quizId": quizId,
+        "name": name,
+        "score": score,
+        "bestScore": bestScore,
+        "attempts": attempts,
+        "lastSubmissionAt": lastSubmissionAt?.toIso8601String(),
+      };
+
+  @override
+  List<Object?> get props => [
+        quizId,
+        name,
+        score,
+        bestScore,
+        attempts,
+        lastSubmissionAt,
       ];
 }

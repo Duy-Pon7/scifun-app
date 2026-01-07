@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="Ôn Thi Lớp 10 MKSHOOL"
+        android:label="SciFun"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true"
@@ -73,6 +73,16 @@
         </intent>
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+        <!-- ZaloPay Sandbox App -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="zalopay-sandbox-ca" />
+        </intent>
+        <!-- ZaloPay Production App -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="zalopay" />
         </intent>
     </queries>
     <uses-permission android:name="android.permission.INTERNET"/>

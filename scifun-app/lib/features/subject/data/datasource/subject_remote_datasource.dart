@@ -20,7 +20,7 @@ class SubjectRemoteDatasourceImpl implements SubjectRemoteDatasource {
     try {
       final res = await dioClient.get(
           url:
-              "${SubjectApiUrl.getSubjects}?page=1&limit=10&search=$searchQuery");
+              "${SubjectApiUrl.getSubjects}?page=1&limit=100&search=$searchQuery");
       if (res.statusCode == 200) {
         final List<dynamic> data = res.data['data']['subjects'];
         return data

@@ -28,7 +28,25 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     super.initState();
     _cubit = context.read<LeaderboardsCubit>();
 
-    // Load lần đầu
+    // Luôn load dữ liệu mới khi trang được khởi tạo
+    // Vì mỗi trang LeaderboardPage đều có BlocProvider riêng với cubit mới
+    _loadData();
+  }
+
+  @override
+  void didUpdateWidget(covariant LeaderboardPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Nếu subjectId thay đổi, load lại dữ liệu
+    if (oldWidget.subjectId != widget.subjectId) {
+      _loadData();
+    }
+  }
+
+  void _loadData() {
+    print(
+        'Loading leaderboard for subjectId: ${widget.subjectId}, cubit hashCode: ${_cubit.hashCode}');
+
+    // Load dữ liệu mới
     _cubit.loadLeaderboards(
       subjectId: widget.subjectId,
       period: 'alltime',

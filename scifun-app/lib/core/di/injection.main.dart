@@ -294,7 +294,7 @@ void _leaderboardInit() {
       () => RebuildLeaderboard(
           leaderboardRepository: sl<LeaderboardRepository>()),
     )
-    ..registerLazySingleton(
+    ..registerFactory(
       () => LeaderboardsCubit(
         getLeaderboard: sl<GetLeaderboard>(),
         rebuildLeaderboard: sl<RebuildLeaderboard>(),
@@ -333,6 +333,5 @@ void resetSingleton() {
     ..resetLazySingleton<PackageBloc>()
     ..resetLazySingleton<ProgressCubit>()
     ..resetLazySingleton<TopicCubit>()
-    ..resetLazySingleton<NotificationCubit>()
-    ..resetLazySingleton<LeaderboardsCubit>();
+    ..resetLazySingleton<NotificationCubit>();
 }
