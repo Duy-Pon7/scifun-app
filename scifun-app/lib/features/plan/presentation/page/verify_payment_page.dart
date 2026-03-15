@@ -133,8 +133,8 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                 height: 120.w,
                 decoration: BoxDecoration(
                   color: _isSuccess
-                      ? Colors.green.withOpacity(0.1)
-                      : AppColor.primary500.withOpacity(0.1),
+                      ? Colors.green.withValues(alpha: 0.1)
+                      : AppColor.primary500.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -178,8 +178,8 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   padding: EdgeInsets.all(16.w),
                   decoration: BoxDecoration(
                     color: _isSuccess
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.red.withOpacity(0.1),
+                        ? Colors.green.withValues(alpha: 0.1)
+                        : Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
                       color: _isSuccess ? Colors.green : Colors.red,

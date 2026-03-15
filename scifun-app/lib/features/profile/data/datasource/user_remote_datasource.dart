@@ -6,7 +6,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
-import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/common/models/user_get_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/app_errors.dart';

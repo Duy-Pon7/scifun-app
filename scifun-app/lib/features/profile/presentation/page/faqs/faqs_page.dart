@@ -33,7 +33,7 @@ class FaqsPage extends StatelessWidget {
                   titleFontSize: 17.sp,
                   backgroundColor: Colors.white,
                   borderColor: AppColor.border,
-                  iconColor: Colors.black.withOpacity(0.5),
+                  iconColor: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12.r),
                   iconExpand: Icons.keyboard_arrow_down,
                   iconCollapse: Icons.keyboard_arrow_up,

@@ -7,27 +7,25 @@ class BackgroundAuth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          color: const Color(0xFFFFF0F0),
+        ),
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Image.asset(
+            AppImage.itemAuth,
             width: double.infinity,
-            height: double.infinity,
-            color: const Color(0xFFFFF0F0),
+            fit: BoxFit.fitWidth,
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset(
-              AppImage.itemAuth,
-              width: double.infinity,
-              fit: BoxFit.fitWidth,
-            ),
-          ),
-          SafeArea(child: child),
-        ],
-      ),
+        ),
+        SafeArea(child: child),
+      ],
     );
   }
 }

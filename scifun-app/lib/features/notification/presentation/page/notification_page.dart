@@ -181,7 +181,7 @@ class NotificationTile extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        color: isRead ? Colors.white : Colors.blue.withOpacity(0.03),
+        color: isRead ? Colors.white : Colors.blue.withValues(alpha: 0.03),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

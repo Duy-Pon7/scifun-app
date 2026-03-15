@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/common/models/user_check_model.dart';
 import 'package:sci_fun/common/models/user_model.dart';
@@ -66,6 +68,16 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   String _extractServerMessage(dynamic data) {
     if (data == null) return AppErrors.commonError;
 
+    if (data is String) {
+      final trimmed = data.trim();
+      if (trimmed.isEmpty) return AppErrors.commonError;
+      try {
+        return _extractServerMessage(jsonDecode(trimmed));
+      } catch (_) {
+        return trimmed;
+      }
+    }
+
     if (data is Map<String, dynamic> && data['message'] is String) {
       return data['message'];
     }
@@ -84,6 +96,67 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       }
     }
 
+    if (data is Map<String, dynamic> && data['error'] is String) {
+      return data['error'];
+    }
+
+    if (data is Map<String, dynamic> && data['errors'] is List) {
+      final errors = data['errors'] as List;
+      if (errors.isNotEmpty) {
+        final first = errors.first;
+        if (first is String) {
+          return first;
+        }
+        if (first is Map && first.isNotEmpty) {
+          final firstMap = Map<String, dynamic>.from(first);
+          if (firstMap['message'] is String) {
+            return firstMap['message'];
+          }
+          if (firstMap['msg'] is String) {
+            return firstMap['msg'];
+          }
+          final fallback = firstMap.values.first;
+          if (fallback != null) {
+            return fallback.toString();
+          }
+        }
+      }
+    }
+
+    if (data is List && data.isNotEmpty) {
+      return _extractServerMessage(data.first);
+    }
+
+    return AppErrors.commonError;
+  }
+
+  String _extractDioMessage(DioException e) {
+    final responseText = e.response?.data?.toString() ?? '';
+    final raw = '${e.message ?? ''} ${e.error ?? ''} $responseText'
+        .toLowerCase()
+        .trim();
+
+    final isCorsBlocked = kIsWeb &&
+        (raw.contains('cors') ||
+            raw.contains('xmlhttprequest') ||
+            raw.contains('access-control-allow-origin') ||
+            raw.contains('invalid cors request'));
+    if (isCorsBlocked) {
+      return AppErrors.webCorsBlocked;
+    }
+
+    final isNetworkIssue = e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout;
+    if (isNetworkIssue) {
+      return AppErrors.networkError;
+    }
+
+    final serverMessage = _extractServerMessage(e.response?.data).trim();
+    if (serverMessage.isNotEmpty && serverMessage != AppErrors.commonError) {
+      return serverMessage;
+    }
     return AppErrors.commonError;
   }
 
@@ -98,19 +171,33 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         data: {
           "email": email,
           "password": password,
-          "device_token": "z",
         },
       );
 
-      final userModel = UserModel.fromJson(res.data);
+      final userModel = UserModel.fromJson(
+        Map<String, dynamic>.from(res.data as Map),
+      );
+      if ((userModel.token ?? '').isEmpty) {
+        throw ServerException(
+          message: _extractServerMessage(res.data),
+        );
+      }
       await sharePrefsService.saveAuthToken(userModel.token);
       await sharePrefsService.saveUserData(userModel.data?.id);
 
       return userModel;
     } on DioException catch (e) {
-      throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+      log(
+        'Login DioException: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}',
       );
+      throw ServerException(
+        message: _extractDioMessage(e),
+      );
+    } on ServerException {
+      rethrow;
+    } catch (e, st) {
+      log('Login parsing error: $e', stackTrace: st);
+      throw ServerException(message: AppErrors.failureLogin);
     }
   }
 
@@ -151,7 +238,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return UserModel.fromJson(res.data);
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     } catch (e) {
       // Parsing or unexpected errors -> wrap and surface friendly message
@@ -173,7 +260,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return AppSuccesses.successfullSendEmail;
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -191,7 +278,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return res.data['message'];
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -212,7 +299,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return returnedData.data;
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -241,7 +328,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return res.data['message'] ?? "Đổi mật khẩu thành công";
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -263,7 +350,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return UserCheckModel.fromJson(res.data['data']);
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -282,7 +369,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return res.data['data'] as bool;
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -304,7 +391,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return res.data['message'];
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }
@@ -326,7 +413,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       return res.data['message'] ?? AppSuccesses.resetPasswordSuccess;
     } on DioException catch (e) {
       throw ServerException(
-        message: _extractServerMessage(e.response?.data),
+        message: _extractDioMessage(e),
       );
     }
   }

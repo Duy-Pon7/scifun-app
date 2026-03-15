@@ -1,19 +1,18 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sci_fun/core/network/check_token_interceptor.dart';
 
 class DioClient {
+  static const String _localWebProxyBaseUrl = 'http://127.0.0.1:8787/api/v1';
   final CheckTokenInterceptor checkTokenInterceptor;
   late final Dio _dio;
 
   DioClient({required this.checkTokenInterceptor})
       : _dio = Dio(
           BaseOptions(
-            baseUrl: dotenv.get('BASE_URL'),
-            headers: {
-              'X-TOKEN-ACCESS': dotenv.get('API_KEY'),
-              'Accept': 'application/json',
-            },
+            baseUrl: _resolveBaseUrl(),
+            headers: _resolveDefaultHeaders(),
             responseType: ResponseType.json,
             // Increase timeouts to handle slow networks / cold starts
             sendTimeout: const Duration(seconds: 30),
@@ -22,6 +21,35 @@ class DioClient {
         )..interceptors.addAll(
             [checkTokenInterceptor],
           );
+
+  static String _resolveBaseUrl() {
+    final defaultBaseUrl = dotenv.get('BASE_URL');
+    if (!kIsWeb) return defaultBaseUrl;
+
+    final webBaseUrl = dotenv.env['WEB_BASE_URL']?.trim();
+    if (webBaseUrl == null || webBaseUrl.isEmpty) {
+      final host = Uri.base.host.toLowerCase();
+      final isLocalHost = host == 'localhost' || host == '127.0.0.1';
+      if (isLocalHost) {
+        return _localWebProxyBaseUrl;
+      }
+      return defaultBaseUrl;
+    }
+    return webBaseUrl;
+  }
+
+  static Map<String, dynamic> _resolveDefaultHeaders() {
+    final headers = <String, dynamic>{
+      'Accept': 'application/json',
+    };
+
+    final apiKey = dotenv.env['API_KEY']?.trim();
+    if (apiKey != null && apiKey.isNotEmpty) {
+      headers['X-TOKEN-ACCESS'] = apiKey;
+    }
+
+    return headers;
+  }
 
   // POST
   Future<Response> post({
@@ -39,7 +67,9 @@ class DioClient {
         options: options,
       );
       return res;
-    } on DioException {
+    } on DioException catch (e) {
+      print(
+          "DioClient POST Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
       rethrow;
     }
   }
@@ -57,7 +87,9 @@ class DioClient {
         options: options,
       );
       return res;
-    } on DioException {
+    } on DioException catch (e) {
+      print(
+          "DioClient PUT Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
       rethrow;
     }
   }
@@ -67,7 +99,9 @@ class DioClient {
     try {
       final res = await _dio.get(url);
       return res;
-    } on DioException {
+    } on DioException catch (e) {
+      print(
+          "DioClient GET Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
       rethrow;
     }
   }
@@ -85,7 +119,9 @@ class DioClient {
         options: options,
       );
       return res;
-    } on DioException {
+    } on DioException catch (e) {
+      print(
+          "DioClient DELETE Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
       rethrow;
     }
   }

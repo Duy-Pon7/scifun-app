@@ -230,7 +230,8 @@ class SubmissionDetailPage extends StatelessWidget {
                                                     ),
                                                     child: Container(
                                                       color: Colors.white
-                                                          .withOpacity(0.7),
+                                                          .withValues(
+                                                              alpha: 0.7),
                                                       alignment:
                                                           Alignment.center,
                                                       child: Row(
@@ -292,7 +293,8 @@ class SubmissionDetailPage extends StatelessWidget {
                                                         ),
                                                         child: Container(
                                                           color: Colors.white
-                                                              .withOpacity(0.7),
+                                                              .withValues(
+                                                                  alpha: 0.7),
                                                           alignment:
                                                               Alignment.center,
                                                           child: Row(

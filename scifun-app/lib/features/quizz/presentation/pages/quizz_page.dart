@@ -141,7 +141,7 @@ class _QuizzPageState extends State<QuizzPage> {
                           ignoring: true, // ✅ cho phép tap xuyên qua overlay
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Center(

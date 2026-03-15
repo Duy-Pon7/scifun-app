@@ -4,7 +4,6 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 import 'package:sci_fun/features/leaderboards/presentation/pages/leaderboard_page.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
@@ -84,8 +83,8 @@ class _SubjectLeaderboardCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
               colors: [
-                AppColor.primary600.withOpacity(0.1),
-                AppColor.primary600.withOpacity(0.05),
+                AppColor.primary600.withValues(alpha: 0.1),
+                AppColor.primary600.withValues(alpha: 0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -111,7 +110,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                             width: 60,
                             height: 60,
                             decoration: BoxDecoration(
-                              color: AppColor.primary600.withOpacity(0.2),
+                              color: AppColor.primary600.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(Icons.book),
@@ -124,7 +123,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: AppColor.primary600.withOpacity(0.2),
+                        color: AppColor.primary600.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(Icons.book),

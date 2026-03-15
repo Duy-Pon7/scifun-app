@@ -27,8 +27,12 @@ final class AuthUserSuccess extends AuthInitial {
 
 final class AuthUserLoginSuccess extends AuthInitial {
   final UserEntity? user;
+  final bool? isFirstLogin;
 
-  AuthUserLoginSuccess({required this.user});
+  AuthUserLoginSuccess({
+    required this.user,
+    this.isFirstLogin,
+  });
 }
 
 final class AuthCheckEmailSuccess extends AuthInitial {

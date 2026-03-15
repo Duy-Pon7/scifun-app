@@ -12,7 +12,6 @@ import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
-import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';

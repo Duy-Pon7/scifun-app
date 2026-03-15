@@ -53,7 +53,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _verificationOtp = verificationOtp,
         _resetPassword = resetPassword,
         super(AuthInitial()) {
-    on<AuthEvent>((event, emit) => emit(AuthLoading()));
     on<AuthLogin>(_onAuthLogin);
     on<AuthSignup>(_onAuthSignup);
     on<AuthSendEmail>(_onAuthSendEmail);
@@ -69,6 +68,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthSendResetEmail(
       AuthSendResetEmail event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _forgotPassword.call(event.email);
     res.fold((failure) => emit(AuthFailure(message: failure.message)),
         (message) async => emit(AuthMessageSuccess(message: message)));
@@ -76,6 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthVerificationOtp(
       AuthVerificationOtp event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _verificationOtp.call(VerificationOtpParams(
       email: event.email,
       otp: event.otp,
@@ -85,6 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthResendOtp(AuthResendOtp event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _resendOtp.call(ResendOtpParams(
       email: event.email,
     ));
@@ -95,6 +97,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthLogin(AuthLogin event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _login.call(LoginParams(
       email: event.email,
       password: event.password,
@@ -106,12 +109,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (user) async {
         print("✅ Login success: $user");
-        emit(AuthUserLoginSuccess(user: user));
+        emit(AuthUserLoginSuccess(
+          user: user,
+          // TODO: Khi backend tra them field "isFirstLogin", map vao day.
+          // Tam thoi de null va UI se default true (luon hien onboarding).
+          isFirstLogin: null,
+        ));
       },
     );
   }
 
   void _onAuthSignup(AuthSignup event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _signup.call(SignupParams(
         password: event.password,
         passwordConfimation: event.passwordConfimation,
@@ -122,12 +131,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthSendEmail(AuthSendEmail event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _sendEmail.call(event.email);
     res.fold((failure) => emit(AuthFailure(message: failure.message)),
         (message) => emit(AuthMessageSuccess(message: message)));
   }
 
   void _onChangePass(AuthChangePass event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _changPass.call(ChangePasswordParams(
       oldPass: event.oldPass,
       newPass: event.newPass,
@@ -142,6 +153,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthResetPassword(
       AuthResetPassword event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _resetPassword.call(ResetPasswordParams(
       email: event.email,
       newPassword: event.newPass,
@@ -155,6 +167,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onAuthCheckEmailPhone(
       AuthCheckEmailPhone event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _checkEmailPhone.call(CheckEmailPhoneParams(
       phone: event.phone,
       email: event.email,
@@ -167,6 +180,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onAuthGetSession(AuthGetSession event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
     final res = await _getAuth.call(NoParams());
 
     res.fold(

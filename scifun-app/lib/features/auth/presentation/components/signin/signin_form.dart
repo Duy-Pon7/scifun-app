@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/obscure_text_cubit.dart';
 import 'package:sci_fun/common/helper/show_alert_dialog_custom.dart';
@@ -10,13 +11,13 @@ import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/basic_text_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/forgot_pass_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signup/signup_page.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:sci_fun/features/onboarding/presentation/page/subject_focus_onboarding_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class SigninForm extends StatefulWidget {
   const SigninForm({super.key});
@@ -30,6 +31,7 @@ class _SigninFormState extends State<SigninForm> {
   final TextEditingController _passCon = TextEditingController();
   final TextEditingController _emailCon = TextEditingController();
   late final AuthBloc authBloc;
+
   @override
   void initState() {
     super.initState();
@@ -38,55 +40,82 @@ class _SigninFormState extends State<SigninForm> {
 
   @override
   void dispose() {
-    super.dispose();
     _passCon.dispose();
     _emailCon.dispose();
+    super.dispose();
   }
 
-  void _listener(BuildContext context, AuthState state) async {
-    print("statesignin $state");
+  Future<void> _listener(BuildContext _, AuthState state) async {
+    if (!mounted) return;
+    print('statesignin $state');
+
     if (state is AuthLoading) {
       EasyLoading.show(
         status: 'Đang tải',
         maskType: EasyLoadingMaskType.black,
       );
-    } else if (state is AuthFailure) {
-      EasyLoading.dismiss();
-      // EasyLoading.showToast(state.message,
-      //     toastPosition: EasyLoadingToastPosition.bottom);
-      showCustomAlertDialog(
-        context,
-        "Đăng nhập thất bại",
-        state.message,
-        "Đồng ý",
-      );
-    } else if (state is AuthUserLoginSuccess) {
-      EasyLoading.dismiss();
-      // Ensure UserCubit refreshes with the newly logged-in user's id
-      final token = sl<SharePrefsService>().getUserData();
-      if (token != null && token.isNotEmpty) {
-        await sl<UserCubit>().getUser(token: token);
+      return;
+    }
+
+    await EasyLoading.dismiss();
+    if (!mounted) return;
+
+    if (state is AuthFailure) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showCustomAlertDialog(
+          context,
+          'Đăng nhập thất bại',
+          state.message,
+          'Đồng ý',
+        );
+      });
+      return;
+    }
+
+    if (state is AuthUserLoginSuccess) {
+      final userId = sl<SharePrefsService>().getUserData();
+      if (userId != null && userId.isNotEmpty) {
+        await sl<UserCubit>().getUser(token: userId);
       }
+      if (!mounted) return;
+
+      // TODO: Khi backend co field first-login thi doi logic nay thanh:
+      // final shouldShowOnboarding = state.isFirstLogin == true;
+      final shouldShowOnboarding = state.isFirstLogin ?? true;
+
       Navigator.pushAndRemoveUntil(
         context,
-        DashboardPage.route(),
+        shouldShowOnboarding
+            ? MaterialPageRoute(
+                builder: (_) => const SubjectFocusOnboardingPage(),
+              )
+            : DashboardPage.route(),
         (route) => false,
       );
-      // }
     }
   }
 
   void _onSignin() {
-    if (_formKey.currentState!.validate()) {
-      FocusScope.of(context).unfocus();
-      authBloc.add(AuthLogin(
-          password: _passCon.text.trim(), email: _emailCon.text.trim()));
-    }
+    if (!_formKey.currentState!.validate()) return;
+    if (authBloc.state is AuthLoading) return;
+
+    FocusScope.of(context).unfocus();
+    authBloc.add(
+      AuthLogin(
+        password: _passCon.text.trim(),
+        email: _emailCon.text.trim(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
+      listenWhen: (_, current) =>
+          current is AuthLoading ||
+          current is AuthFailure ||
+          current is AuthUserLoginSuccess,
       listener: _listener,
       builder: (context, state) {
         return Form(
@@ -114,7 +143,7 @@ class _SigninFormState extends State<SigninForm> {
           }
           return null;
         },
-        hintText: "Email",
+        hintText: 'Email',
         textInputAction: TextInputAction.next,
       );
 
@@ -124,7 +153,7 @@ class _SigninFormState extends State<SigninForm> {
           builder: (context, state) {
             return BasicInputField(
               controller: _passCon,
-              hintText: "Nhập mật khẩu",
+              hintText: 'Nhập mật khẩu',
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Không được để trống';
@@ -149,7 +178,7 @@ class _SigninFormState extends State<SigninForm> {
   Widget _forgotPassword() => Align(
         alignment: Alignment.centerRight,
         child: BasicTextButton(
-          text: "Quên mật khẩu?",
+          text: 'Quên mật khẩu?',
           onPressed: () {
             Navigator.push(context, slidePage(ForgotPassPage()));
           },
@@ -158,8 +187,8 @@ class _SigninFormState extends State<SigninForm> {
       );
 
   Widget _signInButton() => BasicButton(
-        text: "Đăng nhập",
-        onPressed: () => _onSignin(),
+        text: 'Đăng nhập',
+        onPressed: _onSignin,
         width: double.infinity,
         fontSize: 18.sp,
         padding: EdgeInsets.symmetric(
@@ -173,37 +202,41 @@ class _SigninFormState extends State<SigninForm> {
         alignment: Alignment.center,
         child: RichText(
           text: TextSpan(
-            text: "Chưa có tài khoản? ",
+            text: 'Chưa có tài khoản? ',
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: AppColor.hurricane800,
                   fontWeight: FontWeight.w600,
                 ),
             children: [
               TextSpan(
-                  text: "ĐĂNG KÝ",
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColor.primary500,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColor.primary500,
-                      ),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () {
-                      Navigator.pushAndRemoveUntil(
-                          context, slidePage(SignupPage()), (route) => false);
-                    })
+                text: 'ĐĂNG KÝ',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: AppColor.primary500,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColor.primary500,
+                    ),
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      slidePage(SignupPage()),
+                      (route) => false,
+                    );
+                  },
+              ),
             ],
           ),
         ),
       );
+
   String getRemainingDays(DateTime? endDate) {
-    if (endDate == null) return "0 ngày";
+    if (endDate == null) return '0 ngày';
 
     final now = DateTime.now();
     final difference = endDate.difference(now).inDays;
 
-    // Nếu còn 0 hoặc âm ngày thì xem như hết hạn
-    if (difference <= 0) return "Hết hạn";
-    return "$difference ngày";
+    if (difference <= 0) return 'Hết hạn';
+    return '$difference ngày';
   }
 }
