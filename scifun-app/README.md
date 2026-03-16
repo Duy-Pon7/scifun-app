@@ -34,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File .\tool\run_web_with_proxy.ps1
 Then set in `.env`:
 
 ```env
-WEB_BASE_URL = http://127.0.0.1:8787/api/v1
+WEB_BASE_URL = http://192.168.11.61/api/v1
 ```
 
 `BASE_URL` remains used by mobile/desktop; `WEB_BASE_URL` is used only on web.

@@ -4,7 +4,7 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 
 Push-Location $projectRoot
 try {
-  Write-Host "Starting CORS proxy on http://127.0.0.1:8787 ..."
+  Write-Host "Starting CORS proxy on http://192.168.11.61 ..."
   $proxy = Start-Process -FilePath "dart" -ArgumentList @("run", "tool/cors_proxy.dart") -PassThru
 
   Start-Sleep -Seconds 2

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sci_fun/core/network/check_token_interceptor.dart';
 
 class DioClient {
-  static const String _localWebProxyBaseUrl = 'http://127.0.0.1:8787/api/v1';
+  static const String _remoteBaseUrl =
+      'https://java-app-9trd.onrender.com/api/v1';
   final CheckTokenInterceptor checkTokenInterceptor;
   late final Dio _dio;
 
@@ -23,19 +23,7 @@ class DioClient {
           );
 
   static String _resolveBaseUrl() {
-    final defaultBaseUrl = dotenv.get('BASE_URL');
-    if (!kIsWeb) return defaultBaseUrl;
-
-    final webBaseUrl = dotenv.env['WEB_BASE_URL']?.trim();
-    if (webBaseUrl == null || webBaseUrl.isEmpty) {
-      final host = Uri.base.host.toLowerCase();
-      final isLocalHost = host == 'localhost' || host == '127.0.0.1';
-      if (isLocalHost) {
-        return _localWebProxyBaseUrl;
-      }
-      return defaultBaseUrl;
-    }
-    return webBaseUrl;
+    return _remoteBaseUrl;
   }
 
   static Map<String, dynamic> _resolveDefaultHeaders() {

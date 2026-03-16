@@ -11,6 +11,6 @@ class AppErrors {
   static const String networkError =
       'Khong the ket noi may chu. Vui long thu lai.';
   static const String webCorsBlocked =
-      "Web bi chan CORS. Chay 'dart run tool/cors_proxy.dart' va dat WEB_BASE_URL=http://127.0.0.1:8787/api/v1 trong .env.";
+      "Web bi chan CORS. Chay tool/run_web_with_proxy.ps1 va dat WEB_BASE_URL=http://192.168.11.61/api/v1 trong .env.";
   static const String emptyData = 'Chua co';
 }

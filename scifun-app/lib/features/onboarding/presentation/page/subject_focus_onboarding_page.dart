@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
@@ -19,40 +20,50 @@ class SubjectFocusOnboardingPage extends StatefulWidget {
 
 class _SubjectFocusOnboardingPageState
     extends State<SubjectFocusOnboardingPage> {
-  final ScrollController _levelScrollController = ScrollController();
+  static const int _totalSteps = 3;
 
-  static const List<_LevelOption> _levelOptions = [
-    _LevelOption(
-      index: 0,
-      activeBars: 1,
-      label: 'Tôi mới bắt đầu với môn này',
-    ),
-    _LevelOption(
-      index: 1,
-      activeBars: 2,
-      label: 'Tôi biết các kiến thức cơ bản',
-    ),
-    _LevelOption(
-      index: 2,
-      activeBars: 3,
-      label: 'Tôi làm tốt các bài tập mức cơ bản',
-    ),
-    _LevelOption(
-      index: 3,
-      activeBars: 4,
-      label: 'Tôi tự tin với hầu hết chủ đề',
-    ),
-    _LevelOption(
-      index: 4,
-      activeBars: 4,
-      label: 'Tôi muốn học chuyên sâu hơn',
-    ),
+  static const List<String> _ageRanges = [
+    '<5',
+    '5-8',
+    '9-12',
+    '13-15',
+    '16-18',
+    '+18',
   ];
 
-  SubjectEntity? _selectedSubject;
-  _LevelOption? _selectedLevel;
+  static const List<String> _discoveryPlatforms = [
+    'Facebook',
+    'TikTok',
+    'YouTube',
+    'Instagram',
+    'Bạn bè',
+    'Khác',
+  ];
 
-  bool get _canContinue => _selectedSubject != null && _selectedLevel != null;
+  static const String _prefsInterestSubjectId =
+      'onboarding_interest_subject_id';
+  static const String _prefsAgeRange = 'onboarding_age_range';
+  static const String _prefsReferralPlatform = 'onboarding_referral_platform';
+
+  final PageController _pageController = PageController();
+
+  SubjectEntity? _selectedSubject;
+  String? _selectedAgeRange;
+  String? _selectedDiscoveryPlatform;
+  int _currentStep = 0;
+
+  bool get _canContinueCurrentStep {
+    switch (_currentStep) {
+      case 0:
+        return _selectedSubject != null;
+      case 1:
+        return _selectedAgeRange != null;
+      case 2:
+        return _selectedDiscoveryPlatform != null;
+      default:
+        return false;
+    }
+  }
 
   @override
   void initState() {
@@ -75,7 +86,7 @@ class _SubjectFocusOnboardingPageState
 
   @override
   void dispose() {
-    _levelScrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -84,169 +95,58 @@ class _SubjectFocusOnboardingPageState
       return;
     }
 
+    SubjectEntity? firstValidSubject;
+    for (final subject in subjects) {
+      if ((subject.id ?? '').isNotEmpty) {
+        firstValidSubject = subject;
+        break;
+      }
+    }
+
+    if (firstValidSubject == null) {
+      return;
+    }
+
     setState(() {
-      _selectedSubject = subjects.first;
+      _selectedSubject = firstValidSubject;
     });
   }
 
-  Future<void> _showSubjectSwitcher() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: const Color(0xFF0A2333),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(18.r)),
-      ),
-      builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
-            builder: (context, state) {
-              if (state is PaginationLoading<SubjectEntity>) {
-                return SizedBox(
-                  height: 220.h,
-                  child: const Center(child: CircularProgressIndicator()),
-                );
-              }
+  Future<void> _goNextStep() async {
+    if (!_canContinueCurrentStep) {
+      return;
+    }
 
-              if (state is PaginationSuccess<SubjectEntity>) {
-                final subjects = state.items
-                    .where((subject) => (subject.id ?? '').isNotEmpty)
-                    .toList();
+    if (_currentStep < _totalSteps - 1) {
+      await _pageController.animateToPage(
+        _currentStep + 1,
+        duration: const Duration(milliseconds: 240),
+        curve: Curves.easeInOut,
+      );
+      return;
+    }
 
-                if (subjects.isEmpty) {
-                  return SizedBox(
-                    height: 220.h,
-                    child: Center(
-                      child: Text(
-                        'Chưa có môn học',
-                        style: TextStyle(
-                          fontSize: 15.sp,
-                          color: Colors.white70,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  );
-                }
+    await _finishOnboarding();
+  }
 
-                return SizedBox(
-                  height: 420.h,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 10.h),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Chọn môn đang muốn chú ý',
-                                style: TextStyle(
-                                  fontSize: 17.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => Navigator.of(sheetContext).pop(),
-                              icon:
-                                  const Icon(Icons.close, color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: ListView.separated(
-                          itemCount: subjects.length,
-                          padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 20.h),
-                          separatorBuilder: (_, __) => SizedBox(height: 8.h),
-                          itemBuilder: (_, index) {
-                            final subject = subjects[index];
-                            final isSelected =
-                                subject.id == _selectedSubject?.id;
-                            final subjectName =
-                                subject.name?.trim().isNotEmpty == true
-                                    ? subject.name!.trim()
-                                    : 'Môn học';
+  Future<void> _goBackStep() async {
+    if (_currentStep == 0) {
+      return;
+    }
 
-                            return InkWell(
-                              borderRadius: BorderRadius.circular(14.r),
-                              onTap: () {
-                                setState(() {
-                                  _selectedSubject = subject;
-                                });
-                                Navigator.of(sheetContext).pop();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 14.w,
-                                  vertical: 12.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? const Color(0xFF11415C)
-                                      : const Color(0xFF0E3347),
-                                  borderRadius: BorderRadius.circular(14.r),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? const Color(0xFF37BFFF)
-                                        : const Color(0xFF325B72),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        subjectName,
-                                        style: TextStyle(
-                                          fontSize: 15.sp,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      isSelected
-                                          ? Icons.check_circle_rounded
-                                          : Icons.radio_button_unchecked,
-                                      color: isSelected
-                                          ? const Color(0xFF3FD0FF)
-                                          : Colors.white70,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return SizedBox(
-                height: 220.h,
-                child: Center(
-                  child: TextButton(
-                    onPressed: () {
-                      context.read<SubjectCubit>().loadInitial(searchQuery: '');
-                    },
-                    child: const Text('Tải lại danh sách môn'),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+    await _pageController.animateToPage(
+      _currentStep - 1,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeInOut,
     );
   }
 
-  Future<void> _continueToSubject() async {
+  Future<void> _finishOnboarding() async {
     final subject = _selectedSubject;
-    final level = _selectedLevel;
-    if (subject == null || level == null) {
+    final ageRange = _selectedAgeRange;
+    final referralPlatform = _selectedDiscoveryPlatform;
+
+    if (subject == null || ageRange == null || referralPlatform == null) {
       return;
     }
 
@@ -254,19 +154,22 @@ class _SubjectFocusOnboardingPageState
     if (subjectId.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Môn học chưa hợp lệ, vui lòng chọn lại.')),
+          content: Text('Môn học chưa hợp lệ, vui lòng chọn lại.'),
+        ),
       );
       return;
     }
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('onboarding_focus_subject_id', subjectId);
-    await prefs.setString(
-      'onboarding_focus_subject_name',
-      subject.name ?? '',
-    );
-    await prefs.setInt('onboarding_focus_level_index', level.index);
-    await prefs.setString('onboarding_focus_level_label', level.label);
+    await prefs.setString(_prefsInterestSubjectId, subjectId);
+    await prefs.setString(_prefsAgeRange, ageRange);
+    await prefs.setString(_prefsReferralPlatform, referralPlatform);
+
+    // Xóa khóa onboarding cũ để tránh dữ liệu cũ.
+    await prefs.remove('onboarding_focus_subject_id');
+    await prefs.remove('onboarding_focus_subject_name');
+    await prefs.remove('onboarding_focus_level_index');
+    await prefs.remove('onboarding_focus_level_label');
 
     if (!mounted) {
       return;
@@ -283,23 +186,66 @@ class _SubjectFocusOnboardingPageState
     );
   }
 
+  String _getQuestionForStep() {
+    switch (_currentStep) {
+      case 0:
+        return 'Bạn đang hứng thú với môn học nào?';
+      case 1:
+        return 'Bạn đang ở độ tuổi bao nhiêu?';
+      case 2:
+        return 'Bạn biết đến ứng dụng từ nền tảng nào?';
+      default:
+        return '';
+    }
+  }
+
+  Widget _buildProgressIndicator() {
+    return Row(
+      children: [
+        Text(
+          'Bước ${_currentStep + 1}/$_totalSteps',
+          style: TextStyle(
+            fontSize: 13.sp,
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: 10.w),
+        Expanded(
+          child: Row(
+            children: List.generate(_totalSteps, (index) {
+              final isDone = index <= _currentStep;
+              return Expanded(
+                child: Container(
+                  height: 5.h,
+                  margin: EdgeInsets.only(
+                    right: index == _totalSteps - 1 ? 0 : 6.w,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5.r),
+                    color: isDone
+                        ? const Color(0xFF3FD0FF)
+                        : const Color(0xFF24485E),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildCharacterAndQuestion() {
-    final subjectName = _selectedSubject?.name?.trim();
-    final question = subjectName != null && subjectName.isNotEmpty
-        ? 'Mức độ của bạn với môn $subjectName ở mức nào?'
-        : 'Bạn muốn tập trung vào môn nào?';
+    final question = _getQuestionForStep();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 86.w,
-          height: 86.w,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
-          ),
-          child: ClipOval(
+        SizedBox(
+          width: 100.w,
+          height: 100.w,
+          child: Center(
             child: Lottie.asset(
               'assets/lottie_json/cat.json',
               fit: BoxFit.cover,
@@ -319,7 +265,7 @@ class _SubjectFocusOnboardingPageState
             child: Text(
               question,
               style: TextStyle(
-                fontSize: 22.sp,
+                fontSize: 21.sp,
                 height: 1.35,
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -331,144 +277,361 @@ class _SubjectFocusOnboardingPageState
     );
   }
 
+  String _getSubjectFallbackImage(String? subjectName) {
+    final normalized = (subjectName ?? '').trim().toLowerCase();
+
+    if (normalized.contains('toán') ||
+        normalized.contains('toan') ||
+        normalized.contains('math')) {
+      return AppImage.math;
+    }
+    if (normalized.contains('văn') ||
+        normalized.contains('van') ||
+        normalized.contains('ngữ văn') ||
+        normalized.contains('literature')) {
+      return AppImage.literature;
+    }
+    if (normalized.contains('anh') || normalized.contains('english')) {
+      return AppImage.english;
+    }
+    if (normalized.contains('lý') ||
+        normalized.contains('ly') ||
+        normalized.contains('physics')) {
+      return AppImage.lesson;
+    }
+    if (normalized.contains('hóa') ||
+        normalized.contains('hoa') ||
+        normalized.contains('chem')) {
+      return AppImage.examineTest;
+    }
+    if (normalized.contains('sinh') || normalized.contains('bio')) {
+      return AppImage.knowledgeLearn;
+    }
+    return AppImage.lesson;
+  }
+
+  Widget _buildSubjectImage(SubjectEntity subject) {
+    final fallbackImage = _getSubjectFallbackImage(subject.name);
+    final imageUrl = (subject.image ?? '').trim();
+    final hasNetworkImage =
+        imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
+
+    return Container(
+      width: 44.w,
+      height: 44.w,
+      padding: EdgeInsets.all(2.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0D2D40),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: const Color(0xFF335A72), width: 1.w),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.r),
+        child: hasNetworkImage
+            ? Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    Image.asset(fallbackImage, fit: BoxFit.cover),
+              )
+            : Image.asset(fallbackImage, fit: BoxFit.cover),
+      ),
+    );
+  }
+
+  Widget _buildEmptySubjectState({
+    required String message,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 18.h),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A2231),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.white70,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (actionLabel != null && onAction != null) ...[
+            SizedBox(height: 10.h),
+            TextButton(
+              onPressed: onAction,
+              child: Text(
+                actionLabel,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF51D7FF),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubjectTile(SubjectEntity subject) {
+    final isSelected = subject.id == _selectedSubject?.id;
+    final subjectName = subject.name?.trim().isNotEmpty == true
+        ? subject.name!.trim()
+        : 'Môn học';
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(14.r),
+      onTap: () {
+        setState(() {
+          _selectedSubject = subject;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF11415C) : const Color(0xFF0A2434),
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+            color:
+                isSelected ? const Color(0xFF38C0FF) : const Color(0xFF33576C),
+            width: 1.2.w,
+          ),
+        ),
+        child: Row(
+          children: [
+            _buildSubjectImage(subject),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                subjectName,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(
+              isSelected
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked,
+              color: isSelected ? const Color(0xFF41D0FF) : Colors.white60,
+              size: 20.sp,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubjectSelector() {
     return BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
       builder: (context, state) {
-        final isLoading = state is PaginationLoading<SubjectEntity>;
-        final canOpenSelector = state is PaginationSuccess<SubjectEntity>;
-        final subjectName = _selectedSubject?.name?.trim();
+        if (state is PaginationLoading<SubjectEntity> ||
+            state is PaginationLoadingMore<SubjectEntity>) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0A2231),
-            borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.menu_book_rounded,
-                color: const Color(0xFF39CFFF),
-                size: 20.sp,
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  subjectName != null && subjectName.isNotEmpty
-                      ? subjectName
-                      : 'Chọn môn học',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              if (isLoading)
-                SizedBox(
-                  width: 16.w,
-                  height: 16.w,
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                )
-              else
-                TextButton.icon(
-                  onPressed: canOpenSelector ? _showSubjectSwitcher : null,
-                  icon: Icon(
-                    Icons.swap_horiz_rounded,
-                    size: 18.sp,
-                    color: const Color(0xFF51D7FF),
-                  ),
-                  label: Text(
-                    'Đổi môn',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: const Color(0xFF51D7FF),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+        if (state is PaginationSuccess<SubjectEntity>) {
+          final subjects = state.items
+              .where((subject) => (subject.id ?? '').isNotEmpty)
+              .toList();
+
+          if (subjects.isEmpty) {
+            return _buildEmptySubjectState(message: 'Chưa có môn học');
+          }
+
+          return ListView.separated(
+            itemCount: subjects.length,
+            padding: EdgeInsets.zero,
+            physics: const BouncingScrollPhysics(),
+            separatorBuilder: (_, __) => SizedBox(height: 10.h),
+            itemBuilder: (_, index) => _buildSubjectTile(subjects[index]),
+          );
+        }
+
+        return _buildEmptySubjectState(
+          message: 'Không tải được danh sách môn học.',
+          actionLabel: 'Tải lại',
+          onAction: () {
+            context.read<SubjectCubit>().loadInitial(searchQuery: '');
+          },
         );
       },
     );
   }
 
-  Widget _buildLevelList() {
-    return Scrollbar(
-      controller: _levelScrollController,
-      thumbVisibility: true,
-      radius: Radius.circular(8.r),
-      child: ListView.separated(
-        controller: _levelScrollController,
-        padding: EdgeInsets.only(right: 6.w),
-        itemCount: _levelOptions.length,
-        separatorBuilder: (_, __) => SizedBox(height: 12.h),
-        itemBuilder: (_, index) {
-          final option = _levelOptions[index];
-          final isSelected = _selectedLevel == option;
+  Widget _buildSubjectStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Môn học bạn muốn học nhiều hơn',
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Expanded(child: _buildSubjectSelector()),
+        SizedBox(height: 12.h),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A2231),
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
+          ),
+          child: Text(
+            'Bạn có thể thay đổi lựa chọn này bất kỳ lúc nào.',
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: Colors.white70,
+              height: 1.35,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-          return InkWell(
-            borderRadius: BorderRadius.circular(16.r),
-            onTap: () {
-              setState(() {
-                _selectedLevel = option;
-              });
+  Widget _buildChoiceStep({
+    required String helperText,
+    required List<String> options,
+    required String? selectedValue,
+    required ValueChanged<String> onSelected,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          helperText,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.white70,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(height: 10.h),
+        Expanded(
+          child: ListView.separated(
+            itemCount: options.length,
+            separatorBuilder: (_, __) => SizedBox(height: 10.h),
+            itemBuilder: (_, index) {
+              final option = options[index];
+              final isSelected = option == selectedValue;
+              return _buildOptionTile(
+                label: option,
+                isSelected: isSelected,
+                onTap: () => onSelected(option),
+              );
             },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFF11415C)
-                    : const Color(0xFF0A2434),
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF38C0FF)
-                      : const Color(0xFF33576C),
-                  width: 1.2.w,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOptionTile({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14.r),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF11415C) : const Color(0xFF0A2434),
+          borderRadius: BorderRadius.circular(14.r),
+          border: Border.all(
+            color:
+                isSelected ? const Color(0xFF38C0FF) : const Color(0xFF33576C),
+            width: 1.2.w,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              child: Row(
-                children: [
-                  _LevelBars(
-                    activeBars: option.activeBars,
-                    highlight: isSelected,
-                  ),
-                  SizedBox(width: 14.w),
-                  Expanded(
-                    child: Text(
-                      option.label,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  if (isSelected)
-                    Icon(
-                      Icons.check_circle_rounded,
-                      color: const Color(0xFF41D0FF),
-                      size: 22.sp,
-                    ),
-                ],
-              ),
             ),
-          );
-        },
+            Icon(
+              isSelected
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked,
+              color: isSelected ? const Color(0xFF41D0FF) : Colors.white60,
+              size: 20.sp,
+            ),
+          ],
+        ),
       ),
     );
   }
 
+  Widget _buildStepContent() {
+    return PageView(
+      controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      onPageChanged: (page) {
+        setState(() {
+          _currentStep = page;
+        });
+      },
+      children: [
+        _buildSubjectStep(),
+        _buildChoiceStep(
+          helperText: 'Chọn nhóm tuổi phù hợp với bạn',
+          options: _ageRanges,
+          selectedValue: _selectedAgeRange,
+          onSelected: (value) {
+            setState(() {
+              _selectedAgeRange = value;
+            });
+          },
+        ),
+        _buildChoiceStep(
+          helperText: 'Bạn biết đến ứng dụng qua kênh nào',
+          options: _discoveryPlatforms,
+          selectedValue: _selectedDiscoveryPlatform,
+          onSelected: (value) {
+            setState(() {
+              _selectedDiscoveryPlatform = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
   Widget _buildBottomAction() {
-    final enabled = _canContinue;
-    final buttonColor =
+    final enabled = _canContinueCurrentStep;
+    final nextButtonColor =
         enabled ? const Color(0xFF3E5E71) : const Color(0xFF2B3D4A);
-    final textColor =
+    final nextTextColor =
         enabled ? Colors.white : const Color(0xFF7F97A8).withValues(alpha: 0.9);
+    final isLastStep = _currentStep == _totalSteps - 1;
 
     return Container(
       width: double.infinity,
@@ -481,14 +644,29 @@ class _SubjectFocusOnboardingPageState
       ),
       child: Row(
         children: [
-          const Spacer(),
+          if (_currentStep > 0) ...[
+            SizedBox(
+              width: 118.w,
+              child: BasicButton(
+                text: 'QUAY LẠI',
+                onPressed: _goBackStep,
+                backgroundColor: const Color(0xFF243A49),
+                textColor: Colors.white,
+                fontWeight: FontWeight.w700,
+                borderRadius: BorderRadius.circular(16.r),
+                padding: EdgeInsets.symmetric(vertical: 14.h),
+              ),
+            ),
+            SizedBox(width: 10.w),
+          ] else
+            const Spacer(),
           SizedBox(
-            width: 170.w,
+            width: _currentStep > 0 ? 170.w : 180.w,
             child: BasicButton(
-              text: 'TIẾP TỤC',
-              onPressed: enabled ? _continueToSubject : () {},
-              backgroundColor: buttonColor,
-              textColor: textColor,
+              text: isLastStep ? 'HOÀN TẤT' : 'TIẾP TỤC',
+              onPressed: enabled ? _goNextStep : () {},
+              backgroundColor: nextButtonColor,
+              textColor: nextTextColor,
               fontWeight: FontWeight.w700,
               borderRadius: BorderRadius.circular(16.r),
               padding: EdgeInsets.symmetric(vertical: 14.h),
@@ -530,20 +708,11 @@ class _SubjectFocusOnboardingPageState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        _buildProgressIndicator(),
+                        SizedBox(height: 12.h),
                         _buildCharacterAndQuestion(),
                         SizedBox(height: 14.h),
-                        _buildSubjectSelector(),
-                        SizedBox(height: 14.h),
-                        Text(
-                          'Chọn mức độ hiện tại',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 10.h),
-                        Expanded(child: _buildLevelList()),
+                        Expanded(child: _buildStepContent()),
                       ],
                     ),
                   ),
@@ -556,53 +725,4 @@ class _SubjectFocusOnboardingPageState
       ),
     );
   }
-}
-
-class _LevelBars extends StatelessWidget {
-  const _LevelBars({
-    required this.activeBars,
-    required this.highlight,
-  });
-
-  final int activeBars;
-  final bool highlight;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 30.w,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(4, (index) {
-          final isActive = index < activeBars;
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 160),
-            width: 5.w,
-            height: (10 + index * 4).h,
-            decoration: BoxDecoration(
-              color: isActive
-                  ? (highlight
-                      ? const Color(0xFF42D2FF)
-                      : const Color(0xFF26B9F4))
-                  : const Color(0xFF1D4258),
-              borderRadius: BorderRadius.circular(4.r),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _LevelOption {
-  const _LevelOption({
-    required this.index,
-    required this.label,
-    required this.activeBars,
-  });
-
-  final int index;
-  final String label;
-  final int activeBars;
 }
