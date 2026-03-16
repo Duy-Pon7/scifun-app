@@ -55,7 +55,7 @@
 //           leading: IconButton(
 //             icon: Icon(
 //               Icons.arrow_back_ios_rounded,
-//               color: AppColor.primary600,
+//               color: AppColor.skyblue600,
 //             ),
 //             onPressed: () => Navigator.of(context).pop(),
 //           ),
@@ -69,7 +69,7 @@
 //                       return IconButton(
 //                         icon: Icon(
 //                           Icons.history,
-//                           color: last ? AppColor.primary600 : Colors.brown,
+//                           color: last ? AppColor.skyblue600 : Colors.brown,
 //                         ),
 //                         onPressed: last
 //                             ? () async {
@@ -214,7 +214,7 @@
 //                                         leading: IconButton(
 //                                           icon: Icon(
 //                                             Icons.arrow_back_ios_rounded,
-//                                             color: AppColor.primary600,
+//                                             color: AppColor.skyblue600,
 //                                           ),
 //                                           onPressed: () =>
 //                                               Navigator.of(context).pop(),

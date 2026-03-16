@@ -7,7 +7,9 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/core/utils/theme/app_theme.dart';
+import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
@@ -17,13 +19,12 @@ import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
-import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await initializeDependencies();
-  // await TeXRenderingServer.start();
+
   runApp(
     ScreenUtilInit(
       designSize: const Size(473, 932),
@@ -32,37 +33,19 @@ void main() async {
         enabled: false,
         builder: (_) => MultiBlocProvider(
           providers: [
-            BlocProvider.value(
-              value: sl<AuthBloc>(),
-            ),
-            BlocProvider.value(
-              value: sl<UserCubit>(),
-            ),
-            BlocProvider.value(
-              value: sl<ProCubit>(),
-            ),
-            BlocProvider.value(
-              value: sl<PackageBloc>(),
-            ),
-            BlocProvider.value(
-              value: sl<IsAuthorizedCubit>()..isAuthorized(),
-            ),
-            BlocProvider.value(
-              value: sl<DashboardCubit>(),
-            ),
-            // LeaderboardsCubit được tạo riêng cho mỗi LeaderboardPage
-            // không cần global provider ở đây
+            BlocProvider.value(value: sl<AuthBloc>()),
+            BlocProvider.value(value: sl<UserCubit>()),
+            BlocProvider.value(value: sl<ProCubit>()),
+            BlocProvider.value(value: sl<PackageBloc>()),
+            BlocProvider.value(value: sl<IsAuthorizedCubit>()..isAuthorized()),
+            BlocProvider.value(value: sl<DashboardCubit>()),
+            BlocProvider(create: (context) => sl<QuizzCubit>()),
             BlocProvider(
-              create: (context) => sl<QuizzCubit>(),
+              create: (_) => sl<SubjectCubit>()..loadInitial(searchQuery: ''),
             ),
-            BlocProvider(
-              create: (_) => sl<SubjectCubit>()..loadInitial(searchQuery: ""),
-            ),
-            BlocProvider.value(
-              value: sl<ProgressCubit>(),
-            ),
+            BlocProvider.value(value: sl<ProgressCubit>()),
           ],
-          child: MyApp(),
+          child: const MyApp(),
         ),
       ),
     ),
@@ -74,25 +57,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<IsAuthorizedCubit, bool>(
-      builder: (context, isAuthorized) => MaterialApp(
-        locale: const Locale('vi'),
-        supportedLocales: const [
-          Locale('vi'), // Tiếng Việt
-          Locale('en'), // Tiếng Anh (tuỳ chọn)
-        ],
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        debugShowCheckedModeBanner: false,
-        title: 'Sci Fun',
-        theme: AppTheme.theme,
-        builder: EasyLoading.init(),
-        home: isAuthorized ? DashboardPage() : const SigninPage(),
-        // home: AddInfomationPage(),
-      ),
+    return ValueListenableBuilder(
+      valueListenable: AppColor.themeNotifier,
+      builder: (context, _, __) {
+        return BlocBuilder<IsAuthorizedCubit, bool>(
+          builder: (context, isAuthorized) {
+            return MaterialApp(
+              locale: const Locale('vi'),
+              supportedLocales: const [
+                Locale('vi'),
+                Locale('en'),
+              ],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              debugShowCheckedModeBanner: false,
+              title: 'Sci Fun',
+              theme: AppTheme.theme,
+              builder: EasyLoading.init(),
+              home: isAuthorized ? DashboardPage() : const SigninPage(),
+            );
+          },
+        );
+      },
     );
   }
 }

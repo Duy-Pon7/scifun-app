@@ -42,7 +42,7 @@ class ConfirmButton extends StatelessWidget {
       },
       backgroundColor: image == null
           ? AppColor.hurricane500.withValues(alpha: 0.12)
-          : AppColor.primary500,
+          : AppColor.skyblue500,
       textColor: image == null
           ? AppColor.hurricane800.withValues(alpha: 0.3)
           : Colors.white,

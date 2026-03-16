@@ -26,7 +26,7 @@ class LogoTitleWidget extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                  color: AppColor.primary500,
+                  color: AppColor.skyblue500,
                   fontWeight: FontWeight.w700,
                 ),
           ),

@@ -5,6 +5,7 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
@@ -127,13 +128,13 @@ class _TopicPageState extends State<TopicPage> {
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                               tileColor:
-                                  isCurrent ? AppColor.primary50 : Colors.white,
+                                  isCurrent ? AppColor.skyblue50 : Colors.white,
                               title: Text(
                                 subjectName,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   color: isCurrent
-                                      ? AppColor.primary700
+                                      ? AppColor.skyblue700
                                       : Colors.black87,
                                 ),
                               ),
@@ -143,10 +144,10 @@ class _TopicPageState extends State<TopicPage> {
                                     : Icons.arrow_forward_ios_rounded,
                                 size: isCurrent ? 22.sp : 16.sp,
                                 color: isCurrent
-                                    ? AppColor.primary600
+                                    ? AppColor.skyblue600
                                     : Colors.black54,
                               ),
-                              onTap: () {
+                              onTap: () async {
                                 if (isCurrent) {
                                   Navigator.of(sheetContext).pop();
                                   return;
@@ -155,6 +156,16 @@ class _TopicPageState extends State<TopicPage> {
                                 final targetId = subject.id ?? '';
                                 if (targetId.isEmpty) {
                                   Navigator.of(sheetContext).pop();
+                                  return;
+                                }
+
+                                await sl<SharePrefsService>()
+                                    .saveSelectedSubject(
+                                  subjectId: targetId,
+                                  subjectName: subjectName,
+                                );
+
+                                if (!context.mounted) {
                                   return;
                                 }
 
@@ -207,7 +218,7 @@ class _TopicPageState extends State<TopicPage> {
             tooltip: 'Chuyen mon',
             icon: Icon(
               Icons.swap_horiz_rounded,
-              color: AppColor.primary600,
+              color: AppColor.skyblue600,
             ),
             onPressed: _openSubjectSwitcher,
           ),
@@ -240,7 +251,7 @@ class _TopicPageState extends State<TopicPage> {
                             ),
                           ),
                         )
-                      : Icon(Icons.play_lesson, color: AppColor.primary600),
+                      : Icon(Icons.play_lesson, color: AppColor.skyblue600),
                   title: Text(
                     topic.name ?? 'No title',
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -255,7 +266,7 @@ class _TopicPageState extends State<TopicPage> {
                   trailing: Icon(
                     Icons.arrow_forward_ios,
                     size: 18.sp,
-                    color: AppColor.primary600,
+                    color: AppColor.skyblue600,
                   ),
                   onTap: () {
                     Navigator.push(

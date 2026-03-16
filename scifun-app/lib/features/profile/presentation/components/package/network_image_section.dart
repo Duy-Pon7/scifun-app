@@ -24,7 +24,7 @@ class NetworkImageSection extends StatelessWidget {
           : DottedBorder(
               options: RoundedRectDottedBorderOptions(
                 radius: Radius.circular(16.r),
-                color: AppColor.primary500,
+                color: AppColor.skyblue500,
                 strokeWidth: 1.w,
               ),
               child: Center(

@@ -103,7 +103,7 @@ class _SearchPageState extends State<SearchPage> {
                                   ),
                                 )
                               : Icon(Icons.play_lesson,
-                                  color: AppColor.primary600),
+                                  color: AppColor.skyblue600),
                           title: Text(topic.name ?? 'No title',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: topic.description != null
@@ -114,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                                 )
                               : null,
                           trailing: Icon(Icons.arrow_forward_ios,
-                              size: 18.sp, color: AppColor.primary600),
+                              size: 18.sp, color: AppColor.skyblue600),
                           onTap: () {
                             showModalBottomSheet(
                               context: context,
@@ -264,11 +264,11 @@ class _SearchPageState extends State<SearchPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history, color: AppColor.primary600, size: 24.sp),
+            Icon(Icons.history, color: AppColor.skyblue600, size: 24.sp),
             SizedBox(width: 12.w),
             Text(text,
                 style: TextStyle(
-                    color: AppColor.primary600,
+                    color: AppColor.skyblue600,
                     fontSize: 17.sp,
                     fontWeight: FontWeight.w400)),
           ],

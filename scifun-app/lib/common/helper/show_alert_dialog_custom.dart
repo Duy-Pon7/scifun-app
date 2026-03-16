@@ -39,7 +39,7 @@ void showCustomAlertDialog(
             child: Text(
               buttonText,
               style: TextStyle(
-                color: AppColor.primary500, // màu đỏ của bạn
+                color: AppColor.skyblue500, // màu đỏ của bạn
                 fontWeight: FontWeight.bold,
               ),
             ),

@@ -70,7 +70,7 @@ class ListHomeworkAllPage extends StatelessWidget {
               "Tổng số câu: ${questions.length}",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     fontSize: 17.sp,
-                    color: AppColor.primary500,
+                    color: AppColor.skyblue500,
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -78,7 +78,7 @@ class ListHomeworkAllPage extends StatelessWidget {
               "Làm lại",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     fontSize: 15.sp,
-                    color: AppColor.primary500,
+                    color: AppColor.skyblue500,
                     fontWeight: FontWeight.w400,
                   ),
             ),
@@ -171,8 +171,8 @@ class ListHomeworkAllPage extends StatelessWidget {
                     borderColor = Color(0xff34C759);
                     bgColor = Color(0xff34C759); // Nền xanh đậm
                   } else if (selected && !correct) {
-                    borderColor = AppColor.primary600;
-                    bgColor = AppColor.primary600; // Nền đỏ đậm
+                    borderColor = AppColor.skyblue600;
+                    bgColor = AppColor.skyblue600; // Nền đỏ đậm
                   } else if (!selected && correct) {
                     borderColor = Color(0xff34C759);
                     bgColor = Color(0xff34C759);

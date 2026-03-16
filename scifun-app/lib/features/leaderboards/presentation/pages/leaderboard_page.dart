@@ -67,7 +67,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             onTap: () => _cubit.refresh(),
             child: Icon(
               Icons.refresh,
-              color: AppColor.primary600,
+              color: AppColor.skyblue600,
               size: 24,
             )),
         showBack: true,
@@ -121,7 +121,7 @@ class _LeaderboardItem extends StatelessWidget {
                     'Tiến độ: ${item.progress}%',
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColor.primary600,
+                      color: AppColor.skyblue600,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

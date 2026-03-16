@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,10 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/ws_bootstrap.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sci_fun/features/chat/user_chat_page.dart';
+import 'package:sci_fun/core/utils/subject_theme_helper.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:sci_fun/features/chat/chat_connection_config.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
@@ -21,19 +18,7 @@ import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dar
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
-
-String wsUrlForEnvironment({int port = 5000}) {
-  if (kIsWeb) {
-    return 'ws://java-app-9trd.onrender.com/ws'; // web can use localhost and wss if server has cert
-  }
-  if (Platform.isAndroid) {
-    return 'ws://java-app-9trd.onrender.com/ws'; // Android emulator -> host machine
-  }
-  if (Platform.isIOS) {
-    return 'ws://java-app-9trd.onrender.com/ws'; // iOS simulator can use localhost
-  }
-  return 'ws://java-app-9trd.onrender.com/ws';
-}
+import 'package:sci_fun/features/subject/presentation/page/change_subject_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -44,9 +29,128 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
+  String _selectedSubjectId = '';
+  String _selectedSubjectName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedSubjectFromPrefs();
+  }
+
+  void _loadSelectedSubjectFromPrefs() {
+    final prefs = sl<SharePrefsService>();
+    final savedId = (prefs.getSelectedSubjectId() ?? '').trim();
+    final savedName = (prefs.getSelectedSubjectName() ?? '').trim();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _selectedSubjectId = savedId;
+      _selectedSubjectName = savedName;
+    });
+  }
+
+  void _saveAndApplySelectedSubject({
+    required String subjectId,
+    required String subjectName,
+  }) {
+    final normalizedId = subjectId.trim();
+    if (normalizedId.isEmpty) {
+      return;
+    }
+
+    final normalizedName =
+        subjectName.trim().isEmpty ? 'Vật lý' : subjectName.trim();
+
+    if (_selectedSubjectId == normalizedId &&
+        _selectedSubjectName == normalizedName) {
+      return;
+    }
+
+    sl<SharePrefsService>().saveSelectedSubject(
+      subjectId: normalizedId,
+      subjectName: normalizedName,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _selectedSubjectId = normalizedId;
+      _selectedSubjectName = normalizedName;
+    });
+  }
+
+  void _syncSelectedSubjectFromServer(List<SubjectEntity> subjects) {
+    if (subjects.isEmpty) {
+      return;
+    }
+
+    final prefs = sl<SharePrefsService>();
+    final savedId = (prefs.getSelectedSubjectId() ?? '').trim();
+    final savedName = (prefs.getSelectedSubjectName() ?? '').trim();
+
+    if (savedId.isNotEmpty) {
+      String resolvedName = savedName;
+
+      if (resolvedName.isEmpty) {
+        for (final subject in subjects) {
+          if ((subject.id ?? '') == savedId) {
+            resolvedName = (subject.name ?? '').trim();
+            break;
+          }
+        }
+      }
+
+      _saveAndApplySelectedSubject(
+        subjectId: savedId,
+        subjectName: resolvedName,
+      );
+      return;
+    }
+
+    SubjectEntity? defaultSubject;
+    for (final subject in subjects) {
+      if ((subject.id ?? '').isEmpty) {
+        continue;
+      }
+      if (SubjectThemeHelper.isPhysics(subject.name)) {
+        defaultSubject = subject;
+        break;
+      }
+    }
+
+    if (defaultSubject == null) {
+      for (final subject in subjects) {
+        if ((subject.id ?? '').isNotEmpty) {
+          defaultSubject = subject;
+          break;
+        }
+      }
+    }
+
+    if (defaultSubject == null || (defaultSubject.id ?? '').isEmpty) {
+      return;
+    }
+
+    _saveAndApplySelectedSubject(
+      subjectId: defaultSubject.id!,
+      subjectName: (defaultSubject.name ?? '').trim(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final persistedSubjectName =
+        (sl<SharePrefsService>().getSelectedSubjectName() ?? '').trim();
+    final activeSubjectName = persistedSubjectName.isNotEmpty
+        ? persistedSubjectName
+        : _selectedSubjectName;
 
     return MultiBlocProvider(
       providers: [
@@ -87,6 +191,7 @@ class _HomePageState extends State<HomePage>
               listener: (context, state) {
                 if (state is PaginationSuccess<SubjectEntity>) {
                   EasyLoading.dismiss();
+                  _syncSelectedSubjectFromServer(state.items);
                 } else if (state is PaginationError<SubjectEntity>) {
                   EasyLoading.dismiss();
                   EasyLoading.showToast(state.error ?? 'Lỗi',
@@ -98,6 +203,7 @@ class _HomePageState extends State<HomePage>
             ),
           ],
           child: BackgroundHome(
+            subjectName: activeSubjectName,
             child: SafeArea(
               child: Builder(builder: (newcontext) {
                 return RefreshIndicator(
@@ -120,8 +226,15 @@ class _HomePageState extends State<HomePage>
                       child: Column(
                         spacing: 16.h,
                         children: [
-                          HeaderHome(),
-                          ListSubjects(),
+                          HeaderHome(subjectName: activeSubjectName),
+                          ListSubjects(
+                            onSubjectSelected: (subjectId, subjectName) {
+                              _saveAndApplySelectedSubject(
+                                subjectId: subjectId,
+                                subjectName: subjectName,
+                              );
+                            },
+                          ),
                           TrendQuizzesList(),
                           CommentPage(),
                           WsBootstrap(
@@ -136,30 +249,21 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            // Prepare api base and token getter
-            final apiBase =
-                dotenv.get('BASE_URL').replaceAll(RegExp(r'/+$'), '');
-            Future<String?> getToken() async {
-              try {
-                final t = sl<SharePrefsService>().getAuthToken();
-                if (t != null && t.isNotEmpty) return t;
-              } catch (_) {}
-              final storage = const FlutterSecureStorage();
-              return await storage.read(key: 'access_token');
-            }
-
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => UserChatPage(
-                apiBaseUrl: apiBase,
-                wsUrl: wsUrlForEnvironment(),
-                getToken: getToken,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<SubjectCubit>(),
+                  child: const ChangeSubjectPage(),
+                ),
               ),
-            ));
+            ).then((_) => _loadSelectedSubjectFromPrefs());
           },
-          tooltip: 'Chat',
-          child: const Icon(Icons.chat),
+          tooltip: 'Đổi môn học',
+          icon: const Icon(Icons.swap_horiz_rounded),
+          label: const Text('Đổi môn'),
         ),
       ),
     );

@@ -64,24 +64,24 @@ class AppTheme {
     ),
   );
 
-  static final TextSelectionThemeData _textSelectionThemeData =
+  static TextSelectionThemeData get _textSelectionThemeData =>
       TextSelectionThemeData(
-    cursorColor: AppColor.primary500,
-    selectionColor: AppColor.primary200,
-    selectionHandleColor: AppColor.primary500,
-  );
+        cursorColor: AppColor.skyblue500,
+        selectionColor: AppColor.skyblue200,
+        selectionHandleColor: AppColor.skyblue500,
+      );
 
-  static final ThemeData theme = ThemeData(
-    fontFamily: 'Inter',
-    scaffoldBackgroundColor: Colors.white,
-    textTheme: _appTextTheme,
-    primaryColor: AppColor.primary400,
-    textSelectionTheme: _textSelectionThemeData,
-    inputDecorationTheme: _inputDecorationTheme,
-    colorScheme: ColorScheme.light(
-      primary: AppColor.primary500,
-      onPrimary: AppColor.primary400,
-      onSurface: Colors.black,
-    ),
-  );
+  static ThemeData get theme => ThemeData(
+        fontFamily: 'Baloo2',
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: _appTextTheme,
+        primaryColor: AppColor.skyblue400,
+        textSelectionTheme: _textSelectionThemeData,
+        inputDecorationTheme: _inputDecorationTheme,
+        colorScheme: ColorScheme.light(
+          primary: AppColor.skyblue500,
+          onPrimary: AppColor.skyblue400,
+          onSurface: Colors.black,
+        ),
+      );
 }

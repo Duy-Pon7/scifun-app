@@ -40,7 +40,7 @@
 //           width: double.infinity,
 //           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
 //           decoration: BoxDecoration(
-//             color: AppColor.primary200,
+//             color: AppColor.skyblue200,
 //             borderRadius: BorderRadius.circular(12.r),
 //             // border: Border.all(
 //             //   width: 0.3.w,
@@ -325,7 +325,7 @@
 //           vertical: 14.h,
 //           horizontal: 20.w,
 //         ),
-//         backgroundColor: AppColor.primary600,
+//         backgroundColor: AppColor.skyblue600,
 //         borderRadius: BorderRadius.circular(40.r),
 //       );
 // }

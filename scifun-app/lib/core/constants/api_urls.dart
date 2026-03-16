@@ -102,6 +102,12 @@ class HomeApiUrls {
   static const String addQuizz = '/quizzes/score/multiple-choice';
 }
 
+class OnboardingApiUrls {
+  OnboardingApiUrls._();
+
+  static const String submit = '/onboarding';
+}
+
 class PackagesApiUrl {
   PackagesApiUrl._();
 

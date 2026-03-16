@@ -90,7 +90,7 @@ class _QuizzPageState extends State<QuizzPage> {
                   borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
                     color:
-                        isQuizPro ? AppColor.primary600 : Colors.grey.shade300,
+                        isQuizPro ? AppColor.skyblue600 : Colors.grey.shade300,
                     width: isQuizPro ? 2 : 1,
                   ),
                 ),
@@ -129,7 +129,7 @@ class _QuizzPageState extends State<QuizzPage> {
                         right: 8.w,
                         child: Icon(
                           Icons.star,
-                          color: AppColor.primary600,
+                          color: AppColor.skyblue600,
                           size: 18.sp,
                         ),
                       ),
@@ -182,7 +182,7 @@ class _QuizzPageState extends State<QuizzPage> {
         ),
       );
     }
-    return Icon(Icons.quiz, color: AppColor.primary600);
+    return Icon(Icons.quiz, color: AppColor.skyblue600);
   }
 
   Widget _buildTitle(QuizzEntity quizz, bool isQuizPro) {
@@ -200,7 +200,7 @@ class _QuizzPageState extends State<QuizzPage> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
           decoration: BoxDecoration(
-            color: isQuizPro ? AppColor.primary600 : Colors.green,
+            color: isQuizPro ? AppColor.skyblue600 : Colors.green,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
@@ -233,19 +233,19 @@ class _QuizzPageState extends State<QuizzPage> {
         SizedBox(height: 6.h),
         Row(
           children: [
-            Icon(Icons.timer, size: 14.sp, color: AppColor.primary600),
+            Icon(Icons.timer, size: 14.sp, color: AppColor.skyblue600),
             SizedBox(width: 6.w),
             Text('${quizz.duration ?? 0} phút',
                 style: TextStyle(fontSize: 12.sp)),
             SizedBox(width: 12.w),
-            Icon(Icons.help_outline, size: 14.sp, color: AppColor.primary600),
+            Icon(Icons.help_outline, size: 14.sp, color: AppColor.skyblue600),
             SizedBox(width: 6.w),
             Text('${quizz.questionCount ?? 0} câu',
                 style: TextStyle(fontSize: 12.sp)),
             if (quizz.uniqueUserCount != null &&
                 quizz.uniqueUserCount! > 0) ...[
               SizedBox(width: 12.w),
-              Icon(Icons.people, size: 14.sp, color: AppColor.primary600),
+              Icon(Icons.people, size: 14.sp, color: AppColor.skyblue600),
               SizedBox(width: 4.w),
               Text('${quizz.uniqueUserCount}',
                   style: TextStyle(fontSize: 12.sp)),

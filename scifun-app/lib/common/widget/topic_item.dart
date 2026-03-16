@@ -30,7 +30,7 @@ class TopicItem extends StatelessWidget {
               padding: EdgeInsets.all(12.w),
               child: Icon(
                 Icons.play_lesson_rounded,
-                color: AppColor.primary600,
+                color: AppColor.skyblue600,
               ),
             ),
             Expanded(

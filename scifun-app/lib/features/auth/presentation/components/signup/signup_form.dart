@@ -201,7 +201,7 @@ class _SignupFormState extends State<SignupForm> {
           vertical: 14.h,
           horizontal: 20.w,
         ),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 
   Widget _navigateSignUp() => Align(
@@ -217,10 +217,10 @@ class _SignupFormState extends State<SignupForm> {
               TextSpan(
                   text: "ĐĂNG NHẬP",
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: AppColor.primary500,
+                        color: AppColor.skyblue500,
                         fontWeight: FontWeight.w600,
                         decoration: TextDecoration.underline,
-                        decorationColor: AppColor.primary500,
+                        decorationColor: AppColor.skyblue500,
                       ),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
@@ -235,3 +235,4 @@ class _SignupFormState extends State<SignupForm> {
         ),
       );
 }
+

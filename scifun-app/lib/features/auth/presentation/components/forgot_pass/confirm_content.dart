@@ -66,7 +66,7 @@ class _ConfirmContentState extends State<ConfirmContent> {
             Text(
               "Đây là tài khoản của bạn?",
               style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                    color: AppColor.primary500,
+                    color: AppColor.skyblue500,
                     fontWeight: FontWeight.w700,
                   ),
             ),
@@ -113,7 +113,7 @@ class _ConfirmContentState extends State<ConfirmContent> {
               vertical: 14.h,
               horizontal: 20.w,
             ),
-            backgroundColor: AppColor.primary600,
+            backgroundColor: AppColor.skyblue400,
           ),
           BasicButton(
             text: "Không phải",
@@ -124,9 +124,10 @@ class _ConfirmContentState extends State<ConfirmContent> {
               vertical: 14.h,
               horizontal: 20.w,
             ),
-            textColor: AppColor.primary600,
-            backgroundColor: AppColor.primary600.withValues(alpha: 0.16),
+            textColor: AppColor.skyblue500,
+            backgroundColor: AppColor.skyblue500.withValues(alpha: 0.16),
           ),
         ],
       );
 }
+

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
@@ -100,58 +101,34 @@ class _VideoPageState extends State<VideoPage> {
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.w),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 8,
-                offset: Offset(0, 2),
+        child: BasicButton(
+          text: 'Bài tập tự luyện',
+          width: double.infinity,
+          height: 48.h,
+          borderRadius: BorderRadius.circular(8.r),
+          fontSize: 16.sp,
+          fontWeight: FontWeight.bold,
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
-            ],
-          ),
-          child: ElevatedButton(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                ),
-                builder: (context) => SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.85,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: QuizzPage(
-                      topicId: widget.topicId,
-                      topicName: widget.topicName,
-                    ),
+              builder: (context) => SizedBox(
+                height: MediaQuery.of(context).size.height * 0.85,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: QuizzPage(
+                    topicId: widget.topicId,
+                    topicName: widget.topicName,
                   ),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              minimumSize: Size(double.infinity, 48.h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.r),
               ),
-              elevation: 0,
-              shadowColor: Colors.transparent,
-            ),
-            child: Text(
-              'Bài tập tự luyện',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

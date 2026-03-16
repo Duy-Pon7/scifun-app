@@ -69,10 +69,10 @@ class _VideoContentState extends State<VideoContent> {
                               YoutubePlayer(
                                 controller: _controller!,
                                 showVideoProgressIndicator: true,
-                                progressIndicatorColor: AppColor.primary600,
-                                progressColors: const ProgressBarColors(
-                                  playedColor: AppColor.primary600,
-                                  handleColor: AppColor.primary300,
+                                progressIndicatorColor: AppColor.skyblue600,
+                                progressColors: ProgressBarColors(
+                                  playedColor: AppColor.skyblue600,
+                                  handleColor: AppColor.skyblue300,
                                 ),
                               ),
                               // Text(

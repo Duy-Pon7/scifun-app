@@ -29,7 +29,7 @@ void showAlertDialog(
               child: Text(
                 cancelText ?? "Hủy",
                 style: TextStyle(
-                  color: AppColor.primary500,
+                  color: AppColor.skyblue500,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -43,7 +43,7 @@ void showAlertDialog(
             child: Text(
               titleButton,
               style: TextStyle(
-                color: AppColor.primary500,
+                color: AppColor.skyblue500,
                 fontWeight: FontWeight.w600,
               ),
             ),

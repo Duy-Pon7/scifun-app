@@ -3,14 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/presentation/page/search_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
-import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 
 class HeaderHome extends StatefulWidget {
-  const HeaderHome({super.key});
+  const HeaderHome({
+    super.key,
+    this.subjectName,
+  });
+
+  final String? subjectName;
 
   @override
   State<HeaderHome> createState() => _HeaderHomeState();
@@ -23,7 +28,6 @@ class _HeaderHomeState extends State<HeaderHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final token = sl<SharePrefsService>().getUserData();
       if (token != null && token.isNotEmpty) {
-        // ensure user info is loaded when header appears
         context.read<UserCubit>().getUser(token: token);
       }
     });
@@ -36,18 +40,7 @@ class _HeaderHomeState extends State<HeaderHome> {
       children: [
         BlocBuilder<UserCubit, UserState>(
           builder: (context, state) {
-            print('HeaderHome BlocBuilder state: ${state.runtimeType}');
-            if (state is UserLoaded) {
-              print(
-                  'HeaderHome displaying user: ${state.user.data?.id} ${state.user.data?.fullname}');
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _textName(name: state.user.data?.fullname),
-                  _avatar(avatarUrl: state.user.data?.avatar),
-                ],
-              );
-            } else if (state is UserError) {
+            if (state is UserError) {
               return Text(
                 'Lỗi tải thông tin người dùng',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -57,7 +50,19 @@ class _HeaderHomeState extends State<HeaderHome> {
                     ),
               );
             }
-            return const SizedBox.shrink();
+
+            final userName =
+                state is UserLoaded ? state.user.data?.fullname : null;
+            final avatarUrl =
+                state is UserLoaded ? state.user.data?.avatar : null;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _textName(name: userName),
+                _avatar(avatarUrl: avatarUrl),
+              ],
+            );
           },
         ),
         _inputSearch(),
@@ -65,26 +70,38 @@ class _HeaderHomeState extends State<HeaderHome> {
     );
   }
 
-  Widget _textName({required String? name}) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Xin chào,',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400,
-                ),
-          ),
-          Text(
-            name ?? '',
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ],
-      );
+  Widget _textName({required String? name}) {
+    final subjectDisplayName = _subjectDisplayName(widget.subjectName);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          subjectDisplayName,
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                fontSize: 17.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+              ),
+        ),
+        Text(
+          name?.trim().isNotEmpty == true ? name!.trim() : ' ',
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+      ],
+    );
+  }
+
+  String _subjectDisplayName(String? subjectName) {
+    final normalized = subjectName?.trim();
+    if (normalized == null || normalized.isEmpty) {
+      return 'Vật lý';
+    }
+    return normalized;
+  }
 
   Widget _avatar({required String? avatarUrl}) => Container(
         width: 50.w,
@@ -98,11 +115,17 @@ class _HeaderHomeState extends State<HeaderHome> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(25.r),
-          child: CustomNetworkAssetImage(
-            imagePath: avatarUrl ?? '',
-            width: 50.w,
-            height: 50.w,
-          ),
+          child: avatarUrl == null || avatarUrl.isEmpty
+              ? Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 26.sp,
+                )
+              : CustomNetworkAssetImage(
+                  imagePath: avatarUrl,
+                  width: 50.w,
+                  height: 50.w,
+                ),
         ),
       );
 
@@ -130,7 +153,7 @@ class _HeaderHomeState extends State<HeaderHome> {
                 color: AppColor.hurricane800.withValues(alpha: 0.6),
               ),
             ),
-            hintText: "Tìm kiếm chủ đề",
+            hintText: 'Tìm kiếm chủ đề',
             hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
                   fontSize: 17.sp,
                   color: AppColor.hurricane800.withValues(alpha: 0.6),
@@ -139,19 +162,23 @@ class _HeaderHomeState extends State<HeaderHome> {
             enabledBorder: Theme.of(context)
                 .inputDecorationTheme
                 .enabledBorder!
-                .copyWith(borderSide: BorderSide(color: Colors.transparent)),
+                .copyWith(
+                    borderSide: const BorderSide(color: Colors.transparent)),
             errorBorder: Theme.of(context)
                 .inputDecorationTheme
                 .errorBorder!
-                .copyWith(borderSide: BorderSide(color: Colors.transparent)),
+                .copyWith(
+                    borderSide: const BorderSide(color: Colors.transparent)),
             focusedBorder: Theme.of(context)
                 .inputDecorationTheme
                 .focusedBorder!
-                .copyWith(borderSide: BorderSide(color: Colors.transparent)),
+                .copyWith(
+                    borderSide: const BorderSide(color: Colors.transparent)),
             disabledBorder: Theme.of(context)
                 .inputDecorationTheme
                 .disabledBorder!
-                .copyWith(borderSide: BorderSide(color: Colors.transparent)),
+                .copyWith(
+                    borderSide: const BorderSide(color: Colors.transparent)),
           ),
         ),
       );

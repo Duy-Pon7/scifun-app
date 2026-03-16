@@ -60,7 +60,7 @@ class ListStatisticsLesson extends StatelessWidget {
                         backgroundColor:
                             Color(0xFF787880).withValues(alpha: .16),
                         valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColor.primary600),
+                            AlwaysStoppedAnimation<Color>(AppColor.skyblue600),
                         borderRadius: BorderRadius.circular(5.r),
                       ),
                     ),
@@ -93,7 +93,7 @@ class ListStatisticsLesson extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 17.sp,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColor.primary600,
+                                        color: AppColor.skyblue600,
                                       ),
                                     ),
                                   ),
@@ -113,8 +113,8 @@ class ListStatisticsLesson extends StatelessWidget {
                         completedCount: topic.completedQuizzes ?? 0,
                         title: topic.name ?? "Không có tên",
                         backgroundColor: Colors.white,
-                        borderColor: AppColor.primary300,
-                        iconColor: AppColor.primary600,
+                        borderColor: AppColor.skyblue300,
+                        iconColor: AppColor.skyblue600,
                         titleFontSize: 18.sp,
                         children: topic.quizzes.map((quiz) {
                           return LessonItem(

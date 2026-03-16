@@ -90,7 +90,7 @@
 //                                 padding: EdgeInsets.symmetric(
 //                                     vertical: 4.h, horizontal: 10.w),
 //                                 decoration: BoxDecoration(
-//                                   color: AppColor.primary600
+//                                   color: AppColor.skyblue600
 //                                       .withValues(alpha: 0.15),
 //                                   borderRadius:
 //                                       BorderRadius.all(Radius.circular(40.r)),
@@ -98,7 +98,7 @@
 //                                 child: Text(
 //                                   "Hướng dẫn mua gói",
 //                                   style: TextStyle(
-//                                     color: AppColor.primary600,
+//                                     color: AppColor.skyblue600,
 //                                     fontSize: 15.sp,
 //                                     fontWeight: FontWeight.w400,
 //                                   ),

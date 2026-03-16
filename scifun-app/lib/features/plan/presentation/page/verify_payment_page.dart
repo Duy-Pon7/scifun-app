@@ -134,7 +134,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                 decoration: BoxDecoration(
                   color: _isSuccess
                       ? Colors.green.withValues(alpha: 0.1)
-                      : AppColor.primary500.withValues(alpha: 0.1),
+                      : AppColor.skyblue500.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -142,7 +142,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                       ? Icons.check_circle_outline
                       : Icons.payment_outlined,
                   size: 60.w,
-                  color: _isSuccess ? Colors.green : AppColor.primary500,
+                  color: _isSuccess ? Colors.green : AppColor.skyblue500,
                 ),
               ),
               SizedBox(height: 30.h),

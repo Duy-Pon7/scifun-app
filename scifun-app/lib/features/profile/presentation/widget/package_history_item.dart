@@ -36,7 +36,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: AppColor.primary50,
+            color: AppColor.skyblue50,
             borderRadius: BorderRadius.circular(12.r),
             // border: Border.all(
             //   width: 0.3.w,
@@ -161,7 +161,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     width: 28.sp,
                     height: 28.sp,
                     decoration: BoxDecoration(
-                      color: AppColor.primary600
+                      color: AppColor.skyblue600
                           .withValues(alpha: 0.15), // Màu nền
                       shape: BoxShape.circle,
                     ),
@@ -169,7 +169,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                       child: Icon(
                         Icons.arrow_forward,
                         size: 17.sp,
-                        color: AppColor.primary600, // Màu icon
+                        color: AppColor.skyblue600, // Màu icon
                       ),
                     ),
                   ),

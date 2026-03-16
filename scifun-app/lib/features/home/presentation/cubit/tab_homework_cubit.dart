@@ -47,7 +47,7 @@ class _TabHomeworkCubitState extends State<TabHomeworkCubit> {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8.h),
           decoration: BoxDecoration(
-            color: isSelected ? AppColor.primary600 : Colors.transparent,
+            color: isSelected ? AppColor.skyblue600 : Colors.transparent,
             borderRadius: BorderRadius.circular(8.r),
             boxShadow: isSelected
                 ? [

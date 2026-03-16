@@ -31,7 +31,7 @@ class CustomNetworkAssetImage extends StatelessWidget {
         child: Icon(
           Icons.error,
           size: 18.sp,
-          color: AppColor.primary600,
+          color: AppColor.skyblue600,
         ),
       ),
     );

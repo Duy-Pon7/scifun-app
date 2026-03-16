@@ -199,7 +199,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                   width: 28.w,
                   height: 28.w,
                   decoration: BoxDecoration(
-                    color: AppColor.primary400,
+                    color: AppColor.skyblue400,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -242,14 +242,14 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
               return Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: ColorScheme.light(
-                    primary: AppColor.primary400, // Màu header
+                    primary: AppColor.skyblue400, // Màu header
                     onPrimary: Colors.white, // Màu chữ trên header
                     onSurface: Colors.black, // Màu chữ ngày
                   ),
                   textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
                       foregroundColor:
-                          AppColor.primary400, // Màu nút "OK", "Hủy"
+                          AppColor.skyblue400, // Màu nút "OK", "Hủy"
                     ),
                   ),
                 ),
@@ -278,6 +278,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         width: double.infinity,
         fontSize: 18.sp,
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 }
+

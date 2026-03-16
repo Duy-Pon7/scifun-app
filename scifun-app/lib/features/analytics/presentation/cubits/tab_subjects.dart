@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/selected_subject_cubit.dart';
 
-
-
 class TabSubjects extends StatelessWidget {
   final List subjects; // đổi thành List<Subject> nếu em có model
 
@@ -39,7 +37,7 @@ class TabSubjects extends StatelessWidget {
                     padding: EdgeInsets.symmetric(vertical: 8.h),
                     decoration: BoxDecoration(
                       color:
-                          isSelected ? AppColor.primary600 : Colors.transparent,
+                          isSelected ? AppColor.skyblue600 : Colors.transparent,
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Center(
@@ -47,8 +45,7 @@ class TabSubjects extends StatelessWidget {
                         name,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                               color: isSelected ? Colors.white : null,
-                              fontWeight:
-                                  isSelected ? FontWeight.w600 : null,
+                              fontWeight: isSelected ? FontWeight.w600 : null,
                             ),
                       ),
                     ),
@@ -62,4 +59,3 @@ class TabSubjects extends StatelessWidget {
     );
   }
 }
-

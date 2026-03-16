@@ -80,9 +80,10 @@ class _SigninFormState extends State<SigninForm> {
       }
       if (!mounted) return;
 
-      // TODO: Khi backend co field first-login thi doi logic nay thanh:
-      // final shouldShowOnboarding = state.isFirstLogin == true;
-      final shouldShowOnboarding = state.isFirstLogin ?? true;
+      // Backend rule:
+      // isFirstLogin = false -> mở onboarding
+      // isFirstLogin = true  -> vào app bình thường
+      final shouldShowOnboarding = state.isFirstLogin == false;
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -195,7 +196,7 @@ class _SigninFormState extends State<SigninForm> {
           vertical: 14.h,
           horizontal: 20.w,
         ),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 
   Widget _navigateSignUp() => Align(
@@ -211,10 +212,10 @@ class _SigninFormState extends State<SigninForm> {
               TextSpan(
                 text: 'ĐĂNG KÝ',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: AppColor.primary500,
+                      color: AppColor.skyblue500,
                       fontWeight: FontWeight.w600,
                       decoration: TextDecoration.underline,
-                      decorationColor: AppColor.primary500,
+                      decorationColor: AppColor.skyblue500,
                     ),
                 recognizer: TapGestureRecognizer()
                   ..onTap = () {
@@ -240,3 +241,4 @@ class _SigninFormState extends State<SigninForm> {
     return '$difference ngày';
   }
 }
+

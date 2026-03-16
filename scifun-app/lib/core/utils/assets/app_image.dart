@@ -8,7 +8,11 @@ class AppImage {
   static const String itemAuth = '${_basePath}item_auth.png';
   static const String noti = '${_basePath}noti.png';
   static const String noti2 = '${_basePath}noti2.png';
-  static const String waveRightHome = '${_basePath}wave_right_home.png';
+  static const String waveRightHomeBlue =
+      '${_basePath}wave_right_home_blue.png';
+  static const String waveRightHomeRed = '${_basePath}wave_right_home_red.png';
+  static const String waveRightHomeGreen =
+      '${_basePath}wave_right_home_green.png';
   static const String math = '${_basePath}math.png';
   static const String literature = '${_basePath}literature.png';
   static const String english = '${_basePath}english.png';

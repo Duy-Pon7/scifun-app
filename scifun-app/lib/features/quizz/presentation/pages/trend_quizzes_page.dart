@@ -67,98 +67,114 @@ class TrendQuizzesList extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12.0),
                             side: BorderSide(
                               color: isPro
-                                  ? AppColor.primary600
+                                  ? AppColor.skyblue600
                                   : Colors.grey[300]!,
                               width: isPro ? 2.0 : 1.0,
                             ),
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(12.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isCompact = constraints.maxHeight < 110;
+                                final imageSize = isCompact ? 40.w : 56.w;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    quizz.topic?.subject?.image != null &&
-                                            (quizz.topic?.subject?.image ?? '')
-                                                .isNotEmpty
-                                        ? SizedBox(
-                                            width: 56.w,
-                                            height: 56.h,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(6.0),
-                                              child: Image.network(
-                                                quizz.topic!.subject!.image!,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) =>
-                                                    const Icon(Icons
-                                                        .image_not_supported),
+                                    Row(
+                                      children: [
+                                        quizz.topic?.subject?.image != null &&
+                                                (quizz.topic?.subject?.image ??
+                                                        '')
+                                                    .isNotEmpty
+                                            ? SizedBox(
+                                                width: imageSize,
+                                                height: imageSize,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          6.0),
+                                                  child: Image.network(
+                                                    quizz
+                                                        .topic!.subject!.image!,
+                                                    fit: BoxFit.cover,
+                                                    errorBuilder: (_, __,
+                                                            ___) =>
+                                                        const Icon(Icons
+                                                            .image_not_supported),
+                                                  ),
+                                                ),
+                                              )
+                                            : Icon(Icons.quiz,
+                                                color: AppColor.skyblue600),
+                                        SizedBox(width: 8.w),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                quizz.title ?? 'No title',
+                                                maxLines: isCompact ? 1 : 2,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontWeight: isPro
+                                                      ? FontWeight.bold
+                                                      : FontWeight.w600,
+                                                  fontSize:
+                                                      isCompact ? 13.sp : 14.sp,
+                                                ),
                                               ),
-                                            ),
-                                          )
-                                        : Icon(Icons.quiz,
-                                            color: AppColor.primary600),
-                                    SizedBox(width: 8.w),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            quizz.title ?? 'No title',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontWeight: isPro
-                                                  ? FontWeight.bold
-                                                  : FontWeight.w600,
-                                              fontSize: 14.sp,
-                                            ),
+                                              if (quizz.score != null)
+                                                Text(
+                                                  'Điểm: ${(quizz.score! * 100).toStringAsFixed(0)}%',
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: isCompact
+                                                        ? 11.sp
+                                                        : 12.sp,
+                                                    color: AppColor.skyblue600,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                            ],
                                           ),
-                                          if (quizz.score != null)
-                                            Text(
-                                              'Điểm: ${(quizz.score! * 100).toStringAsFixed(0)}%',
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: AppColor.primary600,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
+                                    if (!isCompact) const Spacer(),
+                                    if (!isCompact && quizz.description != null)
+                                      Text(
+                                        quizz.description!,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: Colors.grey[700]),
+                                      ),
+                                    SizedBox(height: isCompact ? 4.h : 8.h),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.timer,
+                                            size: 12.sp,
+                                            color: AppColor.skyblue600),
+                                        SizedBox(width: 6.w),
+                                        Text('${quizz.duration ?? 0} phút',
+                                            style: TextStyle(fontSize: 12.sp)),
+                                        SizedBox(width: 12.w),
+                                        Icon(Icons.help_outline,
+                                            size: 12.sp,
+                                            color: AppColor.skyblue600),
+                                        SizedBox(width: 6.w),
+                                        Text('${quizz.questionCount ?? 0} câu',
+                                            style: TextStyle(fontSize: 12.sp)),
+                                      ],
+                                    )
                                   ],
-                                ),
-                                const Spacer(),
-                                if (quizz.description != null)
-                                  Text(
-                                    quizz.description!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: Colors.grey[700]),
-                                  ),
-                                SizedBox(height: 8.h),
-                                Row(
-                                  children: [
-                                    Icon(Icons.timer,
-                                        size: 12.sp,
-                                        color: AppColor.primary600),
-                                    SizedBox(width: 6.w),
-                                    Text('${quizz.duration ?? 0} phút',
-                                        style: TextStyle(fontSize: 12.sp)),
-                                    SizedBox(width: 12.w),
-                                    Icon(Icons.help_outline,
-                                        size: 12.sp,
-                                        color: AppColor.primary600),
-                                    SizedBox(width: 6.w),
-                                    Text('${quizz.questionCount ?? 0} câu',
-                                        style: TextStyle(fontSize: 12.sp)),
-                                  ],
-                                )
-                              ],
+                                );
+                              },
                             ),
                           ),
                         ),

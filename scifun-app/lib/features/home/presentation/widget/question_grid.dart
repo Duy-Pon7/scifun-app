@@ -38,7 +38,7 @@ class QuestionGrid extends StatelessWidget {
         BoxBorder? border;
 
         if (isCurrent) {
-          bgColor = AppColor.primary600;
+          bgColor = AppColor.skyblue600;
           textColor = Colors.white;
         } else if (isAnswered) {
           bgColor = AppColor.hurricane800.withValues(alpha: 0.3);

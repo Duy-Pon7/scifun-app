@@ -99,6 +99,7 @@ class _ForgotPassFormState extends State<ForgotPassForm> {
           vertical: 14.h,
           horizontal: 20.w,
         ),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 }
+

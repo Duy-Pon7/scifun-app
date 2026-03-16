@@ -6,13 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 class SocialCircleButton extends StatelessWidget {
   final String imageUrl;
   final String linkUrl;
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   const SocialCircleButton({
     super.key,
     required this.imageUrl,
     required this.linkUrl,
-    this.backgroundColor = AppColor.primary400,
+    this.backgroundColor,
   });
 
   Future<void> _launchUrl() async {
@@ -32,7 +32,7 @@ class SocialCircleButton extends StatelessWidget {
         width: 48.w,
         height: 48.h,
         decoration: BoxDecoration(
-          color: AppColor.primary50,
+          color: backgroundColor ?? AppColor.skyblue50,
           shape: BoxShape.circle,
         ),
         child: Padding(

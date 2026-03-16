@@ -139,7 +139,7 @@ class _ChangePassState extends State<ChangePass> {
         width: double.infinity,
         fontSize: 18.sp,
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 
   Widget _passwordOldField() => BlocProvider(
@@ -151,7 +151,7 @@ class _ChangePassState extends State<ChangePass> {
               hintText: "Mật khẩu cũ",
               prefixIcon: Icon(
                 Icons.password,
-                color: AppColor.primary600,
+                color: AppColor.skyblue600,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -185,7 +185,7 @@ class _ChangePassState extends State<ChangePass> {
               hintText: "Mật khẩu mới",
               prefixIcon: Icon(
                 Icons.password,
-                color: AppColor.primary600,
+                color: AppColor.skyblue600,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -219,7 +219,7 @@ class _ChangePassState extends State<ChangePass> {
               hintText: "Nhập lại mật khẩu",
               prefixIcon: Icon(
                 Icons.password,
-                color: AppColor.primary600,
+                color: AppColor.skyblue600,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -249,3 +249,4 @@ class _ChangePassState extends State<ChangePass> {
         ),
       );
 }
+

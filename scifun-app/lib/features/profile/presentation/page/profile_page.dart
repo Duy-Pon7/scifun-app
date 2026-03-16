@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/common/helper/show_alert_dialog.dart';
@@ -13,6 +14,8 @@ import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/chat/chat_connection_config.dart';
+import 'package:sci_fun/features/chat/user_chat_page.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
@@ -38,6 +41,25 @@ class _ProfilePageState extends State<ProfilePage> {
     _userCubit.getUser(token: sl<SharePrefsService>().getUserData()!);
   }
 
+  Future<void> _openChatSupport() async {
+    final apiBase = dotenv.get('BASE_URL').replaceAll(RegExp(r'/+$'), '');
+
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => UserChatPage(
+          apiBaseUrl: apiBase,
+          wsUrl: wsUrlForEnvironment(),
+          getToken: getChatToken,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -61,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
               height: ScreenUtil().screenHeight * 0.3,
               decoration: BoxDecoration(
-                color: AppColor.primary400,
+                color: AppColor.skyblue400,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(ScreenUtil().screenHeight * 0.09),
                   bottomRight:
@@ -149,6 +171,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                         context,
                                         slidePage(const ChangePass()),
                                       );
+                                    }),
+                                    _itemNavigator(
+                                        Icons.chat_bubble_outline_rounded,
+                                        "Chat hỗ trợ", () {
+                                      _openChatSupport();
                                     }),
                                     // Mua gói
                                     _itemNavigator(
@@ -330,7 +357,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Row(
               spacing: 12.w,
               children: [
-                Icon(icon, color: AppColor.primary600),
+                Icon(icon, color: AppColor.skyblue600),
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -382,7 +409,7 @@ Widget subscriptionCard(UserDataEntity user) {
       gradient: LinearGradient(
         colors: isExpired
             ? [Colors.grey.shade400, Colors.grey.shade300]
-            : [AppColor.primary500, AppColor.primary300],
+            : [AppColor.skyblue500, AppColor.skyblue300],
       ),
       borderRadius: BorderRadius.circular(20.r),
       boxShadow: [
@@ -469,7 +496,7 @@ Widget subscriptionCard(UserDataEntity user) {
           child: Text(
             isExpired ? "Đã hết hạn" : "Còn $remainingDays ngày",
             style: TextStyle(
-              color: isExpired ? Colors.red : AppColor.primary600,
+              color: isExpired ? Colors.red : AppColor.skyblue600,
               fontWeight: FontWeight.w600,
               fontSize: 13.sp,
             ),

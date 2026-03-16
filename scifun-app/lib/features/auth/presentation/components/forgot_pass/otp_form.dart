@@ -127,7 +127,7 @@ class _OtpFormState extends State<OtpForm> {
                 Text(
                   "Nhập mã xác minh",
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                        color: AppColor.primary500,
+                        color: AppColor.skyblue500,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
@@ -150,7 +150,7 @@ class _OtpFormState extends State<OtpForm> {
                       if (state.canResend) {
                         return BasicTextButton(
                           text: "Gửi lại mã mới",
-                          textColor: AppColor.primary600,
+                          textColor: AppColor.skyblue600,
                           fontSize: 17.sp,
                           fontWeight: FontWeight.w400,
                           onPressed: () async {
@@ -225,7 +225,7 @@ class _OtpFormState extends State<OtpForm> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(
-                color: AppColor.primary600,
+                color: AppColor.skyblue600,
                 width: 0.8.w,
               ),
             ),

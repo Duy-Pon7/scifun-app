@@ -163,7 +163,7 @@ class _PlanListPageState extends State<PlanListPage> {
               ),
             );
           },
-          backgroundColor: AppColor.primary500,
+          backgroundColor: AppColor.skyblue500,
           icon: const Icon(Icons.verified_outlined, color: Colors.white),
           label: const Text(
             'Xác nhận thanh toán',
@@ -286,7 +286,7 @@ class _PlanCard extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                backgroundColor: AppColor.primary400,
+                backgroundColor: AppColor.skyblue400,
               ),
               onPressed: () async {
                 final price = plan.price ?? 0;

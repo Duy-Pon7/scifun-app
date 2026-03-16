@@ -44,7 +44,7 @@ class TextWithCopyIcon extends StatelessWidget {
               icon: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColor.primary600, // màu nền khung
+                  color: AppColor.skyblue600, // màu nền khung
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

@@ -51,13 +51,13 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       return lower.contains('thành công') || lower.contains('thanh cong');
     }
 
-    // Try primary endpoint: /notifications/read/{id}
-    final primary = '${NotificationApiUrls.markAsRead}/$id';
-    print('NotificationRemoteDatasource POST primary: $primary');
+    // Try skyblue endpoint: /notifications/read/{id}
+    final skyblue = '${NotificationApiUrls.markAsRead}/$id';
+    print('NotificationRemoteDatasource POST skyblue: $skyblue');
 
     try {
-      final res = await dioClient.post(url: primary);
-      print('Response markAsRead primary: ${res.data}');
+      final res = await dioClient.post(url: skyblue);
+      print('Response markAsRead skyblue: ${res.data}');
 
       // Some servers return a success message in the body but use a non-200 status code.
       // Accept success when the response body indicates it, regardless of HTTP status.
@@ -66,18 +66,18 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       }
 
       // If not successful, fallthrough to try alternative endpoint
-      print('Primary mark-as-read did not indicate success, trying fallback');
+      print('skyblue mark-as-read did not indicate success, trying fallback');
     } catch (e) {
       // If Dio threw due to a non-200 status, the response may still contain success information.
       if (e is DioException && e.response != null) {
         final respData = e.response!.data;
-        print('Primary markAsRead returned error with body: $respData');
+        print('skyblue markAsRead returned error with body: $respData');
         if (_checkSuccess(respData)) {
           return true;
         }
       }
 
-      print('Primary markAsRead failed: $e, trying fallback');
+      print('skyblue markAsRead failed: $e, trying fallback');
     }
 
     // Fallback endpoint used by some servers: /mark-as-read/{id}
@@ -118,13 +118,13 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       return lower.contains('thành công') || lower.contains('thanh cong');
     }
 
-    // Primary endpoint: configured URL
-    final primary = NotificationApiUrls.markAsReadAll;
-    print('NotificationRemoteDatasource POST primary (mark all): $primary');
+    // skyblue endpoint: configured URL
+    final skyblue = NotificationApiUrls.markAsReadAll;
+    print('NotificationRemoteDatasource POST skyblue (mark all): $skyblue');
 
     try {
-      final res = await dioClient.post(url: primary);
-      print('Response markAllAsRead primary: ${res.data}');
+      final res = await dioClient.post(url: skyblue);
+      print('Response markAllAsRead skyblue: ${res.data}');
 
       // Accept success when response body indicates success, even if HTTP status is non-200
       if (_checkSuccess(res.data)) {
@@ -132,17 +132,17 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       }
 
       print(
-          'Primary mark-all-as-read did not indicate success, trying fallback');
+          'skyblue mark-all-as-read did not indicate success, trying fallback');
     } catch (e) {
       if (e is DioException && e.response != null) {
         final respData = e.response!.data;
-        print('Primary markAllAsRead returned error with body: $respData');
+        print('skyblue markAllAsRead returned error with body: $respData');
         if (_checkSuccess(respData)) {
           return true;
         }
       }
 
-      print('Primary markAllAsRead failed: $e, trying fallback');
+      print('skyblue markAllAsRead failed: $e, trying fallback');
     }
 
     // Fallback endpoint used by some servers

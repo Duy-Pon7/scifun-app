@@ -83,7 +83,7 @@
 //             widget.fullname ?? "Khách",
 //             style: Theme.of(context).textTheme.titleLarge!.copyWith(
 //                   fontWeight: FontWeight.w700,
-//                   color: AppColor.primary500,
+//                   color: AppColor.skyblue500,
 //                 ),
 //           ),
 //           RichText(

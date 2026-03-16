@@ -8,7 +8,12 @@ import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 
 class ListSubjects extends StatelessWidget {
-  const ListSubjects({super.key});
+  const ListSubjects({
+    super.key,
+    this.onSubjectSelected,
+  });
+
+  final void Function(String subjectId, String subjectName)? onSubjectSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +65,26 @@ class ListSubjects extends StatelessWidget {
                   separatorBuilder: (_, __) => SizedBox(width: 8.w),
                   itemBuilder: (context, index) {
                     final subject = items[index];
+                    final subjectId = subject.id ?? '';
+                    final subjectName = subject.name?.trim().isNotEmpty == true
+                        ? subject.name!.trim()
+                        : 'Môn học';
+
                     return SubjectItem(
-                      subjectName: subject.name ?? "",
+                      subjectName: subjectName,
                       imagePath: subject.image ?? "",
                       onTap: () {
+                        if (subjectId.isEmpty) {
+                          return;
+                        }
+
+                        onSubjectSelected?.call(subjectId, subjectName);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => TopicPage(
-                                subjectId: subject.id ?? '',
-                                subjectName: subject.name ?? '',
+                                subjectId: subjectId,
+                                subjectName: subjectName,
                               ),
                             ));
                       },

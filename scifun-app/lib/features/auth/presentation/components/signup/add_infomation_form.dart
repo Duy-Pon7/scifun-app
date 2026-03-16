@@ -126,7 +126,6 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
                 children: [
                   _fullnameField(),
                   _birthdayField(),
-                 
                   SizedBox(height: 20.h),
                   _changeButton(),
                 ],
@@ -321,14 +320,14 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
               return Theme(
                 data: Theme.of(context).copyWith(
                   colorScheme: ColorScheme.light(
-                    primary: AppColor.primary400, // Màu header
+                    primary: AppColor.skyblue400, // Màu header
                     onPrimary: Colors.white, // Màu chữ trên header
                     onSurface: Colors.black, // Màu chữ ngày
                   ),
                   textButtonTheme: TextButtonThemeData(
                     style: TextButton.styleFrom(
                       foregroundColor:
-                          AppColor.primary400, // Màu nút "OK", "Hủy"
+                          AppColor.skyblue400, // Màu nút "OK", "Hủy"
                     ),
                   ),
                 ),
@@ -357,6 +356,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
         width: double.infinity,
         fontSize: 18.sp,
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 }
+

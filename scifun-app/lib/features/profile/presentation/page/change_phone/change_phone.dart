@@ -68,7 +68,7 @@ class _ChangePhoneState extends State<ChangePhone> {
         width: double.infinity,
         fontSize: 18.sp,
         padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 
   Widget _phoneField() => BasicInputField(
@@ -87,3 +87,4 @@ class _ChangePhoneState extends State<ChangePhone> {
         keyboardType: TextInputType.phone,
       );
 }
+

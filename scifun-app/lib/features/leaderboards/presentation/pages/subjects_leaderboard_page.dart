@@ -27,7 +27,7 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
             onTap: () => context.read<SubjectCubit>().refresh(),
             child: Icon(
               Icons.refresh,
-              color: AppColor.primary600,
+              color: AppColor.skyblue600,
               size: 24,
             )),
         showBack: false,
@@ -83,8 +83,8 @@ class _SubjectLeaderboardCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             gradient: LinearGradient(
               colors: [
-                AppColor.primary600.withValues(alpha: 0.1),
-                AppColor.primary600.withValues(alpha: 0.05),
+                AppColor.skyblue600.withValues(alpha: 0.1),
+                AppColor.skyblue600.withValues(alpha: 0.05),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -110,7 +110,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                             width: 60,
                             height: 60,
                             decoration: BoxDecoration(
-                              color: AppColor.primary600.withValues(alpha: 0.2),
+                              color: AppColor.skyblue600.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(Icons.book),
@@ -123,7 +123,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: AppColor.primary600.withValues(alpha: 0.2),
+                        color: AppColor.skyblue600.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(Icons.book),
@@ -157,7 +157,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
                   // Arrow icon
                   Icon(
                     Icons.arrow_forward_ios,
-                    color: AppColor.primary600,
+                    color: AppColor.skyblue600,
                     size: 18,
                   ),
                 ],

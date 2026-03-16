@@ -111,9 +111,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         print("✅ Login success: $user");
         emit(AuthUserLoginSuccess(
           user: user,
-          // TODO: Khi backend tra them field "isFirstLogin", map vao day.
-          // Tam thoi de null va UI se default true (luon hien onboarding).
-          isFirstLogin: null,
+          isFirstLogin: user?.data?.isFirstLogin,
         ));
       },
     );

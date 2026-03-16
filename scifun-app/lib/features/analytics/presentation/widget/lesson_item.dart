@@ -73,7 +73,7 @@ class LessonItem extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 14.sp,
-                        color: AppColor.primary600,
+                        color: AppColor.skyblue600,
                       ),
                     ),
                   ],

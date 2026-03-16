@@ -32,7 +32,7 @@ class HeaderProfile extends StatelessWidget {
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 24.sp,
-                color: AppColor.primary500,
+                color: AppColor.skyblue500,
               ),
         ),
       ],

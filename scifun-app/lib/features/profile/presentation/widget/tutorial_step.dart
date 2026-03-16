@@ -101,7 +101,7 @@ void showTutorialBottomSheet(
                       height: index == i ? 12.w : 8.w,
                       decoration: BoxDecoration(
                         color: index == i
-                            ? AppColor.primary600
+                            ? AppColor.skyblue600
                             : AppColor.backgroundTab,
                         shape: BoxShape.circle,
                       ),

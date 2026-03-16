@@ -58,6 +58,7 @@ class DataEntity extends Equatable {
     required this.email,
     required this.password,
     required this.fullname,
+    this.isFirstLogin,
     required this.isVerified,
     required this.avatar,
     required this.role,
@@ -71,6 +72,7 @@ class DataEntity extends Equatable {
   final String? email;
   final String? password;
   final String? fullname;
+  final bool? isFirstLogin;
   final bool? isVerified;
   final String? avatar;
   final String? role;
@@ -84,6 +86,7 @@ class DataEntity extends Equatable {
     String? email,
     String? password,
     String? fullname,
+    bool? isFirstLogin,
     bool? isVerified,
     String? avatar,
     String? role,
@@ -97,6 +100,7 @@ class DataEntity extends Equatable {
       email: email ?? this.email,
       password: password ?? this.password,
       fullname: fullname ?? this.fullname,
+      isFirstLogin: isFirstLogin ?? this.isFirstLogin,
       isVerified: isVerified ?? this.isVerified,
       avatar: avatar ?? this.avatar,
       role: role ?? this.role,
@@ -113,6 +117,7 @@ class DataEntity extends Equatable {
       email: json["email"],
       password: json["password"],
       fullname: json["fullname"],
+      isFirstLogin: json["isFirstLogin"],
       isVerified: json["isVerified"],
       avatar: json["avatar"],
       role: json["role"],
@@ -130,6 +135,7 @@ class DataEntity extends Equatable {
         "email": email,
         "password": password,
         "fullname": fullname,
+        "isFirstLogin": isFirstLogin,
         "isVerified": isVerified,
         "avatar": avatar,
         "role": role,
@@ -145,6 +151,7 @@ class DataEntity extends Equatable {
         email,
         password,
         fullname,
+        isFirstLogin,
         isVerified,
         avatar,
         role,

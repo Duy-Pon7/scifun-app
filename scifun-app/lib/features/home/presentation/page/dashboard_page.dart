@@ -24,7 +24,7 @@ class DashboardPage extends StatelessWidget {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: index,
           onTap: context.read<DashboardCubit>().choosePage,
-          selectedItemColor: AppColor.primary600,
+          selectedItemColor: AppColor.skyblue600,
           unselectedItemColor: AppColor.unselect,
           type: BottomNavigationBarType.fixed,
           selectedFontSize: Theme.of(context).textTheme.bodySmall!.fontSize!,

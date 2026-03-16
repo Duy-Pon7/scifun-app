@@ -140,7 +140,7 @@ class _CommentPageState extends State<CommentPage> {
               // Placeholder avatar of current user
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Theme.of(context).primaryColorLight,
+                backgroundColor: Theme.of(context).primaryColor,
                 child: const Icon(Icons.person, size: 18, color: Colors.white),
               ),
               const SizedBox(width: 8),

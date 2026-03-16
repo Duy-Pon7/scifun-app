@@ -68,7 +68,7 @@ class ResultTestPage extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primary500,
+                  backgroundColor: AppColor.skyblue500,
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                 ),
                 child: Text(
@@ -94,7 +94,7 @@ class ResultTestPage extends StatelessWidget {
 //                       children: [
 //                         Container(
 //                           decoration: BoxDecoration(
-//                             color: AppColor.primary100,
+//                             color: AppColor.skyblue100,
 //                             borderRadius: BorderRadius.only(
 //                                 bottomLeft: Radius.elliptical(250, 100),
 //                                 bottomRight: Radius.elliptical(250, 100)),
@@ -102,7 +102,7 @@ class ResultTestPage extends StatelessWidget {
 //                         ),
 //                         Container(
 //                           decoration: BoxDecoration(
-//                             color: AppColor.primary200,
+//                             color: AppColor.skyblue200,
 //                             borderRadius: BorderRadius.only(
 //                                 bottomLeft: Radius.elliptical(200, 200),
 //                                 bottomRight: Radius.elliptical(200, 200)),
@@ -114,7 +114,7 @@ class ResultTestPage extends StatelessWidget {
 //                             width: 170.w,
 //                             height: 170.w,
 //                             decoration: BoxDecoration(
-//                                 color: AppColor.primary600,
+//                                 color: AppColor.skyblue600,
 //                                 borderRadius:
 //                                     BorderRadius.all(Radius.circular(100.r))),
 //                           ),
@@ -150,7 +150,7 @@ class ResultTestPage extends StatelessWidget {
 //                                     .headlineLarge!
 //                                     .copyWith(
 //                                       fontSize: 34.sp,
-//                                       color: AppColor.primary500,
+//                                       color: AppColor.skyblue500,
 //                                       fontWeight: FontWeight.w700,
 //                                     ),
 //                               ),
@@ -325,8 +325,8 @@ class ResultTestPage extends StatelessWidget {
 //                               backgroundColor: Colors.transparent,
 //                               border: true,
 //                               borderWidth: 1,
-//                               textColor: AppColor.primary500,
-//                               borderColor: AppColor.primary600,
+//                               textColor: AppColor.skyblue500,
+//                               borderColor: AppColor.skyblue600,
 //                             ),
 //                           ),
 //                           Expanded(
@@ -338,7 +338,7 @@ class ResultTestPage extends StatelessWidget {
 //                                 horizontal: 12.w,
 //                                 vertical: 16.h,
 //                               ),
-//                               backgroundColor: AppColor.primary600,
+//                               backgroundColor: AppColor.skyblue600,
 //                             ),
 //                           ),
 //                         ],

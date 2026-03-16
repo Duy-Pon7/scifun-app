@@ -49,7 +49,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> {
             color: widget.backgroundColor,
             borderRadius: widget.borderRadius,
             border: Border.all(
-              color: _isExpanded ? AppColor.primary600 : widget.borderColor,
+              color: _isExpanded ? AppColor.skyblue600 : widget.borderColor,
               width: 1.5,
             ),
           ),

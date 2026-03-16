@@ -35,7 +35,7 @@
 //           leading: IconButton(
 //             icon: Icon(
 //               Icons.arrow_back_ios_rounded,
-//               color: AppColor.primary600,
+//               color: AppColor.skyblue600,
 //             ),
 //             onPressed: () => Navigator.of(context).pop(),
 //           ),
@@ -50,7 +50,7 @@
 //                       children: [
 //                         Container(
 //                           decoration: BoxDecoration(
-//                             color: AppColor.primary100,
+//                             color: AppColor.skyblue100,
 //                             borderRadius: BorderRadius.only(
 //                                 bottomLeft: Radius.elliptical(250, 100),
 //                                 bottomRight: Radius.elliptical(250, 100)),
@@ -58,7 +58,7 @@
 //                         ),
 //                         Container(
 //                           decoration: BoxDecoration(
-//                             color: AppColor.primary200,
+//                             color: AppColor.skyblue200,
 //                             borderRadius: BorderRadius.only(
 //                                 bottomLeft: Radius.elliptical(200, 200),
 //                                 bottomRight: Radius.elliptical(200, 200)),
@@ -94,7 +94,7 @@
 //                                     .headlineLarge!
 //                                     .copyWith(
 //                                       fontSize: 34.sp,
-//                                       color: AppColor.primary500,
+//                                       color: AppColor.skyblue500,
 //                                       fontWeight: FontWeight.w700,
 //                                     ),
 //                               ),
@@ -234,8 +234,8 @@
 //                               backgroundColor: Colors.transparent,
 //                               border: true,
 //                               borderWidth: 1,
-//                               textColor: AppColor.primary500,
-//                               borderColor: AppColor.primary600,
+//                               textColor: AppColor.skyblue500,
+//                               borderColor: AppColor.skyblue600,
 //                             ),
 //                           ),
 //                           Expanded(
@@ -247,7 +247,7 @@
 //                                 horizontal: 12.w,
 //                                 vertical: 16.h,
 //                               ),
-//                               backgroundColor: AppColor.primary600,
+//                               backgroundColor: AppColor.skyblue600,
 //                             ),
 //                           ),
 //                         ],

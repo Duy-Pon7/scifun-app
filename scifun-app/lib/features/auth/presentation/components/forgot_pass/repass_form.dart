@@ -69,7 +69,7 @@ class _RepassFormState extends State<RepassForm> {
             Text(
               "Tạo mật khẩu mới",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: AppColor.primary500,
+                    color: AppColor.skyblue500,
                     fontWeight: FontWeight.w700,
                   ),
             ),
@@ -169,6 +169,7 @@ class _RepassFormState extends State<RepassForm> {
           vertical: 14.h,
           horizontal: 20.w,
         ),
-        backgroundColor: AppColor.primary600,
+        backgroundColor: AppColor.skyblue400,
       );
 }
+

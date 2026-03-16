@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:dio/dio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/network/dio_client.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
-import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 
 class SubjectFocusOnboardingPage extends StatefulWidget {
   const SubjectFocusOnboardingPage({super.key});
@@ -51,6 +56,7 @@ class _SubjectFocusOnboardingPageState
   String? _selectedAgeRange;
   String? _selectedDiscoveryPlatform;
   int _currentStep = 0;
+  bool _isSubmitting = false;
 
   bool get _canContinueCurrentStep {
     switch (_currentStep) {
@@ -113,6 +119,10 @@ class _SubjectFocusOnboardingPageState
   }
 
   Future<void> _goNextStep() async {
+    if (_isSubmitting) {
+      return;
+    }
+
     if (!_canContinueCurrentStep) {
       return;
     }
@@ -130,6 +140,10 @@ class _SubjectFocusOnboardingPageState
   }
 
   Future<void> _goBackStep() async {
+    if (_isSubmitting) {
+      return;
+    }
+
     if (_currentStep == 0) {
       return;
     }
@@ -139,6 +153,63 @@ class _SubjectFocusOnboardingPageState
       duration: const Duration(milliseconds: 240),
       curve: Curves.easeInOut,
     );
+  }
+
+  String _mapSubjectForOnboarding(String? subjectName) {
+    final name = (subjectName ?? '').trim();
+    final normalized = name.toLowerCase();
+
+    if (normalized.contains('lý') ||
+        normalized.contains('lí') ||
+        normalized.contains('ly') ||
+        normalized.contains('li') ||
+        normalized.contains('physics')) {
+      return 'Lý';
+    }
+
+    if (normalized.contains('hóa') ||
+        normalized.contains('hoá') ||
+        normalized.contains('hoa') ||
+        normalized.contains('chem')) {
+      return 'Hóa';
+    }
+
+    if (normalized.contains('sinh') || normalized.contains('bio')) {
+      return 'Sinh';
+    }
+
+    return name;
+  }
+
+  String _extractOnboardingErrorMessage(Object error) {
+    if (error is DioException) {
+      final resData = error.response?.data;
+      if (resData is Map<String, dynamic>) {
+        final message = (resData['message'] ?? '').toString().trim();
+        if (message.isNotEmpty) {
+          return message;
+        }
+      }
+
+      if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.sendTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.connectionError) {
+        return 'Không thể kết nối máy chủ, vui lòng thử lại.';
+      }
+
+      final fallback = (error.message ?? '').trim();
+      if (fallback.isNotEmpty) {
+        return fallback;
+      }
+    }
+
+    final fallback = error.toString().trim();
+    if (fallback.isNotEmpty) {
+      return fallback.replaceFirst('Exception: ', '');
+    }
+
+    return 'Lưu thông tin onboarding thất bại.';
   }
 
   Future<void> _finishOnboarding() async {
@@ -160,30 +231,85 @@ class _SubjectFocusOnboardingPageState
       return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_prefsInterestSubjectId, subjectId);
-    await prefs.setString(_prefsAgeRange, ageRange);
-    await prefs.setString(_prefsReferralPlatform, referralPlatform);
+    final subjectName = subject.name?.trim().isNotEmpty == true
+        ? subject.name!.trim()
+        : 'Môn học';
 
-    // Xóa khóa onboarding cũ để tránh dữ liệu cũ.
-    await prefs.remove('onboarding_focus_subject_id');
-    await prefs.remove('onboarding_focus_subject_name');
-    await prefs.remove('onboarding_focus_level_index');
-    await prefs.remove('onboarding_focus_level_label');
-
-    if (!mounted) {
-      return;
+    if (mounted) {
+      setState(() {
+        _isSubmitting = true;
+      });
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => TopicPage(
-          subjectId: subjectId,
-          subjectName: subject.name ?? 'Môn học',
+    try {
+      final response = await sl<DioClient>().post(
+        url: OnboardingApiUrls.submit,
+        data: {
+          'subject': _mapSubjectForOnboarding(subjectName),
+          'ageGroup': ageRange,
+          'referralSource': referralPlatform,
+        },
+      );
+
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        final apiStatus = data['status'];
+        if (apiStatus is num && apiStatus.toInt() != 200) {
+          final message = (data['message'] ?? '').toString().trim();
+          throw Exception(
+            message.isNotEmpty ? message : 'Lưu thông tin onboarding thất bại.',
+          );
+        }
+      }
+
+      final statusCode = response.statusCode ?? 500;
+      if (statusCode < 200 || statusCode >= 300) {
+        throw Exception('Lưu thông tin onboarding thất bại.');
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_prefsInterestSubjectId, subjectId);
+      await prefs.setString(_prefsAgeRange, ageRange);
+      await prefs.setString(_prefsReferralPlatform, referralPlatform);
+
+      // Xóa khóa onboarding cũ để tránh dữ liệu cũ.
+      await prefs.remove('onboarding_focus_subject_id');
+      await prefs.remove('onboarding_focus_subject_name');
+      await prefs.remove('onboarding_focus_level_index');
+      await prefs.remove('onboarding_focus_level_label');
+
+      await sl<SharePrefsService>().saveSelectedSubject(
+        subjectId: subjectId,
+        subjectName: subjectName,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const DashboardPage(),
         ),
-      ),
-    );
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_extractOnboardingErrorMessage(e)),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   String _getQuestionForStep() {
@@ -626,7 +752,7 @@ class _SubjectFocusOnboardingPageState
   }
 
   Widget _buildBottomAction() {
-    final enabled = _canContinueCurrentStep;
+    final enabled = _canContinueCurrentStep && !_isSubmitting;
     final nextButtonColor =
         enabled ? const Color(0xFF3E5E71) : const Color(0xFF2B3D4A);
     final nextTextColor =
@@ -649,7 +775,12 @@ class _SubjectFocusOnboardingPageState
               width: 118.w,
               child: BasicButton(
                 text: 'QUAY LẠI',
-                onPressed: _goBackStep,
+                onPressed: () {
+                  if (_isSubmitting) {
+                    return;
+                  }
+                  _goBackStep();
+                },
                 backgroundColor: const Color(0xFF243A49),
                 textColor: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -663,7 +794,9 @@ class _SubjectFocusOnboardingPageState
           SizedBox(
             width: _currentStep > 0 ? 170.w : 180.w,
             child: BasicButton(
-              text: isLastStep ? 'HOÀN TẤT' : 'TIẾP TỤC',
+              text: isLastStep
+                  ? (_isSubmitting ? 'ĐANG GỬI...' : 'HOÀN TẤT')
+                  : 'TIẾP TỤC',
               onPressed: enabled ? _goNextStep : () {},
               backgroundColor: nextButtonColor,
               textColor: nextTextColor,

@@ -31,7 +31,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
       leading: leftIcon ??
           (showBack
               ? IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: AppColor.primary600),
+                  icon: Icon(Icons.arrow_back_ios, color: AppColor.skyblue600),
                   onPressed: onBackPress ?? () => Navigator.pop(context),
                 )
               : null),

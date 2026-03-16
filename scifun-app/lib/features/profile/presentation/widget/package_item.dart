@@ -75,7 +75,7 @@
 //                         .format(double.parse(price)),
 //                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
 //                         fontWeight: FontWeight.w700,
-//                         color: AppColor.primary500),
+//                         color: AppColor.skyblue500),
 //                     children: [
 //                       TextSpan(
 //                         text: "/năm",
