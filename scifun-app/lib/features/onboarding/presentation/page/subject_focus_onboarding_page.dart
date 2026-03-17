@@ -1,10 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:dio/dio.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
@@ -12,9 +10,11 @@ import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubjectFocusOnboardingPage extends StatefulWidget {
   const SubjectFocusOnboardingPage({super.key});
@@ -711,6 +711,9 @@ class _SubjectFocusOnboardingPageState
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final leadingIcon = _resolveOptionLeadingIcon(label);
+    final leadingColor = isSelected ? _selectedTextColor : _textSecondaryColor;
+
     return BasicButton(
       onPressed: onTap,
       width: double.infinity,
@@ -725,6 +728,14 @@ class _SubjectFocusOnboardingPageState
       buttonHeight: 3,
       child: Row(
         children: [
+          if (leadingIcon != null) ...[
+            Icon(
+              leadingIcon,
+              color: leadingColor,
+              size: 20.sp,
+            ),
+            SizedBox(width: 10.w),
+          ],
           Expanded(
             child: Text(
               label,
@@ -745,6 +756,34 @@ class _SubjectFocusOnboardingPageState
         ],
       ),
     );
+  }
+
+  IconData? _resolveOptionLeadingIcon(String label) {
+    final normalized = label.trim().toLowerCase();
+
+    if (normalized.contains('google')) {
+      return Icons.travel_explore;
+    }
+    if (normalized.contains('facebook')) {
+      return Icons.facebook;
+    }
+    if (normalized.contains('tiktok') || normalized.contains('tik tok')) {
+      return Icons.music_note_rounded;
+    }
+    if (normalized.contains('youtube') || normalized.contains('you tube')) {
+      return Icons.play_circle_fill_rounded;
+    }
+    if (normalized.contains('instagram')) {
+      return Icons.camera_alt_rounded;
+    }
+    if (normalized.contains('bạn bè') || normalized.contains('ban be')) {
+      return Icons.groups_rounded;
+    }
+    if (normalized.contains('khác') || normalized.contains('khac')) {
+      return Icons.more_horiz_rounded;
+    }
+
+    return null;
   }
 
   Widget _buildStepContent() {

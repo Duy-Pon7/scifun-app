@@ -69,6 +69,7 @@ dependencies:
   image: ^4.0.17
   lottie: ^3.3.1
   chiclet: ^1.2.0
+  iconsax: ^0.0.8
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
