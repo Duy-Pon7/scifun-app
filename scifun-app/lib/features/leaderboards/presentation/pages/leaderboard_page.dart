@@ -9,12 +9,14 @@ import 'package:sci_fun/features/leaderboards/domain/entity/leaderboards_entity.
 import 'package:sci_fun/features/leaderboards/presentation/cubit/leaderboards_cubit.dart';
 
 class LeaderboardPage extends StatefulWidget {
-  final String subjectId;
-
   const LeaderboardPage({
     super.key,
     required this.subjectId,
+    this.subjectName,
   });
+
+  final String subjectId;
+  final String? subjectName;
 
   @override
   State<LeaderboardPage> createState() => _LeaderboardPageState();
@@ -27,32 +29,23 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   void initState() {
     super.initState();
     _cubit = context.read<LeaderboardsCubit>();
-
-    // Luôn load dữ liệu mới khi trang được khởi tạo
-    // Vì mỗi trang LeaderboardPage đều có BlocProvider riêng với cubit mới
     _loadData();
   }
 
   @override
   void didUpdateWidget(covariant LeaderboardPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Nếu subjectId thay đổi, load lại dữ liệu
     if (oldWidget.subjectId != widget.subjectId) {
       _loadData();
     }
   }
 
   void _loadData() {
-    print(
-        'Loading leaderboard for subjectId: ${widget.subjectId}, cubit hashCode: ${_cubit.hashCode}');
-
-    // Load dữ liệu mới
     _cubit.loadLeaderboards(
       subjectId: widget.subjectId,
       period: 'alltime',
     );
 
-    // Load progress cho môn học này
     context
         .read<ProgressCubit>()
         .getProgress(ProgressParams(subjectId: widget.subjectId));
@@ -60,16 +53,19 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final accentColor = AppColor.subject600(widget.subjectName);
+
     return Scaffold(
       appBar: BasicAppbar(
         title: '🏆 Bảng xếp hạng',
         rightIcon: GestureDetector(
-            onTap: () => _cubit.refresh(),
-            child: Icon(
-              Icons.refresh,
-              color: AppColor.skyblue600,
-              size: 24,
-            )),
+          onTap: () => _cubit.refresh(),
+          child: Icon(
+            Icons.refresh,
+            color: accentColor,
+            size: 24,
+          ),
+        ),
         showBack: true,
       ),
       body: PaginationListView<LeaderboardsEntity>(
@@ -78,7 +74,10 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           child: Text('Chưa có dữ liệu bảng xếp hạng'),
         ),
         itemBuilder: (context, item) {
-          return _LeaderboardItem(item: item);
+          return _LeaderboardItem(
+            item: item,
+            accentColor: accentColor,
+          );
         },
       ),
     );
@@ -86,18 +85,23 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 }
 
 class _LeaderboardItem extends StatelessWidget {
-  final LeaderboardsEntity item;
-
   const _LeaderboardItem({
     required this.item,
+    required this.accentColor,
   });
+
+  final LeaderboardsEntity item;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
-        leading: _RankBadge(rank: item.rank ?? 0),
+        leading: _RankBadge(
+          rank: item.rank ?? 0,
+          accentColor: accentColor,
+        ),
         title: Text(
           item.userName ?? 'Người dùng ẩn danh',
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -121,7 +125,7 @@ class _LeaderboardItem extends StatelessWidget {
                     'Tiến độ: ${item.progress}%',
                     style: TextStyle(
                       fontSize: 13,
-                      color: AppColor.skyblue600,
+                      color: accentColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -144,27 +148,37 @@ class _LeaderboardItem extends StatelessWidget {
     if (rank == 1) return Colors.amber;
     if (rank == 2) return Colors.grey;
     if (rank == 3) return Colors.brown;
-    return Colors.blueGrey;
+    return accentColor;
   }
 }
 
 class _RankBadge extends StatelessWidget {
-  final int rank;
+  const _RankBadge({
+    required this.rank,
+    required this.accentColor,
+  });
 
-  const _RankBadge({required this.rank});
+  final int rank;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     if (rank > 3) {
       return CircleAvatar(
-        backgroundColor: Colors.blueGrey.shade100,
-        child: Text('$rank'),
+        backgroundColor: accentColor.withValues(alpha: 0.16),
+        child: Text(
+          '$rank',
+          style: TextStyle(
+            color: accentColor,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       );
     }
 
     return CircleAvatar(
       backgroundColor: _color,
-      child: Icon(
+      child: const Icon(
         Icons.emoji_events,
         color: Colors.white,
       ),
@@ -180,7 +194,7 @@ class _RankBadge extends StatelessWidget {
       case 3:
         return Colors.brown;
       default:
-        return Colors.blueGrey;
+        return accentColor;
     }
   }
 }

@@ -119,6 +119,34 @@ class AppColor {
         biology: yellowgreen950,
       );
 
+  static Color subject100(String? subjectName) => _fixedBySubjectName(
+        subjectName: subjectName,
+        physics: physics100,
+        chemistry: red100,
+        biology: yellowgreen100,
+      );
+
+  static Color subject500(String? subjectName) => _fixedBySubjectName(
+        subjectName: subjectName,
+        physics: physics500,
+        chemistry: red500,
+        biology: yellowgreen500,
+      );
+
+  static Color subject600(String? subjectName) => _fixedBySubjectName(
+        subjectName: subjectName,
+        physics: physics600,
+        chemistry: red600,
+        biology: yellowgreen600,
+      );
+
+  static Color subject700(String? subjectName) => _fixedBySubjectName(
+        subjectName: subjectName,
+        physics: physics700,
+        chemistry: red700,
+        biology: yellowgreen700,
+      );
+
   static const Color hurricane50 = Color(0xfff3f3f3);
   static const Color hurricane100 = Color(0xffe2dfdf);
   static const Color hurricane200 = Color(0xffc6c3c2);
@@ -145,7 +173,36 @@ class AppColor {
     required Color chemistry,
     required Color biology,
   }) {
-    return switch (_activeTheme) {
+    return _colorByTheme(
+      theme: _activeTheme,
+      physics: physics,
+      chemistry: chemistry,
+      biology: biology,
+    );
+  }
+
+  static Color _fixedBySubjectName({
+    required String? subjectName,
+    required Color physics,
+    required Color chemistry,
+    required Color biology,
+  }) {
+    final resolvedTheme = SubjectThemeHelper.resolveTheme(subjectName);
+    return _colorByTheme(
+      theme: resolvedTheme,
+      physics: physics,
+      chemistry: chemistry,
+      biology: biology,
+    );
+  }
+
+  static Color _colorByTheme({
+    required SubjectThemeType theme,
+    required Color physics,
+    required Color chemistry,
+    required Color biology,
+  }) {
+    return switch (theme) {
       SubjectThemeType.physics => physics,
       SubjectThemeType.chemistry => chemistry,
       SubjectThemeType.biology => biology,

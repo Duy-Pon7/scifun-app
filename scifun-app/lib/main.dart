@@ -14,6 +14,7 @@ import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/features/onboarding/presentation/page/subject_focus_onboarding_page.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
@@ -77,7 +78,9 @@ class MyApp extends StatelessWidget {
               title: 'Sci Fun',
               theme: AppTheme.theme,
               builder: EasyLoading.init(),
-              home: isAuthorized ? DashboardPage() : const SigninPage(),
+              home: isAuthorized
+                  ? DashboardPage()
+                  : const SubjectFocusOnboardingPage(),
             );
           },
         );

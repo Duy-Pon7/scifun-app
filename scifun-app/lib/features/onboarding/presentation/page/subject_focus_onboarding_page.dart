@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dio/dio.dart';
@@ -443,7 +443,11 @@ class _SubjectFocusOnboardingPageState
     return AppImage.lesson;
   }
 
-  Widget _buildSubjectImage(SubjectEntity subject) {
+  Widget _buildSubjectImage(
+    SubjectEntity subject, {
+    required Color backgroundColor,
+    required Color borderColor,
+  }) {
     final fallbackImage = _getSubjectFallbackImage(subject.name);
     final imageUrl = (subject.image ?? '').trim();
     final hasNetworkImage =
@@ -454,9 +458,9 @@ class _SubjectFocusOnboardingPageState
       height: 44.w,
       padding: EdgeInsets.all(2.w),
       decoration: BoxDecoration(
-        color: _surfaceColor,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: _borderColor, width: 1.w),
+        border: Border.all(color: borderColor, width: 1.w),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.r),
@@ -525,6 +529,19 @@ class _SubjectFocusOnboardingPageState
     final subjectName = subject.name?.trim().isNotEmpty == true
         ? subject.name!.trim()
         : 'Môn học';
+    final accentColor = AppColor.subject600(subject.name);
+    final pressedAccentColor = AppColor.subject700(subject.name);
+    final softAccentColor = AppColor.subject100(subject.name);
+    final tileBackgroundColor = isSelected ? accentColor : softAccentColor;
+    final tileButtonColor = isSelected ? pressedAccentColor : accentColor;
+    final tileTextColor = isSelected ? Colors.white : accentColor;
+    final tileBorderColor =
+        isSelected ? pressedAccentColor : accentColor.withValues(alpha: 0.45);
+    final imageBackgroundColor =
+        isSelected ? Colors.white.withValues(alpha: 0.16) : _surfaceColor;
+    final imageBorderColor = isSelected
+        ? Colors.white.withValues(alpha: 0.5)
+        : accentColor.withValues(alpha: 0.35);
 
     return BasicButton(
       onPressed: () {
@@ -534,24 +551,29 @@ class _SubjectFocusOnboardingPageState
       },
       width: double.infinity,
       border: true,
-      borderColor: isSelected ? _selectedBorderColor : _borderColor,
+      borderColor: tileBorderColor,
       borderWidth: 1.w,
-      backgroundColor: isSelected ? _selectedFillColor : _surfaceColor,
-      textColor: isSelected ? _selectedTextColor : _textPrimaryColor,
+      backgroundColor: tileBackgroundColor,
+      buttonColor: tileButtonColor,
+      textColor: tileTextColor,
       borderRadius: BorderRadius.circular(14.r),
       alignment: Alignment.centerLeft,
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
       buttonHeight: 3,
       child: Row(
         children: [
-          _buildSubjectImage(subject),
+          _buildSubjectImage(
+            subject,
+            backgroundColor: imageBackgroundColor,
+            borderColor: imageBorderColor,
+          ),
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
               subjectName,
               style: TextStyle(
                 fontSize: 16.sp,
-                color: isSelected ? _selectedTextColor : _textPrimaryColor,
+                color: tileTextColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -560,7 +582,9 @@ class _SubjectFocusOnboardingPageState
             isSelected
                 ? Icons.check_circle_rounded
                 : Icons.radio_button_unchecked,
-            color: isSelected ? _selectedTextColor : _textSecondaryColor,
+            color: isSelected
+                ? Colors.white.withValues(alpha: 0.95)
+                : accentColor.withValues(alpha: 0.75),
             size: 20.sp,
           ),
         ],
