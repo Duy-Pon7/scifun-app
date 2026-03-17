@@ -41,7 +41,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 17.sp,
-                fontFamily: 'Inter',
+                fontFamily: 'Baloo2',
                 fontWeight: FontWeight.w600,
               ),
             )

@@ -257,9 +257,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                             SizedBox(width: 4.w),
                                             Text(
                                               "Đăng xuất",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
+                                              style: TextStyle(
+                                                fontFamily: 'Baloo2',
+                                                fontSize: 16.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -331,7 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                 fontSize: 17.sp,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w600,
               ),
         ),
       ],

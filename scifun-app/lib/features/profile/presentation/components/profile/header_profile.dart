@@ -20,7 +20,7 @@ class HeaderProfile extends StatelessWidget {
       spacing: 11.h,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(50.r),
+          borderRadius: BorderRadius.circular(100.r),
           child: CustomNetworkAssetImage(
             imagePath: imgUrl,
             width: 100.w,

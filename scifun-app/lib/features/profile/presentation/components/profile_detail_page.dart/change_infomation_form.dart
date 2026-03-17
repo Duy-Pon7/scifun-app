@@ -174,7 +174,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         return Stack(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(50.r),
+              borderRadius: BorderRadius.circular(100.r),
               child: image != null
                   ? Image.file(
                       image,
@@ -281,4 +281,3 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         backgroundColor: AppColor.skyblue400,
       );
 }
-

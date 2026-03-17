@@ -111,10 +111,10 @@ class _HeaderHomeState extends State<HeaderHome> {
             color: Colors.white,
             width: 2.w,
           ),
-          borderRadius: BorderRadius.circular(25.r),
+          borderRadius: BorderRadius.circular(100.r),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(25.r),
+          borderRadius: BorderRadius.circular(100.r),
           child: avatarUrl == null || avatarUrl.isEmpty
               ? Icon(
                   Icons.person,

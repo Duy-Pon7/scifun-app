@@ -54,7 +54,7 @@ class BasicButton extends StatelessWidget {
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                 color: textColor,
-                fontWeight: fontWeight,
+                fontWeight: FontWeight.w600,
                 fontSize: fontSize,
               ),
         );
@@ -63,7 +63,8 @@ class BasicButton extends StatelessWidget {
       child: builtChild,
     );
     final double resolvedBorderRadius = _resolveBorderRadius();
-    final Color resolvedBackgroundColor = backgroundColor ?? AppColor.skyblue400;
+    final Color resolvedBackgroundColor =
+        backgroundColor ?? AppColor.skyblue400;
     final Color? resolvedButtonColor =
         buttonColor ?? (backgroundColor == null ? AppColor.skyblue500 : null);
 

@@ -80,10 +80,7 @@ class _SigninFormState extends State<SigninForm> {
       }
       if (!mounted) return;
 
-      // Backend rule:
-      // isFirstLogin = false -> mở onboarding
-      // isFirstLogin = true  -> vào app bình thường
-      final shouldShowOnboarding = state.isFirstLogin == false;
+      final shouldShowOnboarding = state.isFirstLogin == true;
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -128,6 +125,7 @@ class _SigninFormState extends State<SigninForm> {
               _passwordField(),
               _forgotPassword(),
               _signInButton(),
+              _guestSignInButton(),
               _navigateSignUp(),
             ],
           ),
@@ -199,6 +197,39 @@ class _SigninFormState extends State<SigninForm> {
         backgroundColor: AppColor.skyblue400,
       );
 
+  Widget _guestSignInButton() => BasicButton(
+        onPressed: () {},
+        width: double.infinity,
+        border: true,
+        borderColor: AppColor.hurricane200,
+        backgroundColor: Colors.white,
+        textColor: AppColor.hurricane800,
+        fontSize: 18.sp,
+        padding: EdgeInsets.symmetric(
+          vertical: 14.h,
+          horizontal: 20.w,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_outline_rounded,
+              size: 20.sp,
+              color: AppColor.hurricane800,
+            ),
+            SizedBox(width: 8.w),
+            Text(
+              'Đăng nhập khách',
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColor.hurricane800,
+                  ),
+            ),
+          ],
+        ),
+      );
+
   Widget _navigateSignUp() => Align(
         alignment: Alignment.center,
         child: RichText(
@@ -241,4 +272,3 @@ class _SigninFormState extends State<SigninForm> {
     return '$difference ngày';
   }
 }
-

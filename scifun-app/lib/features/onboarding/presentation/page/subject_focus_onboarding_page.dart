@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dio/dio.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -57,6 +58,15 @@ class _SubjectFocusOnboardingPageState
   String? _selectedDiscoveryPlatform;
   int _currentStep = 0;
   bool _isSubmitting = false;
+
+  static const Color _surfaceColor = Colors.white;
+  static const Color _borderColor = Color(0xFFD6DADF);
+  static const Color _textPrimaryColor = Color(0xFF3F4348);
+  static const Color _textSecondaryColor = Color(0xFF8D949C);
+  static const Color _selectedFillColor = Color(0xFFD9F0FF);
+  static const Color _selectedBorderColor = Color(0xFF70C5EE);
+  static const Color _selectedTextColor = Color(0xFF2092CA);
+  static const Color _disabledActionColor = Color(0xFFE4E4E4);
 
   bool get _canContinueCurrentStep {
     switch (_currentStep) {
@@ -332,7 +342,7 @@ class _SubjectFocusOnboardingPageState
           'Bước ${_currentStep + 1}/$_totalSteps',
           style: TextStyle(
             fontSize: 13.sp,
-            color: Colors.white70,
+            color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -349,9 +359,8 @@ class _SubjectFocusOnboardingPageState
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5.r),
-                    color: isDone
-                        ? const Color(0xFF3FD0FF)
-                        : const Color(0xFF24485E),
+                    color:
+                        isDone ? _selectedTextColor : const Color(0xFFE7EAEE),
                   ),
                 ),
               );
@@ -369,31 +378,29 @@ class _SubjectFocusOnboardingPageState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 100.w,
-          height: 100.w,
+          width: 140.w,
+          height: 140.w,
           child: Center(
             child: Lottie.asset(
               'assets/lottie_json/cat.json',
-              fit: BoxFit.cover,
               repeat: true,
             ),
           ),
         ),
-        SizedBox(width: 12.w),
         Expanded(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D2738),
+              color: _surfaceColor,
               borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
+              border: Border.all(color: _borderColor, width: 1.w),
             ),
             child: Text(
               question,
               style: TextStyle(
                 fontSize: 21.sp,
                 height: 1.35,
-                color: Colors.white,
+                color: _textPrimaryColor,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -447,9 +454,9 @@ class _SubjectFocusOnboardingPageState
       height: 44.w,
       padding: EdgeInsets.all(2.w),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D2D40),
+        color: _surfaceColor,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: const Color(0xFF335A72), width: 1.w),
+        border: Border.all(color: _borderColor, width: 1.w),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.r),
@@ -474,9 +481,9 @@ class _SubjectFocusOnboardingPageState
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 18.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A2231),
+        color: _surfaceColor,
         borderRadius: BorderRadius.circular(14.r),
-        border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
+        border: Border.all(color: _borderColor, width: 1.w),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -486,22 +493,26 @@ class _SubjectFocusOnboardingPageState
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14.sp,
-              color: Colors.white70,
+              color: _textSecondaryColor,
               fontWeight: FontWeight.w600,
             ),
           ),
           if (actionLabel != null && onAction != null) ...[
             SizedBox(height: 10.h),
-            TextButton(
+            BasicButton(
+              text: actionLabel,
               onPressed: onAction,
-              child: Text(
-                actionLabel,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF51D7FF),
-                ),
-              ),
+              width: 120.w,
+              border: true,
+              borderColor: _selectedBorderColor,
+              borderWidth: 1.w,
+              backgroundColor: _surfaceColor,
+              textColor: _selectedTextColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 14.sp,
+              borderRadius: BorderRadius.circular(12.r),
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              buttonHeight: 3,
             ),
           ],
         ],
@@ -515,48 +526,44 @@ class _SubjectFocusOnboardingPageState
         ? subject.name!.trim()
         : 'Môn học';
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(14.r),
-      onTap: () {
+    return BasicButton(
+      onPressed: () {
         setState(() {
           _selectedSubject = subject;
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF11415C) : const Color(0xFF0A2434),
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color:
-                isSelected ? const Color(0xFF38C0FF) : const Color(0xFF33576C),
-            width: 1.2.w,
-          ),
-        ),
-        child: Row(
-          children: [
-            _buildSubjectImage(subject),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Text(
-                subjectName,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+      width: double.infinity,
+      border: true,
+      borderColor: isSelected ? _selectedBorderColor : _borderColor,
+      borderWidth: 1.w,
+      backgroundColor: isSelected ? _selectedFillColor : _surfaceColor,
+      textColor: isSelected ? _selectedTextColor : _textPrimaryColor,
+      borderRadius: BorderRadius.circular(14.r),
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      buttonHeight: 3,
+      child: Row(
+        children: [
+          _buildSubjectImage(subject),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Text(
+              subjectName,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: isSelected ? _selectedTextColor : _textPrimaryColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(
-              isSelected
-                  ? Icons.check_circle_rounded
-                  : Icons.radio_button_unchecked,
-              color: isSelected ? const Color(0xFF41D0FF) : Colors.white60,
-              size: 20.sp,
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            isSelected
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked,
+            color: isSelected ? _selectedTextColor : _textSecondaryColor,
+            size: 20.sp,
+          ),
+        ],
       ),
     );
   }
@@ -566,7 +573,11 @@ class _SubjectFocusOnboardingPageState
       builder: (context, state) {
         if (state is PaginationLoading<SubjectEntity> ||
             state is PaginationLoadingMore<SubjectEntity>) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: _selectedTextColor,
+            ),
+          );
         }
 
         if (state is PaginationSuccess<SubjectEntity>) {
@@ -606,7 +617,7 @@ class _SubjectFocusOnboardingPageState
           'Môn học bạn muốn học nhiều hơn',
           style: TextStyle(
             fontSize: 14.sp,
-            color: Colors.white70,
+            color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -617,15 +628,15 @@ class _SubjectFocusOnboardingPageState
           width: double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: const Color(0xFF0A2231),
+            color: _surfaceColor,
             borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(color: const Color(0xFF2D556E), width: 1.w),
+            border: Border.all(color: _borderColor, width: 1.w),
           ),
           child: Text(
             'Bạn có thể thay đổi lựa chọn này bất kỳ lúc nào.',
             style: TextStyle(
               fontSize: 13.sp,
-              color: Colors.white70,
+              color: _textSecondaryColor,
               height: 1.35,
             ),
           ),
@@ -647,7 +658,7 @@ class _SubjectFocusOnboardingPageState
           helperText,
           style: TextStyle(
             fontSize: 14.sp,
-            color: Colors.white70,
+            color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -676,42 +687,38 @@ class _SubjectFocusOnboardingPageState
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    return InkWell(
+    return BasicButton(
+      onPressed: onTap,
+      width: double.infinity,
+      border: true,
+      borderColor: isSelected ? _selectedBorderColor : _borderColor,
+      borderWidth: 1.w,
+      backgroundColor: isSelected ? _selectedFillColor : _surfaceColor,
+      textColor: isSelected ? _selectedTextColor : _textPrimaryColor,
       borderRadius: BorderRadius.circular(14.r),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF11415C) : const Color(0xFF0A2434),
-          borderRadius: BorderRadius.circular(14.r),
-          border: Border.all(
-            color:
-                isSelected ? const Color(0xFF38C0FF) : const Color(0xFF33576C),
-            width: 1.2.w,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+      buttonHeight: 3,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: isSelected ? _selectedTextColor : _textPrimaryColor,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(
-              isSelected
-                  ? Icons.check_circle_rounded
-                  : Icons.radio_button_unchecked,
-              color: isSelected ? const Color(0xFF41D0FF) : Colors.white60,
-              size: 20.sp,
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            isSelected
+                ? Icons.check_circle_rounded
+                : Icons.radio_button_unchecked,
+            color: isSelected ? _selectedTextColor : _textSecondaryColor,
+            size: 20.sp,
+          ),
+        ],
       ),
     );
   }
@@ -754,18 +761,19 @@ class _SubjectFocusOnboardingPageState
   Widget _buildBottomAction() {
     final enabled = _canContinueCurrentStep && !_isSubmitting;
     final nextButtonColor =
-        enabled ? const Color(0xFF3E5E71) : const Color(0xFF2B3D4A);
-    final nextTextColor =
-        enabled ? Colors.white : const Color(0xFF7F97A8).withValues(alpha: 0.9);
+        enabled ? AppColor.skyblue500 : _disabledActionColor;
+    final nextTextColor = enabled
+        ? Colors.white
+        : const Color(0xFFA9AFB6).withValues(alpha: 0.95);
     final isLastStep = _currentStep == _totalSteps - 1;
 
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 18.h),
       decoration: BoxDecoration(
-        color: const Color(0xFF051824),
+        color: _surfaceColor,
         border: Border(
-          top: BorderSide(color: const Color(0xFF2E4A5D), width: 1.w),
+          top: BorderSide(color: _borderColor, width: 1.w),
         ),
       ),
       child: Row(
@@ -781,11 +789,15 @@ class _SubjectFocusOnboardingPageState
                   }
                   _goBackStep();
                 },
-                backgroundColor: const Color(0xFF243A49),
-                textColor: Colors.white,
+                border: true,
+                borderColor: _borderColor,
+                borderWidth: 1.w,
+                backgroundColor: _surfaceColor,
+                textColor: _textPrimaryColor,
                 fontWeight: FontWeight.w700,
                 borderRadius: BorderRadius.circular(16.r),
                 padding: EdgeInsets.symmetric(vertical: 14.h),
+                buttonHeight: 3,
               ),
             ),
             SizedBox(width: 10.w),
@@ -803,6 +815,7 @@ class _SubjectFocusOnboardingPageState
               fontWeight: FontWeight.w700,
               borderRadius: BorderRadius.circular(16.r),
               padding: EdgeInsets.symmetric(vertical: 14.h),
+              buttonHeight: 3,
             ),
           ),
         ],
@@ -819,40 +832,27 @@ class _SubjectFocusOnboardingPageState
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF061A27),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF0A2A3C),
-                Color(0xFF061A27),
-                Color(0xFF04141F),
-              ],
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 12.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildProgressIndicator(),
-                        SizedBox(height: 12.h),
-                        _buildCharacterAndQuestion(),
-                        SizedBox(height: 14.h),
-                        Expanded(child: _buildStepContent()),
-                      ],
-                    ),
+        backgroundColor: _surfaceColor,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 12.h),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildProgressIndicator(),
+                      SizedBox(height: 12.h),
+                      _buildCharacterAndQuestion(),
+                      SizedBox(height: 14.h),
+                      Expanded(child: _buildStepContent()),
+                    ],
                   ),
                 ),
-                _buildBottomAction(),
-              ],
-            ),
+              ),
+              _buildBottomAction(),
+            ],
           ),
         ),
       ),
