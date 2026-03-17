@@ -37,6 +37,7 @@ class _QuizzPageState extends State<QuizzPage> {
     super.initState();
     cubit = sl<QuizzCubit>();
     proCubit = context.read<ProCubit>();
+    cubit.loadInitial(filterId: widget.topicId);
     _initStateAsync();
   }
 
@@ -54,8 +55,6 @@ class _QuizzPageState extends State<QuizzPage> {
 
     if (!mounted) return;
     setState(() => isProUser = pro);
-
-    cubit.loadInitial(filterId: widget.topicId);
   }
 
   @override
