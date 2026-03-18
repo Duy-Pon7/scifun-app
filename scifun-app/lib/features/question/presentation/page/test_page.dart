@@ -10,6 +10,7 @@ import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/question/domain/entity/question_entity.dart';
 import 'package:sci_fun/features/question/domain/usecase/submit_quiz.dart';
+import 'package:sci_fun/features/question/presentation/cubit/question_by_id_cubit.dart';
 import 'package:sci_fun/features/question/presentation/cubit/question_cubit.dart';
 import 'package:sci_fun/features/question/presentation/cubit/submit_quiz_cubit.dart';
 import 'package:sci_fun/features/question/presentation/page/quiz_result_page.dart';
@@ -25,9 +26,14 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   late final QuestionCubit cubit;
+  late final QuestionByIdCubit questionByIdCubit;
   late final SubmitQuizCubit submitQuizCubit;
 
   int currentIndex = 0;
+  bool isAnswerChecked = false;
+  bool isCheckingAnswer = false;
+  bool currentAnswerIsCorrect = false;
+  Set<String> checkedCorrectAnswerIds = <String>{};
 
   // Store selected answer IDs by question ID.
   final Map<String, List<String>> selectedAnswers = {};
@@ -37,12 +43,14 @@ class _TestPageState extends State<TestPage> {
     super.initState();
     cubit = QuestionCubit(sl());
     cubit.loadInitial(filterId: widget.quizzId);
+    questionByIdCubit = sl<QuestionByIdCubit>();
     submitQuizCubit = SubmitQuizCubit(sl<SubmitQuiz>());
   }
 
   @override
   void dispose() {
     cubit.close();
+    questionByIdCubit.close();
     submitQuizCubit.close();
     super.dispose();
   }
@@ -56,6 +64,35 @@ class _TestPageState extends State<TestPage> {
 
   bool _isMultiSelectQuestion(QuestionEntity question) {
     return question.answers.where((a) => a.isCorrect == true).length > 1;
+  }
+
+  Set<String> _extractCorrectAnswerIds(QuestionEntity question) {
+    return question.answers
+        .where((answer) => answer.isCorrect == true && answer.id != null)
+        .map((answer) => answer.id!)
+        .toSet();
+  }
+
+  void _applyCheckResult({
+    required QuestionEntity question,
+    required Set<String> correctIds,
+  }) {
+    if (!mounted) return;
+    final questionId = question.id;
+    if (questionId == null) return;
+
+    final selected = Set<String>.from(
+      selectedAnswers[questionId] ?? const <String>[],
+    );
+    final isCorrect = selected.length == correctIds.length &&
+        selected.containsAll(correctIds);
+
+    setState(() {
+      isCheckingAnswer = false;
+      isAnswerChecked = true;
+      currentAnswerIsCorrect = isCorrect;
+      checkedCorrectAnswerIds = correctIds;
+    });
   }
 
   void _toggleAnswerSelection({
@@ -84,23 +121,35 @@ class _TestPageState extends State<TestPage> {
     });
   }
 
-  void _goNextOrSubmit(List<QuestionEntity> questions) {
-    if (questions.isEmpty) return;
+  Future<void> _checkCurrentQuestion(QuestionEntity question) async {
+    final questionId = question.id;
+    if (questionId == null) return;
 
-    final currentQuestion = questions[currentIndex];
-    final currentQuestionId = currentQuestion.id;
-    final selectedCurrent = currentQuestionId == null
-        ? const <String>[]
-        : (selectedAnswers[currentQuestionId] ?? const <String>[]);
-
+    final selectedCurrent = selectedAnswers[questionId] ?? const <String>[];
     if (selectedCurrent.isEmpty) {
       _showSnack('Vui long chon dap an truoc khi tiep tuc.');
       return;
     }
 
+    setState(() {
+      isCheckingAnswer = true;
+      checkedCorrectAnswerIds = <String>{};
+      currentAnswerIsCorrect = false;
+    });
+
+    await questionByIdCubit.fetchQuestionById(questionId);
+  }
+
+  void _continueOrSubmit(List<QuestionEntity> questions) {
+    if (questions.isEmpty) return;
+
     if (currentIndex < questions.length - 1) {
       setState(() {
         currentIndex++;
+        isAnswerChecked = false;
+        isCheckingAnswer = false;
+        currentAnswerIsCorrect = false;
+        checkedCorrectAnswerIds = <String>{};
       });
       return;
     }
@@ -152,6 +201,7 @@ class _TestPageState extends State<TestPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<QuestionCubit>.value(value: cubit),
+        BlocProvider<QuestionByIdCubit>.value(value: questionByIdCubit),
         BlocProvider<SubmitQuizCubit>.value(value: submitQuizCubit),
       ],
       child: Scaffold(
@@ -202,25 +252,65 @@ class _TestPageState extends State<TestPage> {
                 final submitState = context.watch<SubmitQuizCubit>().state;
                 final isSubmitting = submitState is SubmitQuizLoading;
                 final progress = (currentIndex + 1) / items.length;
-                final canCheck = selectedIds.isNotEmpty && !isSubmitting;
+                final isLastQuestion = currentIndex == items.length - 1;
+                final canAction = isAnswerChecked
+                    ? !isSubmitting && !isCheckingAnswer
+                    : selectedIds.isNotEmpty &&
+                        !isSubmitting &&
+                        !isCheckingAnswer;
+                final primaryLabel = isSubmitting
+                    ? 'DANG GUI...'
+                    : isCheckingAnswer
+                        ? 'DANG KIEM TRA...'
+                        : isAnswerChecked
+                            ? (isLastQuestion ? 'NOP BAI' : 'TIEP TUC')
+                            : 'KIEM TRA';
                 final accent = AppColor.skyblue500;
                 final accentDark = AppColor.skyblue700;
                 final accentLight = AppColor.skyblue100;
                 final accentMid = AppColor.skyblue300;
 
-                return BlocListener<SubmitQuizCubit, SubmitQuizState>(
-                  listener: (context, submitState) {
-                    if (submitState is SubmitQuizSuccess) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              QuizResultPage(result: submitState.result),
-                        ),
-                      );
-                    } else if (submitState is SubmitQuizError) {
-                      _showSnack(submitState.message);
-                    }
-                  },
+                return MultiBlocListener(
+                  listeners: [
+                    BlocListener<SubmitQuizCubit, SubmitQuizState>(
+                      listener: (context, submitState) {
+                        if (submitState is SubmitQuizSuccess) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  QuizResultPage(result: submitState.result),
+                            ),
+                          );
+                        } else if (submitState is SubmitQuizError) {
+                          _showSnack(submitState.message);
+                        }
+                      },
+                    ),
+                    BlocListener<QuestionByIdCubit, QuestionByIdState>(
+                      listener: (context, questionByIdState) {
+                        final activeQuestion = items[currentIndex];
+
+                        if (questionByIdState is QuestionByIdLoaded) {
+                          final fetchedQuestion = questionByIdState.question;
+                          final correctIds =
+                              fetchedQuestion.id == activeQuestion.id
+                                  ? _extractCorrectAnswerIds(fetchedQuestion)
+                                  : _extractCorrectAnswerIds(activeQuestion);
+                          _applyCheckResult(
+                            question: activeQuestion,
+                            correctIds: correctIds,
+                          );
+                        } else if (questionByIdState is QuestionByIdError) {
+                          _showSnack(questionByIdState.message);
+                          _applyCheckResult(
+                            question: activeQuestion,
+                            correctIds:
+                                _extractCorrectAnswerIds(activeQuestion),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -260,7 +350,7 @@ class _TestPageState extends State<TestPage> {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            '5',
+                            '${items.length}',
                             style: TextStyle(
                               fontSize: 24.sp,
                               fontWeight: FontWeight.w700,
@@ -314,6 +404,22 @@ class _TestPageState extends State<TestPage> {
                             ),
                           ),
                         ),
+                      if (isAnswerChecked)
+                        Padding(
+                          padding: EdgeInsets.only(top: 8.h),
+                          child: Text(
+                            currentAnswerIsCorrect
+                                ? 'Ban da chon dung.'
+                                : 'Cau nay chua dung. Dap an dung duoc to mau xanh.',
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w700,
+                              color: currentAnswerIsCorrect
+                                  ? const Color(0xFF1B5E20)
+                                  : const Color(0xFFB71C1C),
+                            ),
+                          ),
+                        ),
                       SizedBox(height: 16.h),
                       Expanded(
                         child: ListView.separated(
@@ -324,9 +430,64 @@ class _TestPageState extends State<TestPage> {
                             final answerId = answer.id;
                             final isSelected = answerId != null &&
                                 selectedIds.contains(answerId);
+                            final isCorrectAnswer = answerId != null &&
+                                checkedCorrectAnswerIds.contains(answerId);
+                            final isWrongSelected = isAnswerChecked &&
+                                isSelected &&
+                                !isCorrectAnswer;
+                            final shouldHighlightCorrect =
+                                isAnswerChecked && isCorrectAnswer;
+
+                            final borderColor = isAnswerChecked
+                                ? shouldHighlightCorrect
+                                    ? const Color(0xFF66BB6A)
+                                    : isWrongSelected
+                                        ? const Color(0xFFEF5350)
+                                        : AppColor.hurricane200
+                                : (isSelected
+                                    ? AppColor.skyblue400
+                                    : AppColor.hurricane200);
+
+                            final backgroundColor = isAnswerChecked
+                                ? shouldHighlightCorrect
+                                    ? const Color(0xFFE8F5E9)
+                                    : isWrongSelected
+                                        ? const Color(0xFFFFEBEE)
+                                        : Colors.white
+                                : (isSelected ? accentLight : Colors.white);
+
+                            final buttonColor = isAnswerChecked
+                                ? shouldHighlightCorrect
+                                    ? const Color(0xFFA5D6A7)
+                                    : isWrongSelected
+                                        ? const Color(0xFFEF9A9A)
+                                        : AppColor.hurricane100
+                                : (isSelected
+                                    ? accentMid
+                                    : AppColor.hurricane100);
+
+                            final textColor = isAnswerChecked
+                                ? shouldHighlightCorrect
+                                    ? const Color(0xFF1B5E20)
+                                    : isWrongSelected
+                                        ? const Color(0xFFB71C1C)
+                                        : const Color(0xFF4B4B4B)
+                                : (isSelected
+                                    ? accentDark
+                                    : const Color(0xFF4B4B4B));
+
+                            final statusIcon = shouldHighlightCorrect
+                                ? Icons.check_circle
+                                : (isWrongSelected ? Icons.cancel : null);
+                            final statusIconColor = shouldHighlightCorrect
+                                ? const Color(0xFF2E7D32)
+                                : const Color(0xFFC62828);
 
                             return BasicButton(
-                              onPressed: (answerId == null || isSubmitting)
+                              onPressed: (answerId == null ||
+                                      isSubmitting ||
+                                      isCheckingAnswer ||
+                                      isAnswerChecked)
                                   ? () {}
                                   : () => _toggleAnswerSelection(
                                         question: question,
@@ -337,32 +498,39 @@ class _TestPageState extends State<TestPage> {
                               height: 66.h,
                               borderRadius: BorderRadius.circular(16.r),
                               border: true,
-                              borderWidth: isSelected ? 1.8 : 1.2,
-                              borderColor: isSelected
-                                  ? AppColor.skyblue400
-                                  : AppColor.hurricane200,
-                              backgroundColor:
-                                  isSelected ? accentLight : Colors.white,
-                              buttonColor: isSelected
-                                  ? accentMid
-                                  : AppColor.hurricane100,
-                              textColor: isSelected
-                                  ? accentDark
-                                  : const Color(0xFF4B4B4B),
-                              buttonHeight: isSelected ? 5 : 4,
+                              borderWidth:
+                                  (isSelected || isAnswerChecked) ? 1.8 : 1.2,
+                              borderColor: borderColor,
+                              backgroundColor: backgroundColor,
+                              buttonColor: buttonColor,
+                              textColor: textColor,
+                              buttonHeight:
+                                  (isSelected || isAnswerChecked) ? 5 : 4,
                               padding: EdgeInsets.symmetric(horizontal: 16.w),
-                              child: Text(
-                                answer.text ?? '',
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 23.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? accentDark
-                                      : const Color(0xFF4B4B4B),
-                                ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      answer.text ?? '',
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 23.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: textColor,
+                                      ),
+                                    ),
+                                  ),
+                                  if (statusIcon != null) ...[
+                                    SizedBox(width: 8.w),
+                                    Icon(
+                                      statusIcon,
+                                      size: 20.sp,
+                                      color: statusIconColor,
+                                    ),
+                                  ],
+                                ],
                               ),
                             );
                           },
@@ -370,20 +538,27 @@ class _TestPageState extends State<TestPage> {
                       ),
                       SizedBox(height: 12.h),
                       BasicButton(
-                        text: isSubmitting ? 'DANG GUI...' : 'KIEM TRA',
+                        text: primaryLabel,
                         width: double.infinity,
                         height: 56.h,
                         borderRadius: BorderRadius.circular(16.r),
                         fontSize: 27.sp,
                         fontWeight: FontWeight.w700,
                         textColor:
-                            canCheck ? Colors.white : AppColor.hurricane300,
+                            canAction ? Colors.white : AppColor.hurricane300,
                         backgroundColor:
-                            canCheck ? accent : AppColor.hurricane100,
+                            canAction ? accent : AppColor.hurricane100,
                         buttonColor:
-                            canCheck ? accentDark : AppColor.hurricane200,
-                        onPressed:
-                            canCheck ? () => _goNextOrSubmit(items) : () {},
+                            canAction ? accentDark : AppColor.hurricane200,
+                        onPressed: canAction
+                            ? () {
+                                if (isAnswerChecked) {
+                                  _continueOrSubmit(items);
+                                } else {
+                                  _checkCurrentQuestion(question);
+                                }
+                              }
+                            : () {},
                       ),
                     ],
                   ),
