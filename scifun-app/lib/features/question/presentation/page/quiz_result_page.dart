@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/helper/get_category_score.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/submission_detail_page.dart';
 
@@ -41,6 +43,10 @@ class QuizResultPage extends StatelessWidget {
       default: // Chưa đạt
         performanceColor = const Color(0xFFDC3545);
     }
+
+    final Color accent = AppColor.skyblue500;
+    final Color accentDark = AppColor.skyblue700;
+    final Color accentLight = AppColor.skyblue50;
 
     return Scaffold(
       appBar: BasicAppbar(
@@ -149,18 +155,17 @@ class QuizResultPage extends StatelessWidget {
                     label: 'Điểm',
                   ),
                   _buildStatItem(
-                    value: '${totalQuestions}\'${0}"',
+                    value: '$totalQuestions\'0"',
                     label: 'Thời gian',
                   ),
                 ],
               ),
               SizedBox(height: 40.h),
               // Buttons
-              OutlinedButton(
+              BasicButton(
                 onPressed: () {
                   final submissionId = result['submissionId'] ?? '';
                   if (submissionId.isEmpty) {
-                    // fallback: just pop if no submission id
                     Navigator.of(context).pop();
                     return;
                   }
@@ -174,44 +179,34 @@ class QuizResultPage extends StatelessWidget {
                     ),
                   );
                 },
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  side: const BorderSide(color: Color(0xFF17A2B8), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-                child: Text(
-                  'Xem đáp án',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: const Color(0xFF17A2B8),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                text: 'Xem đáp án',
+                width: double.infinity,
+                height: 52.h,
+                borderRadius: BorderRadius.circular(12.r),
+                border: true,
+                borderWidth: 1.5.w,
+                borderColor: accent,
+                backgroundColor: Colors.white,
+                buttonColor: accentLight,
+                textColor: accent,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
               ),
               SizedBox(height: 12.h),
-              ElevatedButton(
+              BasicButton(
                 onPressed: () {
-                  // Pop cả QuizResultPage và TestPage để ra ngoài
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF17A2B8),
-                  padding: EdgeInsets.symmetric(vertical: 14.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-                child: Text(
-                  'Quay về',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                text: 'Quay về',
+                width: double.infinity,
+                height: 52.h,
+                borderRadius: BorderRadius.circular(12.r),
+                backgroundColor: accent,
+                buttonColor: accentDark,
+                textColor: Colors.white,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
               ),
             ],
           ),

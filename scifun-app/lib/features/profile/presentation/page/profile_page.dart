@@ -5,8 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/entities/user_get_entity.dart';
-import 'package:sci_fun/common/helper/show_alert_dialog.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -57,6 +57,24 @@ class _ProfilePageState extends State<ProfilePage> {
           getToken: getChatToken,
         ),
       ),
+    );
+  }
+
+  Future<void> _logoutAndNavigateToSignin() async {
+    await sl<SharePrefsService>().clear();
+    const storage = FlutterSecureStorage();
+    await storage.delete(key: 'access_token');
+    await sl<IsAuthorizedCubit>().logout();
+    sl<UserCubit>().clear();
+    resetSingleton();
+
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const SigninPage()),
+      (route) => false,
     );
   }
 
@@ -217,35 +235,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                       );
                                     }),
                                     GestureDetector(
-                                      onTap: () {
-                                        showAlertDialog(
-                                          context,
-                                          () async {
-                                            await sl<SharePrefsService>()
-                                                .clear();
-                                            final storage =
-                                                const FlutterSecureStorage();
-                                            await storage.delete(
-                                                key: 'access_token');
-                                            await sl<IsAuthorizedCubit>()
-                                                .logout();
-                                            // Clear user state so UI updates immediately
-                                            sl<UserCubit>().clear();
-                                            resetSingleton();
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      const SigninPage()),
-                                              (route) => false,
-                                            );
-                                          },
-                                          () {},
-                                          "Xác nhận đăng xuất",
-                                          "Bạn có chắc chắn muốn đăng xuất không?",
-                                          "Đăng xuất",
-                                          "Hủy",
+                                      onTap: () async {
+                                        final shouldLogout =
+                                            await showLogoutConfirmDialog(
+                                          context: context,
                                         );
+                                        if (shouldLogout != true ||
+                                            !context.mounted) {
+                                          return;
+                                        }
+                                        await _logoutAndNavigateToSignin();
                                       },
                                       child: Container(
                                         margin: EdgeInsets.all(6.w),
@@ -275,27 +274,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
                           // Nếu chưa có user => hiển thị nút đăng xuất
                           return GestureDetector(
-                            onTap: () {
-                              showAlertDialog(
-                                context,
-                                () async {
-                                  await sl<SharePrefsService>().clear();
-                                  final storage = const FlutterSecureStorage();
-                                  await storage.delete(key: 'access_token');
-                                  await sl<IsAuthorizedCubit>().logout();
-                                  resetSingleton();
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    MaterialPageRoute(
-                                        builder: (_) => const SigninPage()),
-                                    (route) => false,
-                                  );
-                                },
-                                () {},
-                                "Xác nhận đăng xuất",
-                                "Bạn có chắc chắn muốn đăng xuất không?",
-                                "Đăng xuất",
-                                "Hủy",
+                            onTap: () async {
+                              final shouldLogout =
+                                  await showLogoutConfirmDialog(
+                                context: context,
                               );
+                              if (shouldLogout != true || !context.mounted) {
+                                return;
+                              }
+                              await _logoutAndNavigateToSignin();
                             },
                             child: Container(
                               margin: EdgeInsets.all(6.w),

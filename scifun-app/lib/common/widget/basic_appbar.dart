@@ -22,41 +22,79 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      // leadingWidth: 48.w,
+    final titleWidget = showTitle
+        ? Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 17.sp,
+              fontFamily: 'Baloo2',
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        : const SizedBox.shrink();
 
-      // leading diff
-      leading: leftIcon ??
-          (showBack
-              ? IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: AppColor.skyblue600),
-                  onPressed: onBackPress ?? () => Navigator.pop(context),
-                )
-              : null),
-      title: showTitle
-          ? Text(
-              title,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 17.sp,
-                fontFamily: 'Baloo2',
-                fontWeight: FontWeight.w600,
-              ),
-            )
-          : null,
-      centerTitle: true,
-      actions: [
-        if (rightIcon != null)
-          Padding(
-            padding: EdgeInsets.only(right: 12.w), // hoặc 16.w
-            child: rightIcon!,
+    return PreferredSize(
+      preferredSize: preferredSize,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          AppBar(
+            elevation: 0,
+            surfaceTintColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(),
+            centerTitle: true,
+            toolbarHeight: preferredSize.height,
+            titleSpacing: 0,
+            title: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 48,
+                  child: Center(child: _buildLeft(context)),
+                ),
+                Expanded(
+                  child: Center(child: titleWidget),
+                ),
+                SizedBox(
+                  width: 48,
+                  child: Center(child: _buildRight()),
+                ),
+              ],
+            ),
           ),
-      ],
+        ],
+      ),
     );
   }
 
+  Widget _buildLeft(BuildContext context) {
+    if (leftIcon != null) {
+      return leftIcon!;
+    }
+
+    if (!showBack) {
+      return const SizedBox.shrink();
+    }
+
+    return IconButton(
+      padding: EdgeInsets.zero,
+      icon: Icon(
+        Icons.arrow_back_ios_new_rounded,
+        color: AppColor.skyblue600,
+        size: 20,
+      ),
+      onPressed: onBackPress ?? () => Navigator.maybePop(context),
+    );
+  }
+
+  Widget _buildRight() {
+    return rightIcon ?? const SizedBox.shrink();
+  }
+
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(60);
 }

@@ -272,7 +272,7 @@ class _TestPageState extends State<TestPage> {
                       ),
                       SizedBox(height: 24.h),
                       Text(
-                        'Chon nghia dung',
+                        'Chọn câu đúng',
                         style: TextStyle(
                           fontSize: 39.sp,
                           fontWeight: FontWeight.w700,
@@ -288,7 +288,7 @@ class _TestPageState extends State<TestPage> {
                             width: 110.w,
                             height: 110.w,
                             child: Lottie.asset(
-                              appLoadingLottieAssetPath,
+                              'assets/lottie_json/cat.json',
                               fit: BoxFit.contain,
                               repeat: true,
                             ),
