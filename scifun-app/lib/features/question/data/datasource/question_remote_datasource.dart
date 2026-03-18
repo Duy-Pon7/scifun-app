@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
+import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/features/question/data/model/question_model.dart';
 
@@ -7,6 +9,10 @@ abstract interface class QuestionRemoteDatasource {
     required String quizId,
     int page = 1,
     int limit = 10,
+  });
+
+  Future<QuestionModel> getQuestionById({
+    required String questionId,
   });
 
   Future<Map<String, dynamic>> submitQuizAnswers({
@@ -56,6 +62,36 @@ class QuestionRemoteDatasourceImpl implements QuestionRemoteDatasource {
     } catch (e) {
       print("Error fetching questions: $e"); // Debug print
       throw Exception('Failed to load questions: $e');
+    }
+  }
+
+  @override
+  Future<QuestionModel> getQuestionById({
+    required String questionId,
+  }) async {
+    try {
+      final res = await dioClient.get(
+        url: "${QuestionApiUrl.getQuestionById}/$questionId",
+      );
+      final responseBody = res.data;
+      if (res.statusCode == 200 && responseBody is Map<String, dynamic>) {
+        final questionData = responseBody['data'];
+        if (questionData is Map<String, dynamic>) {
+          return QuestionModel.fromJson(questionData);
+        }
+      }
+      throw ServerException(message: 'Failed to load question detail');
+    } on DioException catch (e) {
+      final dynamic errorData = e.response?.data;
+      final String? apiMessage =
+          errorData is Map<String, dynamic> ? errorData['message'] : null;
+      throw ServerException(
+        message: apiMessage ?? 'Failed to load question detail',
+      );
+    } on ServerException {
+      rethrow;
+    } catch (_) {
+      throw ServerException(message: 'Failed to load question detail');
     }
   }
 

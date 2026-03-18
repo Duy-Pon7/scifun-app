@@ -272,10 +272,16 @@ void _questionInit() {
       () => GetAllQuestions(questionRepository: sl<QuestionRepository>()),
     )
     ..registerFactory(
+      () => GetQuestionById(questionRepository: sl<QuestionRepository>()),
+    )
+    ..registerFactory(
       () => SubmitQuiz(questionRepository: sl<QuestionRepository>()),
     )
     ..registerFactory(
       () => GetSubmissionDetail(questionRepository: sl<QuestionRepository>()),
+    )
+    ..registerFactory(
+      () => QuestionByIdCubit(sl<GetQuestionById>()),
     );
 }
 

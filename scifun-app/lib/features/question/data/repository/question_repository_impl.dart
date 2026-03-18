@@ -29,6 +29,20 @@ class QuestionRepositoryImpl implements QuestionRepository {
   }
 
   @override
+  Future<Either<Failure, QuestionEntity>> getQuestionById({
+    required String questionId,
+  }) async {
+    try {
+      final res = await questionRemoteDatasource.getQuestionById(
+        questionId: questionId,
+      );
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, Map<String, dynamic>>> submitQuizAnswers({
     required String userId,
     required String quizId,

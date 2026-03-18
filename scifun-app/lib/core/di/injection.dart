@@ -102,7 +102,9 @@ import 'package:sci_fun/features/question/data/datasource/question_remote_dataso
 import 'package:sci_fun/features/question/data/repository/question_repository_impl.dart';
 import 'package:sci_fun/features/question/domain/repository/question_repository.dart';
 import 'package:sci_fun/features/question/domain/usecase/get_all_question.dart';
+import 'package:sci_fun/features/question/domain/usecase/get_question_by_id.dart';
 import 'package:sci_fun/features/question/domain/usecase/get_submission_detail.dart';
+import 'package:sci_fun/features/question/presentation/cubit/question_by_id_cubit.dart';
 import 'package:sci_fun/features/subject/data/datasource/subject_remote_datasource.dart';
 import 'package:sci_fun/features/subject/data/repository/subject_repository_impl.dart';
 import 'package:sci_fun/features/subject/domain/repository/subject_repository.dart';

@@ -9,6 +9,10 @@ abstract interface class QuestionRepository {
     int limit = 10,
   });
 
+  Future<Either<Failure, QuestionEntity>> getQuestionById({
+    required String questionId,
+  });
+
   Future<Either<Failure, Map<String, dynamic>>> submitQuizAnswers({
     required String userId,
     required String quizId,
