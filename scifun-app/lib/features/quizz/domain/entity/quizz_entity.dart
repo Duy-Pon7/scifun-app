@@ -6,6 +6,7 @@ class QuizzEntity extends Equatable {
     required this.duration,
     required this.questionCount,
     required this.accessTier,
+    required this.level,
     required this.description,
     required this.lastAttemptAt,
     required this.topic,
@@ -18,6 +19,7 @@ class QuizzEntity extends Equatable {
   final int? duration;
   final int? questionCount;
   final String? accessTier;
+  final String? level;
   final String? description;
   final int? lastAttemptAt;
   final TopicEntity? topic;
@@ -30,6 +32,7 @@ class QuizzEntity extends Equatable {
     int? duration,
     int? questionCount,
     String? accessTier,
+    String? level,
     String? description,
     int? lastAttemptAt,
     TopicEntity? topic,
@@ -42,6 +45,7 @@ class QuizzEntity extends Equatable {
       duration: duration ?? this.duration,
       questionCount: questionCount ?? this.questionCount,
       accessTier: accessTier ?? this.accessTier,
+      level: level ?? this.level,
       description: description ?? this.description,
       lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
       topic: topic ?? this.topic,
@@ -57,6 +61,7 @@ class QuizzEntity extends Equatable {
       duration: json["duration"],
       questionCount: json["questionCount"],
       accessTier: json["accessTier"],
+      level: json["level"] ?? json["topic"]?["level"],
       description: json["description"],
       lastAttemptAt: json["lastAttemptAt"],
       topic: json["topic"] == null ? null : TopicEntity.fromJson(json["topic"]),
@@ -71,6 +76,7 @@ class QuizzEntity extends Equatable {
         "duration": duration,
         "questionCount": questionCount,
         "accessTier": accessTier,
+        "level": level,
         "description": description,
         "lastAttemptAt": lastAttemptAt,
         "topic": topic?.toJson(),
@@ -85,6 +91,7 @@ class QuizzEntity extends Equatable {
         duration,
         questionCount,
         accessTier,
+        level,
         description,
         lastAttemptAt,
         topic,
