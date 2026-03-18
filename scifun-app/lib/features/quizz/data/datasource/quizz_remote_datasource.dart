@@ -14,7 +14,7 @@ abstract interface class QuizzRemoteDatasource {
     required int limit,
   });
 
-  Future<QuizzTrendModel> getTrendQuizzes();
+  Future<QuizzTrendModel> getTrendQuizzes({String? subjectId});
   Future<QuizzResultModel> getSubmissionDetail(String submissionId);
 }
 
@@ -71,10 +71,16 @@ class QuizzRemoteDatasourceImpl implements QuizzRemoteDatasource {
   }
 
   @override
-  Future<QuizzTrendModel> getTrendQuizzes() async {
+  Future<QuizzTrendModel> getTrendQuizzes({String? subjectId}) async {
     try {
+      final normalizedSubjectId = (subjectId ?? '').trim();
+      final querySubId = Uri.encodeQueryComponent(normalizedSubjectId);
+      final trendUrl = normalizedSubjectId.isEmpty
+          ? QuizApiUrl.getTrendQuizzes
+          : '${QuizApiUrl.getTrendQuizzes}?subId=$querySubId';
+
       final res = await dioClient.get(
-        url: QuizApiUrl.getTrendQuizzes,
+        url: trendUrl,
       );
 
       if (res.statusCode == 200) {

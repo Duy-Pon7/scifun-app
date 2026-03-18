@@ -33,9 +33,12 @@ class QuizzRepositoryImpl implements QuizzRepository {
   }
 
   @override
-  Future<Either<Failure, QuizzTrend>> getTrendQuizzes() async {
+  Future<Either<Failure, QuizzTrend>> getTrendQuizzes({
+    String? subjectId,
+  }) async {
     try {
-      final res = await quizzRemoteDatasource.getTrendQuizzes();
+      final res =
+          await quizzRemoteDatasource.getTrendQuizzes(subjectId: subjectId);
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));

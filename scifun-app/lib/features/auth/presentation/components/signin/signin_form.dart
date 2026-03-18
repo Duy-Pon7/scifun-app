@@ -74,9 +74,11 @@ class _SigninFormState extends State<SigninForm> {
     }
 
     if (state is AuthUserLoginSuccess) {
-      final userId = sl<SharePrefsService>().getUserData();
-      if (userId != null && userId.isNotEmpty) {
-        await sl<UserCubit>().getUser(token: userId);
+      if (!state.isGuest) {
+        final userId = sl<SharePrefsService>().getUserData();
+        if (userId != null && userId.isNotEmpty) {
+          await sl<UserCubit>().getUser(token: userId);
+        }
       }
       if (!mounted) return;
 
@@ -105,6 +107,13 @@ class _SigninFormState extends State<SigninForm> {
         email: _emailCon.text.trim(),
       ),
     );
+  }
+
+  void _onGuestSignin() {
+    if (authBloc.state is AuthLoading) return;
+
+    FocusScope.of(context).unfocus();
+    authBloc.add(AuthGuestLogin());
   }
 
   @override
@@ -198,7 +207,7 @@ class _SigninFormState extends State<SigninForm> {
       );
 
   Widget _guestSignInButton() => BasicButton(
-        onPressed: () {},
+        onPressed: _onGuestSignin,
         width: double.infinity,
         border: true,
         borderColor: AppColor.hurricane200,

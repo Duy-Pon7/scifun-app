@@ -8,6 +8,7 @@ abstract interface class AuthRepository {
     required String email,
     required String password,
   });
+  Future<Either<Failure, UserEntity?>> guestLogin();
 
   Future<Either<Failure, UserEntity?>> signup({
     required String password,

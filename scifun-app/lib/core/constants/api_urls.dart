@@ -5,6 +5,7 @@ class AuthApiUrls {
   AuthApiUrls._();
   //? Kiểm tra sao nó hiển thị lỗi lúc mới vào và check token trong thời gian bao lâu
   static const String login = '/user/login'; //
+  static const String guestLogin = '/user/guest'; //
   static const String signup = '/user/register'; //
   static const String verificationOtp = '/user/verify-otp'; //
 

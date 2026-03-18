@@ -28,10 +28,12 @@ final class AuthUserSuccess extends AuthInitial {
 final class AuthUserLoginSuccess extends AuthInitial {
   final UserEntity? user;
   final bool? isFirstLogin;
+  final bool isGuest;
 
   AuthUserLoginSuccess({
     required this.user,
     this.isFirstLogin,
+    this.isGuest = false,
   });
 }
 

@@ -12,7 +12,7 @@ abstract interface class QuizzRepository {
     required int limit,
   });
 
-  Future<Either<Failure, QuizzTrend>> getTrendQuizzes();
+  Future<Either<Failure, QuizzTrend>> getTrendQuizzes({String? subjectId});
 
   Future<Either<Failure, QuizzResult>> getSubmissionDetail(String submissionId);
 }

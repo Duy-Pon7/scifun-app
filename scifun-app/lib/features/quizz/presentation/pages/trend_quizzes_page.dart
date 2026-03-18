@@ -9,12 +9,22 @@ import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class TrendQuizzesList extends StatelessWidget {
-  const TrendQuizzesList({super.key});
+  const TrendQuizzesList({
+    super.key,
+    this.subjectId,
+  });
+
+  final String? subjectId;
 
   @override
   Widget build(BuildContext context) {
+    final normalizedSubjectId = (subjectId ?? '').trim();
+
     return BlocProvider(
-      create: (_) => sl<TrendQuizzCubit>()..fetchTrendQuizzes(),
+      create: (_) => sl<TrendQuizzCubit>()
+        ..fetchTrendQuizzes(
+          subjectId: normalizedSubjectId.isEmpty ? null : normalizedSubjectId,
+        ),
       child: BlocBuilder<TrendQuizzCubit, TrendQuizzState>(
         builder: (context, state) {
           if (state is TrendQuizzLoading) {

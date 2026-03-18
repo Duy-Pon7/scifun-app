@@ -7,6 +7,7 @@ class TopicModel extends TopicEntity {
     required super.id,
     required super.subject,
     required super.image,
+    required super.level,
   });
 
   // @override
@@ -34,6 +35,7 @@ class TopicModel extends TopicEntity {
       subject:
           json["subject"] == null ? null : TopicModel.fromJson(json["subject"]),
       image: json["image"],
+      level: json["level"],
     );
   }
 
@@ -44,6 +46,7 @@ class TopicModel extends TopicEntity {
         "_id": id,
         "subject": subject?.toJson(),
         "image": image,
+        "level": level,
       };
 
   @override
@@ -53,5 +56,6 @@ class TopicModel extends TopicEntity {
         id,
         subject,
         image,
+        level,
       ];
 }

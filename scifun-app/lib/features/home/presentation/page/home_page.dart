@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -148,8 +148,13 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final persistedSubjectId =
+        (sl<SharePrefsService>().getSelectedSubjectId() ?? '').trim();
     final persistedSubjectName =
         (sl<SharePrefsService>().getSelectedSubjectName() ?? '').trim();
+    final activeSubjectId = persistedSubjectId.isNotEmpty
+        ? persistedSubjectId
+        : _selectedSubjectId.trim();
     final activeSubjectName = persistedSubjectName.isNotEmpty
         ? persistedSubjectName
         : _selectedSubjectName;
@@ -241,7 +246,10 @@ class _HomePageState extends State<HomePage>
                               },
                             ),
                             SizedBox(height: 16.h),
-                            TrendQuizzesList(),
+                            TrendQuizzesList(
+                              key: ValueKey('trend-$activeSubjectId'),
+                              subjectId: activeSubjectId,
+                            ),
                             SizedBox(height: 16.h),
                             CommentPage(),
                             SizedBox(height: 16.h),

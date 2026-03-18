@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sci_fun/core/utils/usecase.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_trend_entity.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_trend_quizz.dart';
 
@@ -34,10 +33,12 @@ class TrendQuizzCubit extends Cubit<TrendQuizzState> {
 
   TrendQuizzCubit(this.getTrendQuizzes) : super(TrendQuizzInitial());
 
-  Future<void> fetchTrendQuizzes() async {
+  Future<void> fetchTrendQuizzes({String? subjectId}) async {
     emit(TrendQuizzLoading());
     try {
-      final res = await getTrendQuizzes.call(NoParams());
+      final res = await getTrendQuizzes.call(
+        TrendQuizzParams(subjectId: subjectId),
+      );
       res.fold(
         (failure) => emit(TrendQuizzError(failure.message)),
         (trendData) => emit(TrendQuizzLoaded(trendData)),

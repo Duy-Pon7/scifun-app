@@ -18,6 +18,7 @@ abstract interface class AuthRemoteDatasource {
     required String email,
     required String password,
   });
+  Future<UserModel?> guestLogin();
 
   Future<UserModel?> signup({
     required String password,
@@ -197,6 +198,69 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       rethrow;
     } catch (e, st) {
       log('Login parsing error: $e', stackTrace: st);
+      throw ServerException(message: AppErrors.failureLogin);
+    }
+  }
+
+  @override
+  Future<UserModel?> guestLogin() async {
+    try {
+      final res = await dioClient.post(
+        url: AuthApiUrls.guestLogin,
+      );
+
+      final responseData = Map<String, dynamic>.from(res.data as Map);
+      final dynamic rawData = responseData['data'];
+      if (rawData is! Map) {
+        throw ServerException(message: _extractServerMessage(res.data));
+      }
+
+      final guestData = Map<String, dynamic>.from(rawData);
+      final token = (guestData['token'] ?? '').toString().trim();
+      final userId = (guestData['userId'] ?? '').toString().trim();
+      final isFirstLogin =
+          guestData['isFirstLogin'] ?? guestData['isFisrtLogin'];
+
+      if (token.isEmpty || userId.isEmpty) {
+        throw ServerException(message: _extractServerMessage(res.data));
+      }
+
+      final normalizedResponse = <String, dynamic>{
+        'status': responseData['status'],
+        'message': responseData['message'],
+        'token': token,
+        'data': <String, dynamic>{
+          'id': userId,
+          'email': guestData['email'] ?? '$userId@guest.local',
+          'password': guestData['password'],
+          'fullname': guestData['fullname'] ?? 'Khách',
+          'isFirstLogin': isFirstLogin,
+          'isVerified': guestData['isVerified'] ?? false,
+          'avatar': guestData['avatar'],
+          'role': guestData['role'] ?? 'USER',
+          'sex': guestData['sex'],
+          'subscription': guestData['subscription'],
+          'dob': guestData['dob'],
+          '__v': guestData['__v'],
+        },
+      };
+
+      final userModel = UserModel.fromJson(normalizedResponse);
+      await sharePrefsService.saveAuthToken(token);
+      await sharePrefsService.saveUserData(userId);
+
+      return userModel;
+    } on DioException catch (e) {
+      log(
+        'Guest login DioException: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}',
+      );
+      throw ServerException(
+        message: _extractDioMessage(e),
+      );
+    } on ServerException {
+      rethrow;
+    } catch (e, st) {
+      log('Guest login parsing error: $e', stackTrace: st);
       throw ServerException(message: AppErrors.failureLogin);
     }
   }

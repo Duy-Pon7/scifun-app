@@ -7,6 +7,7 @@ class TopicEntity extends Equatable {
     required this.id,
     required this.subject,
     required this.image,
+    required this.level,
   });
 
   final String? name;
@@ -14,6 +15,7 @@ class TopicEntity extends Equatable {
   final String? id;
   final TopicEntity? subject;
   final String? image;
+  final String? level;
 
   TopicEntity copyWith({
     String? name,
@@ -21,6 +23,7 @@ class TopicEntity extends Equatable {
     String? id,
     TopicEntity? subject,
     String? image,
+    String? level,
   }) {
     return TopicEntity(
       name: name ?? this.name,
@@ -28,6 +31,7 @@ class TopicEntity extends Equatable {
       id: id ?? this.id,
       subject: subject ?? this.subject,
       image: image ?? this.image,
+      level: level ?? this.level,
     );
   }
 
@@ -40,6 +44,7 @@ class TopicEntity extends Equatable {
           ? null
           : TopicEntity.fromJson(json["subject"]),
       image: json["image"],
+      level: json["level"],
     );
   }
 
@@ -49,6 +54,7 @@ class TopicEntity extends Equatable {
         "_id": id,
         "subject": subject?.toJson(),
         "image": image,
+        "level": level,
       };
 
   @override
@@ -58,5 +64,6 @@ class TopicEntity extends Equatable {
         id,
         subject,
         image,
+        level,
       ];
 }

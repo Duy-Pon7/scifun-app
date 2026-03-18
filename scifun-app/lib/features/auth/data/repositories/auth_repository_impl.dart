@@ -77,6 +77,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, UserEntity?>> guestLogin() async {
+    try {
+      final loginRes = await authRemoteDatasource.guestLogin();
+
+      if (loginRes == null) {
+        return Left(Failure(message: AppErrors.failureLogin));
+      }
+      return Right(loginRes);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity?>> signup({
     required String password,
     required String passwordConfimation,

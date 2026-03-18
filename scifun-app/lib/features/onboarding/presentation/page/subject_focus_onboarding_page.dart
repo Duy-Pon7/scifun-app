@@ -27,7 +27,7 @@ class SubjectFocusOnboardingPage extends StatefulWidget {
 
 class _SubjectFocusOnboardingPageState
     extends State<SubjectFocusOnboardingPage> {
-  static const int _totalSteps = 3;
+  static const int _totalSteps = 4;
 
   static const List<String> _ageRanges = [
     '<5',
@@ -47,15 +47,23 @@ class _SubjectFocusOnboardingPageState
     'Khác',
   ];
 
+  static const Map<String, String> _levelDisplayToValue = {
+    'Mới bắt đầu': 'Beginner',
+    'Trung cấp': 'Intermediate',
+    'Nâng cao': 'Advanced',
+  };
+
   static const String _prefsInterestSubjectId =
       'onboarding_interest_subject_id';
   static const String _prefsAgeRange = 'onboarding_age_range';
+  static const String _prefsLevel = 'onboarding_level';
   static const String _prefsReferralPlatform = 'onboarding_referral_platform';
 
   final PageController _pageController = PageController();
 
   SubjectEntity? _selectedSubject;
   String? _selectedAgeRange;
+  String? _selectedLevel;
   String? _selectedDiscoveryPlatform;
   int _currentStep = 0;
   bool _isSubmitting = false;
@@ -76,6 +84,8 @@ class _SubjectFocusOnboardingPageState
       case 1:
         return _selectedAgeRange != null;
       case 2:
+        return _selectedLevel != null;
+      case 3:
         return _selectedDiscoveryPlatform != null;
       default:
         return false;
@@ -223,12 +233,30 @@ class _SubjectFocusOnboardingPageState
     return 'Lưu thông tin onboarding thất bại.';
   }
 
+  String? _getLevelDisplayLabel(String? levelValue) {
+    if (levelValue == null || levelValue.isEmpty) {
+      return null;
+    }
+
+    for (final entry in _levelDisplayToValue.entries) {
+      if (entry.value == levelValue) {
+        return entry.key;
+      }
+    }
+
+    return null;
+  }
+
   Future<void> _finishOnboarding() async {
     final subject = _selectedSubject;
     final ageRange = _selectedAgeRange;
+    final level = _selectedLevel;
     final referralPlatform = _selectedDiscoveryPlatform;
 
-    if (subject == null || ageRange == null || referralPlatform == null) {
+    if (subject == null ||
+        ageRange == null ||
+        level == null ||
+        referralPlatform == null) {
       return;
     }
 
@@ -258,6 +286,7 @@ class _SubjectFocusOnboardingPageState
         data: {
           'subject': _mapSubjectForOnboarding(subjectName),
           'ageGroup': ageRange,
+          'level': level,
           'referralSource': referralPlatform,
         },
       );
@@ -281,6 +310,7 @@ class _SubjectFocusOnboardingPageState
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_prefsInterestSubjectId, subjectId);
       await prefs.setString(_prefsAgeRange, ageRange);
+      await prefs.setString(_prefsLevel, level);
       await prefs.setString(_prefsReferralPlatform, referralPlatform);
 
       // Xóa khóa onboarding cũ để tránh dữ liệu cũ.
@@ -330,6 +360,8 @@ class _SubjectFocusOnboardingPageState
       case 1:
         return 'Bạn đang ở độ tuổi bao nhiêu?';
       case 2:
+        return 'Trình độ hiện tại của bạn là gì?';
+      case 3:
         return 'Bạn biết đến ứng dụng từ nền tảng nào?';
       default:
         return '';
@@ -383,7 +415,7 @@ class _SubjectFocusOnboardingPageState
           height: 140.w,
           child: Center(
             child: Lottie.asset(
-              appLoadingLottieAssetPath,
+              'assets/lottie_json/cat.json',
               repeat: true,
             ),
           ),
@@ -803,6 +835,20 @@ class _SubjectFocusOnboardingPageState
           onSelected: (value) {
             setState(() {
               _selectedAgeRange = value;
+            });
+          },
+        ),
+        _buildChoiceStep(
+          helperText: 'Chọn trình độ hiện tại để cá nhân hóa nội dung',
+          options: _levelDisplayToValue.keys.toList(growable: false),
+          selectedValue: _getLevelDisplayLabel(_selectedLevel),
+          onSelected: (displayLabel) {
+            final mappedLevel = _levelDisplayToValue[displayLabel];
+            if (mappedLevel == null) {
+              return;
+            }
+            setState(() {
+              _selectedLevel = mappedLevel;
             });
           },
         ),

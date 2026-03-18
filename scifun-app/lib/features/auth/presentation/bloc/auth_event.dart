@@ -13,6 +13,8 @@ final class AuthLogin extends AuthEvent {
   });
 }
 
+final class AuthGuestLogin extends AuthEvent {}
+
 final class AuthSignup extends AuthEvent {
   final String password;
   final String passwordConfimation;

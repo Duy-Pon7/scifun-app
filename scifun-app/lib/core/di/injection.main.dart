@@ -173,6 +173,7 @@ Future<void> _authInit() async {
     ..registerFactory<AuthRepository>(
         () => AuthRepositoryImpl(authRemoteDatasource: sl()))
     ..registerFactory(() => Login(authRepository: sl()))
+    ..registerFactory(() => GuestLogin(authRepository: sl()))
     ..registerFactory(() => Signup(authRepository: sl()))
     ..registerFactory(() => SendEmail(authRepository: sl()))
     ..registerFactory(() => ForgotPassword(authRepository: sl()))
@@ -187,6 +188,7 @@ Future<void> _authInit() async {
     ..registerFactory(() => GetAuth(authRepository: sl()))
     ..registerLazySingleton(() => AuthBloc(
           login: sl(),
+          guestLogin: sl(),
           signup: sl(),
           sendEmail: sl(),
           forgotPassword: sl(),

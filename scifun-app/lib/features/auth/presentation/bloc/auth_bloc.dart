@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/core/utils/usecase.dart';
 import 'package:sci_fun/features/auth/domain/usecases/change_password.dart';
 import 'package:sci_fun/features/auth/domain/usecases/check_email_phone.dart';
+import 'package:sci_fun/features/auth/domain/usecases/guest_login.dart';
 import 'package:sci_fun/features/auth/domain/usecases/get_auth.dart';
 import 'package:sci_fun/features/auth/domain/usecases/login.dart';
 import 'package:sci_fun/features/auth/domain/usecases/resend_otp.dart';
@@ -22,6 +23,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final Login _login;
+  final GuestLogin _guestLogin;
   final Signup _signup;
   final SendEmail _sendEmail;
   final ForgotPassword _forgotPassword;
@@ -33,6 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ResetPassword _resetPassword;
   AuthBloc({
     required Login login,
+    required GuestLogin guestLogin,
     required Signup signup,
     required SendEmail sendEmail,
     required ForgotPassword forgotPassword,
@@ -43,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required VerificationOtp verificationOtp,
     required ResetPassword resetPassword,
   })  : _login = login,
+        _guestLogin = guestLogin,
         _signup = signup,
         _sendEmail = sendEmail,
         _forgotPassword = forgotPassword,
@@ -54,6 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _resetPassword = resetPassword,
         super(AuthInitial()) {
     on<AuthLogin>(_onAuthLogin);
+    on<AuthGuestLogin>(_onAuthGuestLogin);
     on<AuthSignup>(_onAuthSignup);
     on<AuthSendEmail>(_onAuthSendEmail);
     on<AuthSendResetEmail>(_onAuthSendResetEmail);
@@ -112,6 +117,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthUserLoginSuccess(
           user: user,
           isFirstLogin: user?.data?.isFirstLogin,
+          isGuest: false,
+        ));
+      },
+    );
+  }
+
+  void _onAuthGuestLogin(AuthGuestLogin event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    final res = await _guestLogin.call(NoParams());
+    res.fold(
+      (failure) => emit(AuthFailure(message: failure.message)),
+      (user) async {
+        emit(AuthUserLoginSuccess(
+          user: user,
+          isFirstLogin: user?.data?.isFirstLogin,
+          isGuest: true,
         ));
       },
     );

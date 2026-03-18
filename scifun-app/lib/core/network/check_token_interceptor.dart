@@ -10,6 +10,7 @@ class CheckTokenInterceptor extends Interceptor {
 
   final Set<String> _noAuthPaths = {
     AuthApiUrls.login,
+    AuthApiUrls.guestLogin,
     AuthApiUrls.sendEmail,
     AuthApiUrls.signup,
     HomeApiUrls.getNews,
