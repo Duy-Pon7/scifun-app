@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/presentation/cubit/lesson_cubit.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -48,7 +49,7 @@ class _VideoContentState extends State<VideoContent> {
           _initializePlayer(videoUrl);
 
           return _controller == null
-              ? CircularProgressIndicator()
+              ? const AppLoadingIndicator(message: 'Đang mở bài học...')
               : Column(
                   children: [
                     Expanded(

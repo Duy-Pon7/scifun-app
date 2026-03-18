@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -382,7 +383,7 @@ class _SubjectFocusOnboardingPageState
           height: 140.w,
           child: Center(
             child: Lottie.asset(
-              'lottie_json/cat.json',
+              appLoadingLottieAssetPath,
               repeat: true,
             ),
           ),
@@ -597,10 +598,8 @@ class _SubjectFocusOnboardingPageState
       builder: (context, state) {
         if (state is PaginationLoading<SubjectEntity> ||
             state is PaginationLoadingMore<SubjectEntity>) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: _selectedTextColor,
-            ),
+          return const Center(
+            child: AppLoadingIndicator(message: 'Đang tải môn học...'),
           );
         }
 

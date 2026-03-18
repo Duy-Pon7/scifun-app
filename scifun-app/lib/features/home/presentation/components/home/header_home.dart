@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -22,6 +23,9 @@ class HeaderHome extends StatefulWidget {
 }
 
 class _HeaderHomeState extends State<HeaderHome> {
+  static const String _avatarMascotLottiePath =
+      'assets/lottie_json/cat_hide_and_seek.json';
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +64,7 @@ class _HeaderHomeState extends State<HeaderHome> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _textName(name: userName),
-                _avatar(avatarUrl: avatarUrl),
+                _avatarWithMascot(avatarUrl: avatarUrl),
               ],
             );
           },
@@ -102,6 +106,37 @@ class _HeaderHomeState extends State<HeaderHome> {
     }
     return normalized;
   }
+
+  Widget _avatarWithMascot({required String? avatarUrl}) => SizedBox(
+        width: 58.w,
+        height: 58.w,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              bottom: 60.h,
+              left: 10.w,
+              right: 0,
+              child: IgnorePointer(
+                child: SizedBox(
+                  width: 74.w,
+                  height: 74.w,
+                  child: Lottie.asset(
+                    _avatarMascotLottiePath,
+                    fit: BoxFit.contain,
+                    repeat: true,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: _avatar(avatarUrl: avatarUrl),
+            ),
+          ],
+        ),
+      );
 
   Widget _avatar({required String? avatarUrl}) => Container(
         width: 50.w,

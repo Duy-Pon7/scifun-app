@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
@@ -69,7 +70,11 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
             child: BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
               builder: (context, subjectState) {
                 if (subjectState is PaginationLoading<SubjectEntity>) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: AppLoadingIndicator(
+                      message: 'Đang tải thống kê...',
+                    ),
+                  );
                 }
 
                 if (subjectState is PaginationError<SubjectEntity>) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -38,7 +39,9 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
         builder: (context, state) {
           if (state.items.isEmpty && state.currentPage == 1) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: AppLoadingIndicator(
+                message: 'Đang tải bảng xếp hạng...',
+              ),
             );
           }
 

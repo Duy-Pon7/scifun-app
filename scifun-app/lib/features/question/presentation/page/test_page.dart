@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -161,7 +162,9 @@ class _TestPageState extends State<TestPage> {
             child: BlocBuilder<QuestionCubit, PaginationState<QuestionEntity>>(
               builder: (context, state) {
                 if (state is PaginationLoading<QuestionEntity>) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: AppLoadingIndicator(message: 'Đang vào bài học...'),
+                  );
                 }
 
                 if (state is PaginationError<QuestionEntity> &&
@@ -285,7 +288,7 @@ class _TestPageState extends State<TestPage> {
                             width: 110.w,
                             height: 110.w,
                             child: Lottie.asset(
-                              'lottie_json/cat.json',
+                              appLoadingLottieAssetPath,
                               fit: BoxFit.contain,
                               repeat: true,
                             ),

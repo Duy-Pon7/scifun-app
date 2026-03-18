@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -53,7 +54,11 @@ class _PlanListPageState extends State<PlanListPage> {
             showDialog(
               context: context,
               barrierDismissible: false,
-              builder: (_) => const Center(child: CircularProgressIndicator()),
+              builder: (_) => const Center(
+                child: AppLoadingIndicator(
+                  message: 'Đang xác thực thanh toán...',
+                ),
+              ),
             );
           }
 
@@ -107,7 +112,11 @@ class _PlanListPageState extends State<PlanListPage> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (_) => const Center(child: CircularProgressIndicator()),
+            builder: (_) => const Center(
+              child: AppLoadingIndicator(
+                message: 'Đang xác thực thanh toán...',
+              ),
+            ),
           );
         }
 
@@ -175,7 +184,11 @@ class _PlanListPageState extends State<PlanListPage> {
           child: BlocBuilder<PlanCubit, PlanState>(
             builder: (context, state) {
               if (state is PlanLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: AppLoadingIndicator(
+                    message: 'Đang tải gói dịch vụ...',
+                  ),
+                );
               }
 
               if (state is PlansLoaded) {
@@ -296,8 +309,11 @@ class _PlanCard extends StatelessWidget {
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) =>
-                      const Center(child: CircularProgressIndicator()),
+                  builder: (_) => const Center(
+                    child: AppLoadingIndicator(
+                      message: 'Đang tạo thanh toán...',
+                    ),
+                  ),
                 );
 
                 final res = await sl<CreateCheckout>().call(

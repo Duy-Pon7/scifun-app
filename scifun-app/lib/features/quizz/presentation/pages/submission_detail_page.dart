@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/features/quizz/domain/usecase/get_submission_detail.dart'
@@ -32,7 +33,11 @@ class SubmissionDetailPage extends StatelessWidget {
         body: BlocBuilder<SubmissionDetailCubit, SubmissionDetailState>(
           builder: (context, state) {
             if (state is SubmissionDetailLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: AppLoadingIndicator(
+                  message: 'Đang tải chi tiết bài làm...',
+                ),
+              );
             }
 
             if (state is SubmissionDetailError) {

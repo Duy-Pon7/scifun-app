@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sci_fun/common/models/chat_models.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/core/services/chat_api_service.dart';
 import 'package:sci_fun/core/services/realtime_service.dart';
 
@@ -182,7 +183,9 @@ class _UserChatPageState extends State<UserChatPage> {
         title: "Hỗ trợ trực tuyến",
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: AppLoadingIndicator(message: 'Đang mở chat...'),
+            )
           : Column(
               children: [
                 Expanded(

@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -24,6 +25,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await initializeDependencies();
+  _configureEasyLoading();
 
   runApp(
     ScreenUtilInit(
@@ -50,6 +52,15 @@ void main() async {
       ),
     ),
   );
+}
+
+void _configureEasyLoading() {
+  EasyLoading.instance
+    ..indicatorWidget = const AppLoadingIndicator(size: 120, message: '')
+    ..maskType = EasyLoadingMaskType.black
+    ..maskColor = Colors.black.withValues(alpha: 0.45)
+    ..userInteractions = false
+    ..dismissOnTap = false;
 }
 
 class MyApp extends StatelessWidget {

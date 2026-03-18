@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/analytics/domain/entities/progress_entity.dart';
 import 'package:sci_fun/features/analytics/presentation/widget/custom_expansion_tile_lesson.dart';
@@ -40,7 +41,11 @@ class ListStatisticsLesson extends StatelessWidget {
     return BlocBuilder<ProgressCubit, ProgressState>(
       builder: (context, state) {
         if (state is ProgressLoading) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(
+            child: AppLoadingIndicator(
+              message: 'Đang tải tiến độ học tập...',
+            ),
+          );
         } else if (state is ProgressLoaded) {
           final topics = state.progress.topics;
           final progress = state.progress.progress ?? 0;

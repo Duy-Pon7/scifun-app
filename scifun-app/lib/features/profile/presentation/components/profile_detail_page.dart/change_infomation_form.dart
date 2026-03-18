@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
@@ -153,7 +154,9 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         return Center(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 40.h),
-            child: const CircularProgressIndicator(),
+            child: const AppLoadingIndicator(
+              message: 'Đang tải thông tin cá nhân...',
+            ),
           ),
         );
       },

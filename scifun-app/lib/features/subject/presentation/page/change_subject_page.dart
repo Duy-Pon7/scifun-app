@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
-import 'package:sci_fun/features/topic/presentation/pages/topic_page.dart';
 
 class ChangeSubjectPage extends StatefulWidget {
   const ChangeSubjectPage({super.key});
@@ -42,7 +42,9 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
         builder: (context, state) {
           if (state is PaginationLoading<SubjectEntity> &&
               state.items.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: AppLoadingIndicator(message: 'Đang tải danh sách môn...'),
+            );
           }
 
           if (state is PaginationError<SubjectEntity> && state.items.isEmpty) {
@@ -124,15 +126,7 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
                     return;
                   }
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => TopicPage(
-                        subjectId: subjectId,
-                        subjectName: subjectName,
-                      ),
-                    ),
-                  );
+                  Navigator.pop(context);
                 },
               );
             },

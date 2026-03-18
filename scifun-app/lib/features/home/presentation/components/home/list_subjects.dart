@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
+import 'package:sci_fun/common/widget/subject_change_confirm_dialog.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/presentation/widget/subject_item.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
@@ -11,12 +16,20 @@ class ListSubjects extends StatelessWidget {
   const ListSubjects({
     super.key,
     this.onSubjectSelected,
+    this.selectedSubjectId = '',
   });
 
   final void Function(String subjectId, String subjectName)? onSubjectSelected;
+  final String selectedSubjectId;
 
   @override
   Widget build(BuildContext context) {
+    final persistedSubjectId =
+        (sl<SharePrefsService>().getSelectedSubjectId() ?? '').trim();
+    final activeSelectedSubjectId = selectedSubjectId.trim().isNotEmpty
+        ? selectedSubjectId.trim()
+        : persistedSubjectId;
+
     return Column(
       children: [
         Container(
@@ -28,7 +41,7 @@ class ListSubjects extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "Môn học",
+                'M\u00f4n h\u1ecdc',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontSize: 17.sp,
                       fontWeight: FontWeight.w600,
@@ -43,7 +56,11 @@ class ListSubjects extends StatelessWidget {
             if (state is PaginationLoading<SubjectEntity>) {
               return SizedBox(
                 height: 150.h,
-                child: const Center(child: CircularProgressIndicator()),
+                child: const Center(
+                  child: AppLoadingIndicator(
+                    message: '\u0110ang t\u1ea3i trang ch\u1ee7...',
+                  ),
+                ),
               );
             }
 
@@ -52,7 +69,9 @@ class ListSubjects extends StatelessWidget {
               if (items.isEmpty) {
                 return SizedBox(
                   height: 150.h,
-                  child: const Center(child: Text('Không có môn học')),
+                  child: const Center(
+                    child: Text('Kh\u00f4ng c\u00f3 m\u00f4n h\u1ecdc'),
+                  ),
                 );
               }
 
@@ -65,28 +84,50 @@ class ListSubjects extends StatelessWidget {
                   separatorBuilder: (_, __) => SizedBox(width: 8.w),
                   itemBuilder: (context, index) {
                     final subject = items[index];
-                    final subjectId = subject.id ?? '';
+                    final subjectId = (subject.id ?? '').trim();
                     final subjectName = subject.name?.trim().isNotEmpty == true
                         ? subject.name!.trim()
-                        : 'Môn học';
+                        : 'M\u00f4n h\u1ecdc';
+                    final isSelected = activeSelectedSubjectId == subjectId;
 
                     return SubjectItem(
                       subjectName: subjectName,
-                      imagePath: subject.image ?? "",
-                      onTap: () {
+                      imagePath: subject.image ?? '',
+                      isSelected: isSelected,
+                      selectedBackgroundColor: AppColor.subject100(subjectName),
+                      selectedBorderColor: AppColor.subject500(subjectName),
+                      selectedTextColor: AppColor.subject700(subjectName),
+                      onTap: () async {
                         if (subjectId.isEmpty) {
                           return;
                         }
 
+                        if (activeSelectedSubjectId.isNotEmpty &&
+                            activeSelectedSubjectId != subjectId) {
+                          final shouldChange =
+                              await showSubjectChangeConfirmDialog(
+                            context: context,
+                            nextSubjectName: subjectName,
+                          );
+                          if (shouldChange != true || !context.mounted) {
+                            return;
+                          }
+                        }
+
                         onSubjectSelected?.call(subjectId, subjectName);
+                        if (!context.mounted) {
+                          return;
+                        }
+
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TopicPage(
-                                subjectId: subjectId,
-                                subjectName: subjectName,
-                              ),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TopicPage(
+                              subjectId: subjectId,
+                              subjectName: subjectName,
+                            ),
+                          ),
+                        );
                       },
                     );
                   },
@@ -101,12 +142,14 @@ class ListSubjects extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Lỗi khi tải môn học: ${state.error}'),
+                      Text(
+                        'L\u1ed7i khi t\u1ea3i m\u00f4n h\u1ecdc: ${state.error}',
+                      ),
                       ElevatedButton(
                         onPressed: () => context
                             .read<SubjectCubit>()
-                            .getSubjects(searchQuery: ""),
-                        child: const Text('Thử lại'),
+                            .getSubjects(searchQuery: ''),
+                        child: const Text('Th\u1eed l\u1ea1i'),
                       ),
                     ],
                   ),
@@ -116,7 +159,8 @@ class ListSubjects extends StatelessWidget {
 
             return SizedBox(
               height: 150.h,
-              child: const Center(child: Text('Không có môn học')),
+              child: const Center(
+                  child: Text('Kh\u00f4ng c\u00f3 m\u00f4n h\u1ecdc')),
             );
           },
         ),

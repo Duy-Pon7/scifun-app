@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -68,7 +69,11 @@ class _TopicPageState extends State<TopicPage> {
               if (subjectState is PaginationLoading<SubjectEntity>) {
                 return SizedBox(
                   height: 220.h,
-                  child: const Center(child: CircularProgressIndicator()),
+                  child: const Center(
+                    child: AppLoadingIndicator(
+                      message: 'Đang tải danh sách môn...',
+                    ),
+                  ),
                 );
               }
 

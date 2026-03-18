@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 
 // Phiên bản dọc
 class PaginationListView<T> extends StatefulWidget {
@@ -55,7 +56,9 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
       builder: (context, state) {
         // Initial loading
         if (state is PaginationLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: AppLoadingIndicator(message: 'Đang tải dữ liệu...'),
+          );
         }
 
         // Error on first load
@@ -93,7 +96,7 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
                 return const Center(
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(),
+                    child: AppLoadingIndicator(size: 88, message: ''),
                   ),
                 );
               }

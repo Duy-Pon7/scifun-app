@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -238,14 +239,8 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
               // Loading indicator
               if (_isLoading) ...[
                 SizedBox(height: 20.h),
-                const CircularProgressIndicator(),
-                SizedBox(height: 16.h),
-                Text(
-                  'Đang kiểm tra thanh toán...',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.grey[600],
-                  ),
+                const AppLoadingIndicator(
+                  message: 'Đang kiểm tra thanh toán...',
                 ),
               ],
             ],

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/ws_bootstrap.dart';
@@ -207,44 +208,51 @@ class _HomePageState extends State<HomePage>
             subjectName: activeSubjectName,
             child: SafeArea(
               child: Builder(builder: (newcontext) {
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    newcontext.read<NewsCubit>().getNews();
-                    newcontext
-                        .read<SubjectCubit>()
-                        .getSubjects(searchQuery: "");
-                    newcontext.read<AuthBloc>().add(AuthGetSession());
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 16.w,
-                        right: 16.w,
-                        top: 16.w,
-                        bottom: MediaQuery.of(newcontext).padding.bottom + 96.h,
-                      ),
-                      child: Column(
-                        spacing: 16.h,
-                        children: [
-                          HeaderHome(subjectName: activeSubjectName),
-                          ListSubjects(
-                            onSubjectSelected: (subjectId, subjectName) {
-                              _saveAndApplySelectedSubject(
-                                subjectId: subjectId,
-                                subjectName: subjectName,
-                              );
-                            },
+                return Column(
+                  children: [
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          newcontext.read<NewsCubit>().getNews();
+                          newcontext
+                              .read<SubjectCubit>()
+                              .getSubjects(searchQuery: "");
+                          newcontext.read<AuthBloc>().add(AuthGetSession());
+                        },
+                        child: ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(
+                            left: 16.w,
+                            right: 16.w,
+                            top: 16.w,
+                            bottom:
+                                MediaQuery.of(newcontext).padding.bottom + 96.h,
                           ),
-                          TrendQuizzesList(),
-                          CommentPage(),
-                          WsBootstrap(
-                            wsUrl: wsUrlForEnvironment(),
-                          ),
-                        ],
+                          children: [
+                            HeaderHome(subjectName: activeSubjectName),
+                            SizedBox(height: 16.h),
+                            ListSubjects(
+                              selectedSubjectId: _selectedSubjectId,
+                              onSubjectSelected: (subjectId, subjectName) {
+                                _saveAndApplySelectedSubject(
+                                  subjectId: subjectId,
+                                  subjectName: subjectName,
+                                );
+                              },
+                            ),
+                            SizedBox(height: 16.h),
+                            TrendQuizzesList(),
+                            SizedBox(height: 16.h),
+                            CommentPage(),
+                            SizedBox(height: 16.h),
+                            WsBootstrap(
+                              wsUrl: wsUrlForEnvironment(),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 );
               }),
             ),
@@ -255,12 +263,13 @@ class _HomePageState extends State<HomePage>
           alignment: Alignment.bottomRight,
           children: [
             Positioned(
-              right: 6.w,
-              bottom: 28.h,
+              right: 0,
+              left: 0,
+              bottom: 18.h,
               child: IgnorePointer(
                 child: SizedBox(
-                  width: 120.w,
-                  height: 120.w,
+                  width: 100.w,
+                  height: 100.w,
                   child: Lottie.asset(
                     'assets/lottie_json/cat_is_sleeping_and_rolling.json',
                     fit: BoxFit.contain,
@@ -269,21 +278,42 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
             ),
-            FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider.value(
-                      value: context.read<SubjectCubit>(),
-                      child: const ChangeSubjectPage(),
+            Tooltip(
+              message: 'Đổi môn học',
+              child: BasicButton(
+                width: 150.w,
+                height: 52.h,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<SubjectCubit>(),
+                        child: const ChangeSubjectPage(),
+                      ),
                     ),
-                  ),
-                ).then((_) => _loadSelectedSubjectFromPrefs());
-              },
-              tooltip: 'Đổi môn học',
-              icon: const Icon(Icons.swap_horiz_rounded),
-              label: const Text('Đổi môn'),
+                  ).then((_) => _loadSelectedSubjectFromPrefs());
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.swap_horiz_rounded,
+                      size: 18.sp,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      'Đổi môn',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.sp,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
