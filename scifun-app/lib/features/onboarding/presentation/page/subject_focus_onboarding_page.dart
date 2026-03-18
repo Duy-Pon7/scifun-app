@@ -382,7 +382,7 @@ class _SubjectFocusOnboardingPageState
           height: 140.w,
           child: Center(
             child: Lottie.asset(
-              'assets/lottie_json/cat.json',
+              'lottie_json/cat.json',
               repeat: true,
             ),
           ),

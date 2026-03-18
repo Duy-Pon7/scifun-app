@@ -285,7 +285,7 @@ class _TestPageState extends State<TestPage> {
                             width: 110.w,
                             height: 110.w,
                             child: Lottie.asset(
-                              'assets/lottie_json/cat.json',
+                              'lottie_json/cat.json',
                               fit: BoxFit.contain,
                               repeat: true,
                             ),

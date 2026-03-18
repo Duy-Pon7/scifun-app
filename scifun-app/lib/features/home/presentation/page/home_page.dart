@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/ws_bootstrap.dart';
@@ -249,21 +250,42 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<SubjectCubit>(),
-                  child: const ChangeSubjectPage(),
+        floatingActionButton: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomRight,
+          children: [
+            Positioned(
+              right: 6.w,
+              bottom: 28.h,
+              child: IgnorePointer(
+                child: SizedBox(
+                  width: 120.w,
+                  height: 120.w,
+                  child: Lottie.asset(
+                    'assets/lottie_json/cat_is_sleeping_and_rolling.json',
+                    fit: BoxFit.contain,
+                    repeat: true,
+                  ),
                 ),
               ),
-            ).then((_) => _loadSelectedSubjectFromPrefs());
-          },
-          tooltip: 'Đổi môn học',
-          icon: const Icon(Icons.swap_horiz_rounded),
-          label: const Text('Đổi môn'),
+            ),
+            FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<SubjectCubit>(),
+                      child: const ChangeSubjectPage(),
+                    ),
+                  ),
+                ).then((_) => _loadSelectedSubjectFromPrefs());
+              },
+              tooltip: 'Đổi môn học',
+              icon: const Icon(Icons.swap_horiz_rounded),
+              label: const Text('Đổi môn'),
+            ),
+          ],
         ),
       ),
     );
