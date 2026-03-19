@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -37,11 +38,34 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
       ),
       body: BlocBuilder<SubjectCubit, PaginationState<SubjectEntity>>(
         builder: (context, state) {
-          if (state.items.isEmpty && state.currentPage == 1) {
+          if (state is PaginationLoading<SubjectEntity> &&
+              state.items.isEmpty) {
             return const Center(
               child: AppLoadingIndicator(
-                message: 'Đang tải bảng xếp hạng...',
+                message: 'Dang tai bang xep hang...',
               ),
+            );
+          }
+
+          if (state is PaginationError<SubjectEntity> && state.items.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Loi khi tai bang xep hang: ${state.error}'),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => context.read<SubjectCubit>().refresh(),
+                    child: const Text('Thu lai'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state.items.isEmpty) {
+            return const Center(
+              child: AppEmptyState(message: 'Chua co du lieu bang xep hang'),
             );
           }
 

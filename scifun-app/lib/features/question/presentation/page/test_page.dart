@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -232,13 +234,10 @@ class _TestPageState extends State<TestPage> {
 
                 final items = state.items;
                 if (items.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Khong co cau hoi',
-                      style: TextStyle(
-                        color: const Color(0xFF4F4F4F),
-                        fontSize: 16.sp,
-                      ),
+                  return const Center(
+                    child: AppEmptyState(
+                      message: 'Khong co cau hoi',
+                      animationSize: 140,
                     ),
                   );
                 }
@@ -510,7 +509,7 @@ class _TestPageState extends State<TestPage> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: Text(
+                                    child: AutoSizeText(
                                       answer.text ?? '',
                                       textAlign: TextAlign.center,
                                       maxLines: 2,

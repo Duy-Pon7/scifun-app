@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -86,7 +87,10 @@ class _TopicPageState extends State<TopicPage> {
                   return SizedBox(
                     height: 220.h,
                     child: const Center(
-                      child: Text('Khong co mon hoc nao'),
+                      child: AppEmptyState(
+                        message: 'Không có môn học nào',
+                        animationSize: 120,
+                      ),
                     ),
                   );
                 }
@@ -287,7 +291,9 @@ class _TopicPageState extends State<TopicPage> {
                 ),
               );
             },
-            emptyWidget: const Center(child: Text('No topics found')),
+            emptyWidget: const Center(
+              child: AppEmptyState(message: 'Không có chủ đề nào'),
+            ),
           ),
         ),
       ),

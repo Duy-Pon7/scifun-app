@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -71,7 +72,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
       body: PaginationListView<LeaderboardsEntity>(
         cubit: _cubit,
         emptyWidget: const Center(
-          child: Text('Chưa có dữ liệu bảng xếp hạng'),
+          child: AppEmptyState(message: 'Chưa có dữ liệu bảng xếp hạng'),
         ),
         itemBuilder: (context, item) {
           return _LeaderboardItem(

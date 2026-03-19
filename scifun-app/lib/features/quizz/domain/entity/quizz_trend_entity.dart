@@ -45,6 +45,7 @@ class Datum extends Equatable {
     required this.duration,
     required this.questionCount,
     required this.score,
+    required this.level,
     required this.description,
     required this.topic,
     required this.lastAttemptAt,
@@ -56,6 +57,7 @@ class Datum extends Equatable {
   final int? duration;
   final int? questionCount;
   final double? score;
+  final String? level;
   final String? description;
   final Topic? topic;
   final DateTime? lastAttemptAt;
@@ -67,6 +69,7 @@ class Datum extends Equatable {
     int? duration,
     int? questionCount,
     double? score,
+    String? level,
     String? description,
     Topic? topic,
     DateTime? lastAttemptAt,
@@ -78,6 +81,7 @@ class Datum extends Equatable {
       duration: duration ?? this.duration,
       questionCount: questionCount ?? this.questionCount,
       score: score ?? this.score,
+      level: level ?? this.level,
       description: description ?? this.description,
       topic: topic ?? this.topic,
       lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
@@ -92,6 +96,7 @@ class Datum extends Equatable {
       duration: json["duration"],
       questionCount: json["questionCount"],
       score: json["score"],
+      level: json["level"] ?? json["topic"]?["level"],
       description: json["description"],
       topic: json["topic"] == null ? null : Topic.fromJson(json["topic"]),
       lastAttemptAt: DateTime.tryParse(json["lastAttemptAt"] ?? ""),
@@ -105,6 +110,7 @@ class Datum extends Equatable {
         "duration": duration,
         "questionCount": questionCount,
         "score": score,
+        "level": level,
         "description": description,
         "topic": topic?.toJson(),
         "lastAttemptAt": lastAttemptAt?.toIso8601String(),
@@ -118,6 +124,7 @@ class Datum extends Equatable {
         duration,
         questionCount,
         score,
+        level,
         description,
         topic,
         lastAttemptAt,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 
 // Phiên bản dọc
@@ -81,7 +82,9 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
         // Empty state
         if (state.items.isEmpty) {
           return widget.emptyWidget ??
-              const Center(child: Text('No items found'));
+              const Center(
+                child: AppEmptyState(message: 'Khong co du lieu'),
+              );
         }
 
         // Success with data

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -143,8 +144,10 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       );
                     },
-                    emptyWidget:
-                        const Center(child: Text('Không tìm thấy chủ đề nào')),
+                    emptyWidget: const Center(
+                      child:
+                          AppEmptyState(message: 'Không tìm thấy chủ đề nào'),
+                    ),
                   ),
                 )
               // Hiển thị lịch sử tìm kiếm nếu không tìm

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -70,7 +71,11 @@ class ListSubjects extends StatelessWidget {
                 return SizedBox(
                   height: 150.h,
                   child: const Center(
-                    child: Text('Kh\u00f4ng c\u00f3 m\u00f4n h\u1ecdc'),
+                    child: AppEmptyState(
+                      message: 'Khong co mon hoc',
+                      animationSize: 90,
+                      spacing: 4,
+                    ),
                   ),
                 );
               }
@@ -160,7 +165,12 @@ class ListSubjects extends StatelessWidget {
             return SizedBox(
               height: 150.h,
               child: const Center(
-                  child: Text('Kh\u00f4ng c\u00f3 m\u00f4n h\u1ecdc')),
+                child: AppEmptyState(
+                  message: 'Khong co mon hoc',
+                  animationSize: 90,
+                  spacing: 4,
+                ),
+              ),
             );
           },
         ),

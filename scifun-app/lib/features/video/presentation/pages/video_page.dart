@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -51,25 +52,8 @@ class _VideoPageState extends State<VideoPage> {
         itemBuilder: (context, video) {
           return VideoTile(video: video);
         },
-        emptyWidget: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.video_library_outlined,
-                size: 64.sp,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Chưa có video nào',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
+        emptyWidget: const Center(
+          child: AppEmptyState(message: 'Chưa có video nào'),
         ),
         errorWidget: Center(
           child: Column(

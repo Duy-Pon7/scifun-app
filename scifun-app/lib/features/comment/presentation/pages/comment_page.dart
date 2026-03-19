@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sci_fun/core/services/realtime_service.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/features/comment/presentation/cubit/comment_pagination_cubit.dart';
 import 'package:sci_fun/features/comment/data/model/comment_model.dart';
@@ -128,7 +129,12 @@ class _CommentPageState extends State<CommentPage> {
           child: PaginationListView<CommentEntity>(
             cubit: _commentPaginationCubit,
             itemBuilder: (context, c) => _buildCommentTile(context, c),
-            emptyWidget: const Center(child: Text('Chưa có bình luận nào')),
+            emptyWidget: const Center(
+              child: AppEmptyState(
+                message: 'Chưa có bình luận nào',
+                animationSize: 120,
+              ),
+            ),
           ),
         ),
 

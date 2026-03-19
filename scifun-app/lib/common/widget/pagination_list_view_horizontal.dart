@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 
 // Phiên bản ngang
@@ -89,7 +90,13 @@ class _PaginationListViewHorizontalState<T>
           return SizedBox(
             height: widget.height ?? 150,
             child: widget.emptyWidget ??
-                const Center(child: Text('No items found')),
+                const Center(
+                  child: AppEmptyState(
+                    message: 'Khong co du lieu',
+                    animationSize: 96,
+                    spacing: 6,
+                  ),
+                ),
           );
         }
 

@@ -1,12 +1,14 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/core/di/injection.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sci_fun/features/quizz/presentation/cubit/trend_quizz_cubit.dart';
-import 'package:sci_fun/features/question/presentation/page/test_page.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/question/presentation/page/test_page.dart';
+import 'package:sci_fun/features/quizz/presentation/cubit/trend_quizz_cubit.dart';
 
 class TrendQuizzesList extends StatelessWidget {
   const TrendQuizzesList({
@@ -30,7 +32,7 @@ class TrendQuizzesList extends StatelessWidget {
           if (state is TrendQuizzLoading) {
             return const Center(
               child: AppLoadingIndicator(
-                message: 'Đang tải bài kiểm tra thịnh hành...',
+                message: 'Dang tai bai kiem tra thinh hanh...',
               ),
             );
           }
@@ -43,7 +45,11 @@ class TrendQuizzesList extends StatelessWidget {
 
           if (items.isEmpty) {
             return const Center(
-                child: Text('Không có bài kiểm tra thịnh hành'));
+              child: AppEmptyState(
+                message: 'Khong co bai kiem tra thinh hanh',
+                animationSize: 120,
+              ),
+            );
           }
 
           return Column(
@@ -51,23 +57,24 @@ class TrendQuizzesList extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Bài kiểm tra thịnh hành',
-                        style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                  ],
+                child: Text(
+                  'Bai kiem tra thinh hanh',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               SizedBox(
-                height: 150.h,
+                height: 164.h,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.symmetric(horizontal: 8.w),
                   itemBuilder: (context, index) {
                     final quizz = items[index];
                     final isPro = quizz.score != null && quizz.score! > 0.8;
+                    final level = _normalizeLevel(quizz.level);
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -76,7 +83,7 @@ class TrendQuizzesList extends StatelessWidget {
                         );
                       },
                       child: SizedBox(
-                        width: 260.w,
+                        width: 300.w,
                         child: Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
@@ -93,6 +100,7 @@ class TrendQuizzesList extends StatelessWidget {
                               builder: (context, constraints) {
                                 final isCompact = constraints.maxHeight < 110;
                                 final imageSize = isCompact ? 40.w : 56.w;
+
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -107,21 +115,23 @@ class TrendQuizzesList extends StatelessWidget {
                                                 height: imageSize,
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.circular(
-                                                          6.0),
+                                                      BorderRadius.circular(6),
                                                   child: Image.network(
                                                     quizz
                                                         .topic!.subject!.image!,
                                                     fit: BoxFit.cover,
-                                                    errorBuilder: (_, __,
-                                                            ___) =>
-                                                        const Icon(Icons
-                                                            .image_not_supported),
+                                                    errorBuilder:
+                                                        (_, __, ___) =>
+                                                            const Icon(
+                                                      Icons.image_not_supported,
+                                                    ),
                                                   ),
                                                 ),
                                               )
-                                            : Icon(Icons.quiz,
-                                                color: AppColor.skyblue600),
+                                            : Icon(
+                                                Icons.quiz,
+                                                color: AppColor.skyblue600,
+                                              ),
                                         SizedBox(width: 8.w),
                                         Expanded(
                                           child: Column(
@@ -142,7 +152,7 @@ class TrendQuizzesList extends StatelessWidget {
                                               ),
                                               if (quizz.score != null)
                                                 Text(
-                                                  'Điểm: ${(quizz.score! * 100).toStringAsFixed(0)}%',
+                                                  'Diem: ${(quizz.score! * 100).toStringAsFixed(0)}%',
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -166,27 +176,27 @@ class TrendQuizzesList extends StatelessWidget {
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: Colors.grey[700]),
+                                          fontSize: 12.sp,
+                                          color: Colors.grey[700],
+                                        ),
                                       ),
                                     SizedBox(height: isCompact ? 4.h : 8.h),
                                     Row(
+                                      spacing: 10.w,
                                       children: [
-                                        Icon(Icons.timer,
-                                            size: 12.sp,
-                                            color: AppColor.skyblue600),
-                                        SizedBox(width: 6.w),
-                                        Text('${quizz.duration ?? 0} phút',
-                                            style: TextStyle(fontSize: 12.sp)),
-                                        SizedBox(width: 12.w),
-                                        Icon(Icons.help_outline,
-                                            size: 12.sp,
-                                            color: AppColor.skyblue600),
-                                        SizedBox(width: 6.w),
-                                        Text('${quizz.questionCount ?? 0} câu',
-                                            style: TextStyle(fontSize: 12.sp)),
+                                        if (level != null)
+                                          _buildLevelBadge(level),
+                                        _buildMetaItem(
+                                          icon: Icons.timer,
+                                          text: '${quizz.duration ?? 0} phut',
+                                        ),
+                                        _buildMetaItem(
+                                          icon: Icons.help_outline,
+                                          text:
+                                              '${quizz.questionCount ?? 0} cau',
+                                        ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 );
                               },
@@ -203,6 +213,112 @@ class TrendQuizzesList extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildMetaItem({required IconData icon, required String text}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: AppColor.skyblue600.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColor.skyblue600.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12.sp, color: AppColor.skyblue600),
+          SizedBox(width: 6.w),
+          AutoSizeText(text, style: TextStyle(fontSize: 12.sp)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLevelBadge(String level) {
+    final color = _levelColor(level);
+    final chevronCount = _levelChevronCount(level);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _TrendLevelChevronIcon(
+            count: chevronCount,
+            color: color,
+            size: 10.sp,
+          ),
+          SizedBox(width: 6.w),
+          AutoSizeText(
+            level,
+            style: TextStyle(
+              fontSize: 11.sp,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _normalizeLevel(String? value) {
+    final raw = (value ?? '').trim();
+    if (raw.isEmpty) return null;
+    final lower = raw.toLowerCase();
+    if (lower == 'beginner') return 'Beginner';
+    if (lower == 'intermediate') return 'Intermediate';
+    if (lower == 'advanced') return 'Advanced';
+    return raw;
+  }
+
+  int _levelChevronCount(String level) {
+    final lower = level.toLowerCase();
+    if (lower == 'advanced') return 3;
+    if (lower == 'intermediate') return 2;
+    return 1;
+  }
+
+  Color _levelColor(String level) {
+    final lower = level.toLowerCase();
+    if (lower == 'advanced') return Colors.red.shade700;
+    if (lower == 'intermediate') return Colors.orange.shade700;
+    return Colors.green.shade700;
+  }
+}
+
+class _TrendLevelChevronIcon extends StatelessWidget {
+  const _TrendLevelChevronIcon({
+    required this.count,
+    required this.color,
+    required this.size,
+  });
+
+  final int count;
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        count,
+        (_) => Transform.translate(
+          offset: Offset(0, -1.h),
+          child: Icon(
+            Icons.keyboard_arrow_up,
+            size: size,
+            color: color,
+          ),
+        ),
       ),
     );
   }

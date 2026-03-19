@@ -1,47 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/get_category_score.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
-import 'package:sci_fun/common/helper/get_category_score.dart';
+import 'package:sci_fun/common/widget/basic_confetti.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/submission_detail_page.dart';
 
-class QuizResultPage extends StatelessWidget {
+class QuizResultPage extends StatefulWidget {
+  const QuizResultPage({
+    super.key,
+    required this.result,
+  });
+
   final Map<String, dynamic> result;
 
-  const QuizResultPage({super.key, required this.result});
+  @override
+  State<QuizResultPage> createState() => _QuizResultPageState();
+}
+
+class _QuizResultPageState extends State<QuizResultPage> {
+  bool _didLaunchConfetti = false;
 
   @override
   Widget build(BuildContext context) {
-    final int correctAnswers = result["correctAnswers"] ?? 0;
-    final dynamic scoreValue = result["score"] ?? 0;
-    final int totalQuestions = result["totalQuestions"] ?? 0;
+    final int correctAnswers = widget.result['correctAnswers'] ?? 0;
+    final dynamic scoreValue = widget.result['score'] ?? 0;
+    final int totalQuestions = widget.result['totalQuestions'] ?? 0;
 
-    // Convert score to double if needed
-    final double score =
-        scoreValue is int ? scoreValue.toDouble() : scoreValue as double;
+    final double score = scoreValue is num
+        ? scoreValue.toDouble()
+        : double.tryParse(scoreValue.toString()) ?? 0;
 
-    // Determine performance level using getCategoryScore
-    final String performanceTitle = getCategoryScore(score.toInt());
+    final int scoreInt = score.toInt();
+    final String performanceTitle = getCategoryScore(scoreInt);
 
     final Color performanceColor;
-    switch (performanceTitle) {
-      case 'Xuất sắc':
-        performanceColor = const Color(0xFF17A2B8);
-        break;
-      case 'Giỏi':
-        performanceColor = const Color(0xFF28A745);
-        break;
-      case 'Khá':
-        performanceColor = const Color(0xFF0066CC);
-        break;
-      case 'Trung bình':
-        performanceColor = const Color(0xFFFF9800);
-        break;
-      default: // Chưa đạt
-        performanceColor = const Color(0xFFDC3545);
+    bool shouldCelebrate = false;
+    if (scoreInt >= 90) {
+      performanceColor = const Color(0xFF17A2B8);
+      shouldCelebrate = true;
+    } else if (scoreInt >= 80) {
+      performanceColor = const Color(0xFF28A745);
+      shouldCelebrate = true;
+    } else if (scoreInt >= 65) {
+      performanceColor = const Color(0xFF0066CC);
+      shouldCelebrate = true;
+    } else if (scoreInt >= 50) {
+      performanceColor = const Color(0xFFFF9800);
+    } else {
+      performanceColor = const Color(0xFFDC3545);
+    }
+
+    if (shouldCelebrate && !_didLaunchConfetti) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _didLaunchConfetti) return;
+        _didLaunchConfetti = true;
+        launchSuccessConfetti(context);
+      });
     }
 
     final Color accent = AppColor.skyblue500;
@@ -52,7 +70,6 @@ class QuizResultPage extends StatelessWidget {
       appBar: BasicAppbar(
         title: 'Kết quả bài làm',
         onBackPress: () {
-          // Pop cả QuizResultPage và TestPage để ra ngoài
           Navigator.of(context).pop();
           Navigator.of(context).pop();
         },
@@ -63,7 +80,6 @@ class QuizResultPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Trophy Section with pink background
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -74,18 +90,19 @@ class QuizResultPage extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Trophy Icon
                     Icon(
                       Icons.emoji_events,
                       size: 120.sp,
                       color: const Color(0xFFFFC107),
                     ),
-                    // Celebration particles
                     Positioned(
                       left: 20.w,
                       top: 20.h,
-                      child: Icon(Icons.star,
-                          size: 24.sp, color: const Color(0xFFFFD700)),
+                      child: Icon(
+                        Icons.star,
+                        size: 24.sp,
+                        color: const Color(0xFFFFD700),
+                      ),
                     ),
                     Positioned(
                       right: 30.w,
@@ -114,14 +131,16 @@ class QuizResultPage extends StatelessWidget {
                     Positioned(
                       right: 20.w,
                       bottom: 40.h,
-                      child: Icon(Icons.star,
-                          size: 16.sp, color: const Color(0xFFFFD700)),
+                      child: Icon(
+                        Icons.star,
+                        size: 16.sp,
+                        color: const Color(0xFFFFD700),
+                      ),
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 24.h),
-              // Performance Title
               Text(
                 performanceTitle,
                 textAlign: TextAlign.center,
@@ -132,7 +151,6 @@ class QuizResultPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8.h),
-              // Subtitle
               Text(
                 'Hoàn thành kiểm tra',
                 textAlign: TextAlign.center,
@@ -142,7 +160,6 @@ class QuizResultPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 32.h),
-              // Stats Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -161,10 +178,9 @@ class QuizResultPage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 40.h),
-              // Buttons
               BasicButton(
                 onPressed: () {
-                  final submissionId = result['submissionId'] ?? '';
+                  final submissionId = widget.result['submissionId'] ?? '';
                   if (submissionId.isEmpty) {
                     Navigator.of(context).pop();
                     return;

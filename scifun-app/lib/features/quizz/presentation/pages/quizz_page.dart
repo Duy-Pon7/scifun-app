@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
-import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
-import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
-import 'package:sci_fun/features/question/presentation/page/test_page.dart';
 import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
+import 'package:sci_fun/features/question/presentation/page/test_page.dart';
+import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
+import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
 
 class QuizzPage extends StatefulWidget {
   final String topicId;
@@ -78,7 +79,7 @@ class _QuizzPageState extends State<QuizzPage> {
           child: PaginationListView<QuizzEntity>(
             cubit: cubit,
             emptyWidget: const Center(
-              child: Text('Không có bài kiểm tra'),
+              child: AppEmptyState(message: 'Không có bài kiểm tra'),
             ),
             itemBuilder: (context, quizz) {
               final bool isQuizPro = quizz.accessTier == 'PRO';
@@ -100,7 +101,6 @@ class _QuizzPageState extends State<QuizzPage> {
                       title: _buildTitle(quizz, isQuizPro),
                       subtitle: _buildSubtitle(quizz),
                       onTap: () {
-                        // ✅ Không PRO: vẫn tap được nhưng chuyển sang page mua
                         if (isLocked) {
                           Navigator.push(
                             context,
@@ -109,7 +109,6 @@ class _QuizzPageState extends State<QuizzPage> {
                           return;
                         }
 
-                        // ✅ PRO hoặc FREE: vào bài test bình thường
                         Navigator.push(
                           context,
                           slidePage(
@@ -120,8 +119,6 @@ class _QuizzPageState extends State<QuizzPage> {
                         );
                       },
                     ),
-
-                    /// ⭐ PRO icon
                     if (isQuizPro)
                       Positioned(
                         top: 8.h,
@@ -132,12 +129,10 @@ class _QuizzPageState extends State<QuizzPage> {
                           size: 18.sp,
                         ),
                       ),
-
-                    /// 🔒 Lock overlay (không chặn tap)
                     if (isLocked)
                       Positioned.fill(
                         child: IgnorePointer(
-                          ignoring: true, // ✅ cho phép tap xuyên qua overlay
+                          ignoring: true,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.7),
@@ -162,8 +157,6 @@ class _QuizzPageState extends State<QuizzPage> {
       ),
     );
   }
-
-  /// ===================== UI PART =====================
 
   Widget _buildLeading(QuizzEntity quizz) {
     if (quizz.topic?.subject?.image != null &&
@@ -200,7 +193,7 @@ class _QuizzPageState extends State<QuizzPage> {
           padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
           decoration: BoxDecoration(
             color: isQuizPro ? AppColor.skyblue600 : Colors.green,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             isQuizPro ? 'PRO' : 'FREE',
@@ -216,6 +209,8 @@ class _QuizzPageState extends State<QuizzPage> {
   }
 
   Widget _buildSubtitle(QuizzEntity quizz) {
+    final level = _normalizeLevel(quizz.level ?? quizz.topic?.level);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -230,28 +225,134 @@ class _QuizzPageState extends State<QuizzPage> {
             ),
           ),
         SizedBox(height: 6.h),
-        Row(
+        Wrap(
+          spacing: 12.w,
+          runSpacing: 6.h,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Icon(Icons.timer, size: 14.sp, color: AppColor.skyblue600),
-            SizedBox(width: 6.w),
-            Text('${quizz.duration ?? 0} phút',
-                style: TextStyle(fontSize: 12.sp)),
-            SizedBox(width: 12.w),
-            Icon(Icons.help_outline, size: 14.sp, color: AppColor.skyblue600),
-            SizedBox(width: 6.w),
-            Text('${quizz.questionCount ?? 0} câu',
-                style: TextStyle(fontSize: 12.sp)),
-            if (quizz.uniqueUserCount != null &&
-                quizz.uniqueUserCount! > 0) ...[
-              SizedBox(width: 12.w),
-              Icon(Icons.people, size: 14.sp, color: AppColor.skyblue600),
-              SizedBox(width: 4.w),
-              Text('${quizz.uniqueUserCount}',
-                  style: TextStyle(fontSize: 12.sp)),
-            ]
+            if (level != null) _buildLevelBadge(level),
+            _buildMetaItem(
+              icon: Icons.timer,
+              text: '${quizz.duration ?? 0} phút',
+            ),
+            _buildMetaItem(
+              icon: Icons.help_outline,
+              text: '${quizz.questionCount ?? 0} câu',
+            ),
+            if (quizz.uniqueUserCount != null && quizz.uniqueUserCount! > 0)
+              _buildMetaItem(
+                icon: Icons.people,
+                text: '${quizz.uniqueUserCount}',
+              ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildMetaItem({required IconData icon, required String text}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: AppColor.skyblue600.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColor.skyblue600.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14.sp, color: AppColor.skyblue600),
+          SizedBox(width: 6.w),
+          Text(text, style: TextStyle(fontSize: 12.sp)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLevelBadge(String level) {
+    final color = _levelColor(level);
+    final chevronCount = _levelChevronCount(level);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _LevelChevronIcon(
+            count: chevronCount,
+            color: color,
+            size: 11.sp,
+          ),
+          SizedBox(width: 6.w),
+          Text(
+            level,
+            style: TextStyle(
+              fontSize: 11.sp,
+              color: color,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _normalizeLevel(String? value) {
+    final raw = (value ?? '').trim();
+    if (raw.isEmpty) return null;
+    final lower = raw.toLowerCase();
+    if (lower == 'beginner') return 'Beginner';
+    if (lower == 'intermediate') return 'Intermediate';
+    if (lower == 'advanced') return 'Advanced';
+    return raw;
+  }
+
+  int _levelChevronCount(String level) {
+    final lower = level.toLowerCase();
+    if (lower == 'advanced') return 3;
+    if (lower == 'intermediate') return 2;
+    return 1;
+  }
+
+  Color _levelColor(String level) {
+    final lower = level.toLowerCase();
+    if (lower == 'advanced') return Colors.red.shade700;
+    if (lower == 'intermediate') return Colors.orange.shade700;
+    return Colors.green.shade700;
+  }
+}
+
+class _LevelChevronIcon extends StatelessWidget {
+  const _LevelChevronIcon({
+    required this.count,
+    required this.color,
+    required this.size,
+  });
+
+  final int count;
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        count,
+        (_) => Transform.translate(
+          offset: Offset(0, -1.h),
+          child: Icon(
+            Icons.keyboard_arrow_up,
+            size: size,
+            color: color,
+          ),
+        ),
+      ),
     );
   }
 }

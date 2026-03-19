@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/notification/domain/entity/notification_entity.dart';
 import 'package:sci_fun/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
@@ -103,22 +105,8 @@ class _NotificationPageState extends State<NotificationPage> {
         cubit: _notificationCubit,
         controller: _listController,
         itemBuilder: (context, item) => NotificationTile(item: item),
-        emptyWidget: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.notifications_off_outlined,
-                size: 64.sp,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Không có thông báo',
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
-              ),
-            ],
-          ),
+        emptyWidget: const Center(
+          child: AppEmptyState(message: 'Không có thông báo'),
         ),
         errorWidget: Center(
           child: Column(
@@ -160,6 +148,11 @@ class NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRead = item.read ?? false;
+    final subjectName = item.data?.subjectName;
+    final hasSubject = subjectName?.trim().isNotEmpty == true;
+    final accentColor =
+        hasSubject ? AppColor.subject500(subjectName) : AppColor.skyblue500;
+    final unreadBackground = accentColor.withValues(alpha: 0.08);
 
     return InkWell(
       onTap: () async {
@@ -181,7 +174,7 @@ class NotificationTile extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        color: isRead ? Colors.white : Colors.blue.withValues(alpha: 0.03),
+        color: isRead ? Colors.white : unreadBackground,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -189,7 +182,7 @@ class NotificationTile extends StatelessWidget {
               width: 44.w,
               height: 44.w,
               decoration: BoxDecoration(
-                color: isRead ? Colors.grey[200] : Colors.blue,
+                color: isRead ? Colors.grey[200] : accentColor,
                 shape: BoxShape.circle,
               ),
               child: Center(

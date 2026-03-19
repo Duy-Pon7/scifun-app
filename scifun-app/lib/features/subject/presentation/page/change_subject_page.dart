@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -70,7 +71,9 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
               .toList();
 
           if (subjects.isEmpty) {
-            return const Center(child: Text('Không có môn học'));
+            return const Center(
+              child: AppEmptyState(message: 'Không có môn học'),
+            );
           }
 
           return ListView.separated(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -194,7 +195,9 @@ class _PlanListPageState extends State<PlanListPage> {
               if (state is PlansLoaded) {
                 final plans = state.plans;
                 if (plans.isEmpty) {
-                  return const Center(child: Text('Không có gói nào'));
+                  return const Center(
+                    child: AppEmptyState(message: 'Không có gói nào'),
+                  );
                 }
 
                 return ListView.separated(
