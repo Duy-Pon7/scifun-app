@@ -731,7 +731,6 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
   final TextEditingController _inputController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<_QuizChatMessage> _messages = <_QuizChatMessage>[];
-
   bool _isSending = false;
 
   @override
@@ -802,7 +801,6 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
         setState(() {
           _isSending = false;
         });
-        _scrollToBottom();
       }
     }
   }
@@ -840,7 +838,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       return errorMessage.trim();
     }
 
-    return 'Co loi ket noi den chat API.';
+    return 'Co loi ket noi den tro ly AI.';
   }
 
   String _cleanReplyText(String text) {
@@ -895,7 +893,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      'Tro ly hoc tap',
+                      'Tro ly AI (phien hien tai)',
                       style: TextStyle(
                         fontSize: 19.sp,
                         fontWeight: FontWeight.w700,
@@ -921,7 +919,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 30.w),
                         child: Text(
-                          'Nhap cau hoi de hoi tro ly.\nVi du: Newton phat hien luc hap dan nhu the nao?',
+                          'Chat AI chi luu trong phien hien tai.\nNhap cau hoi de bat dau.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF667085),
@@ -1086,7 +1084,7 @@ class _ChatTypingBubble extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE3E8EF)),
         ),
         child: Text(
-          'Dang tra loi...',
+          'Đang suy nghĩ...',
           style: TextStyle(
             fontSize: fontSize,
             color: const Color(0xFF667085),

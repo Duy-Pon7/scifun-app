@@ -35,6 +35,8 @@ class UserDataModel extends UserDataEntity {
     super.sex,
     super.dob,
     super.role,
+    super.isGuest,
+    super.daysRemaining,
     super.level,
     SubscriptionModel? super.subscription,
   });
@@ -48,6 +50,8 @@ class UserDataModel extends UserDataEntity {
       sex: json['sex'],
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
+      isGuest: json['isGuest'] == true,
+      daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
       level: json['level'],
       subscription: json['subscription'] == null
           ? null
@@ -64,6 +68,8 @@ class UserDataModel extends UserDataEntity {
         'sex': sex,
         'dob': dob?.toIso8601String(),
         'role': role,
+        'isGuest': isGuest,
+        'daysRemaining': daysRemaining,
         'level': level,
         'subscription': subscription?.toJson(),
       };

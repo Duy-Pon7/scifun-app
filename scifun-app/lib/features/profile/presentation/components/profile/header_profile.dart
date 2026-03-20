@@ -13,10 +13,12 @@ class HeaderProfile extends StatelessWidget {
     required this.imgUrl,
     required this.name,
     required this.remainingPackage,
+    required this.isGuest,
   });
   final String imgUrl;
   final String name;
   final String remainingPackage;
+  final bool isGuest;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +69,44 @@ class HeaderProfile extends StatelessWidget {
                 fontSize: 24.sp,
                 color: AppColor.skyblue500,
               ),
+        ),
+        Wrap(
+          spacing: 8.w,
+          runSpacing: 8.h,
+          alignment: WrapAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(
+                color: AppColor.skyblue50,
+                borderRadius: BorderRadius.circular(999.r),
+              ),
+              child: Text(
+                'Con $remainingPackage',
+                style: TextStyle(
+                  color: AppColor.skyblue700,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.sp,
+                ),
+              ),
+            ),
+            if (isGuest)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF2CC),
+                  borderRadius: BorderRadius.circular(999.r),
+                ),
+                child: Text(
+                  'Tai khoan khach',
+                  style: TextStyle(
+                    color: const Color(0xFF8A6700),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
+          ],
         ),
       ],
     );

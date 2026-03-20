@@ -114,6 +114,14 @@ class UserCubit extends Cubit<UserState> {
           print('UserCubit.updateUser success: returned=$returned');
           // Nếu update thành công, dùng dữ liệu trả về từ API trực tiếp
           if (returned != null && returned.data != null) {
+            final currentState = state;
+            int? currentDaysRemaining;
+            bool? currentIsGuest;
+            if (currentState is UserLoaded) {
+              currentDaysRemaining = currentState.user.data?.daysRemaining;
+              currentIsGuest = currentState.user.data?.isGuest;
+            }
+
             // Convert UserModel data to UserGetEntity
             final updatedUser = UserGetEntity(
               status: returned.status,
@@ -126,6 +134,8 @@ class UserCubit extends Cubit<UserState> {
                 sex: returned.data!.sex,
                 dob: returned.data!.dob,
                 role: returned.data!.role,
+                isGuest: currentIsGuest,
+                daysRemaining: currentDaysRemaining,
                 level: returned.data!.level,
                 subscription: returned.data!.subscription != null
                     ? SubscriptionEntity(

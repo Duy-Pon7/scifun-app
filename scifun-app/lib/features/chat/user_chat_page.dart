@@ -42,6 +42,28 @@ class _UserChatPageState extends State<UserChatPage> {
     _init();
   }
 
+  bool _isOwnMessage(ChatMessage message) {
+    final myId = RealtimeService.I.selfId;
+    if (myId != null && myId.isNotEmpty) {
+      return message.senderId == myId;
+    }
+    return (message.senderRole ?? '').toUpperCase() == 'USER';
+  }
+
+  int _findOptimisticIndex(ChatMessage message) {
+    return _messages.lastIndexWhere((item) {
+      if (!(item.id?.startsWith('local-') ?? false)) return false;
+      if (item.content != message.content) return false;
+
+      if (item.createdAt == null || message.createdAt == null) {
+        return true;
+      }
+
+      return item.createdAt!.difference(message.createdAt!).inSeconds.abs() <=
+          10;
+    });
+  }
+
   Future<void> _init() async {
     try {
       _token = await widget.getToken();
@@ -69,28 +91,26 @@ class _UserChatPageState extends State<UserChatPage> {
       _wsSub = RealtimeService.I.chatStream.listen((m) {
         if (!mounted) return;
         if (m.conversationId != _conversationId) return;
+        final isMine = _isOwnMessage(m);
 
         setState(() {
-          // Try to find a matching optimistic message and replace it to avoid duplicates.
-          final idx = _messages.indexWhere((x) {
-            if (m.id != null && x.id == m.id) return true;
-            // Match optimistic local message by sender + content + nearby timestamp
-            if ((x.id?.startsWith('local-') ?? false) &&
-                x.senderId == m.senderId &&
-                x.content == m.content &&
-                x.createdAt != null &&
-                m.createdAt != null &&
-                (m.createdAt!.difference(x.createdAt!).inSeconds.abs() <= 5)) {
-              return true;
-            }
-            return false;
-          });
-
-          if (idx != -1) {
-            _messages[idx] = m;
-          } else {
-            _messages.add(m);
+          final existedById =
+              m.id == null ? -1 : _messages.indexWhere((x) => x.id == m.id);
+          if (existedById != -1) {
+            _messages[existedById] = m;
+            return;
           }
+
+          final optimisticIdx = _findOptimisticIndex(m);
+          if (optimisticIdx != -1) {
+            _messages[optimisticIdx] = m;
+            return;
+          }
+
+          // Skip self echoes when we already rendered optimistic message.
+          if (isMine) return;
+
+          _messages.add(m);
         });
 
         _scrollToBottom();
@@ -175,8 +195,6 @@ class _UserChatPageState extends State<UserChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final myId = RealtimeService.I.selfId;
-
     return Scaffold(
       backgroundColor: const Color(0xfff4f6fb),
       appBar: BasicAppbar(
@@ -195,7 +213,7 @@ class _UserChatPageState extends State<UserChatPage> {
                     itemCount: _messages.length,
                     itemBuilder: (_, i) {
                       final m = _messages[i];
-                      final isMe = myId != null && m.senderId == myId;
+                      final isMe = _isOwnMessage(m);
 
                       return _ChatBubble(
                         isMe: isMe,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,6 +16,7 @@ import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/chat/admin_chat_page.dart';
 import 'package:sci_fun/features/chat/chat_connection_config.dart';
 import 'package:sci_fun/features/chat/user_chat_page.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
@@ -43,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _openChatSupport() async {
     final apiBase = dotenv.get('BASE_URL').replaceAll(RegExp(r'/+$'), '');
+    final isAdmin = await _isCurrentUserAdmin();
 
     if (!mounted) {
       return;
@@ -51,13 +55,49 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => UserChatPage(
-          apiBaseUrl: apiBase,
-          wsUrl: wsUrlForEnvironment(),
-          getToken: getChatToken,
-        ),
+        builder: (_) => isAdmin
+            ? AdminChatPage(
+                apiBaseUrl: apiBase,
+                wsUrl: wsUrlForEnvironment(),
+                getToken: getChatToken,
+              )
+            : UserChatPage(
+                apiBaseUrl: apiBase,
+                wsUrl: wsUrlForEnvironment(),
+                getToken: getChatToken,
+              ),
       ),
     );
+  }
+
+  Future<bool> _isCurrentUserAdmin() async {
+    final userState = _userCubit.state;
+    if (userState is UserLoaded) {
+      final role = userState.user.data?.role?.trim().toUpperCase();
+      if (role == 'ADMIN') {
+        return true;
+      }
+      if (role != null && role.isNotEmpty) {
+        return false;
+      }
+    }
+
+    final token = await getChatToken();
+    if (token == null || token.isEmpty) return false;
+
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return false;
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final map = jsonDecode(payload);
+      if (map is! Map<String, dynamic>) return false;
+      final role = map['role']?.toString().trim().toUpperCase();
+      return role == 'ADMIN';
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> _logoutAndNavigateToSignin() async {
@@ -146,6 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               'ProfilePage BlocBuilder state: ${state.runtimeType}');
                           if (state is UserLoaded) {
                             final user = state.user.data;
+                            final remainingDays = user?.daysRemaining ?? 0;
 
                             print(
                                 'ProfilePage displaying user: ${user?.id} ${user?.fullname}');
@@ -157,12 +198,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                   imgUrl: user?.avatar ??
                                       "https://cdn-icons-png.flaticon.com/512/8345/8345328.png",
                                   name: user?.fullname ?? "Khách",
-                                  remainingPackage: user?.subscription
-                                              ?.currentPeriodEnd ==
-                                          null
-                                      ? "0 ngày"
-                                      : getRemainingDays(
-                                          user!.subscription!.currentPeriodEnd),
+                                  remainingPackage:
+                                      "${remainingDays < 0 ? 0 : remainingDays} ngay",
+                                  isGuest: user?.isGuest == true,
                                 ),
 
                                 /// ===== GÓI ĐANG DÙNG =====
@@ -366,13 +404,6 @@ class _ProfilePageState extends State<ProfilePage> {
   SvgPicture _rightWave() {
     return SvgPicture.asset(AppVector.rightWave, fit: BoxFit.cover);
   }
-
-  String getRemainingDays(DateTime? endDate) {
-    if (endDate == null) return "0 ngày";
-    final now = DateTime.now();
-    final difference = endDate.difference(now).inDays;
-    return difference <= 0 ? "Hết hạn" : "$difference ngày";
-  }
 }
 
 String formatDate(DateTime date) {
@@ -383,14 +414,12 @@ String formatDate(DateTime date) {
 
 Widget subscriptionCard(UserDataEntity user) {
   final sub = user.subscription;
-
-  final bool isExpired = sub?.currentPeriodEnd == null
-      ? true
-      : sub!.currentPeriodEnd!.isBefore(DateTime.now());
-
-  final int remainingDays = sub?.currentPeriodEnd == null
-      ? 0
-      : sub!.currentPeriodEnd!.difference(DateTime.now()).inDays;
+  final isGuest = user.isGuest == true;
+  final remainingDays = user.daysRemaining ?? 0;
+  final isExpired = remainingDays <= 0;
+  final packageLabel = isGuest ? 'GUEST' : (sub?.tier?.toUpperCase() ?? 'FREE');
+  final statusLabel =
+      isGuest ? 'Tai khoan khach' : (isExpired ? 'Het han' : 'Dang hoat dong');
 
   return Container(
     padding: EdgeInsets.all(16.w),
@@ -412,12 +441,11 @@ Widget subscriptionCard(UserDataEntity user) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// Header
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Gói đang sử dụng",
+              'Goi dang su dung',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16.sp,
@@ -431,7 +459,7 @@ Widget subscriptionCard(UserDataEntity user) {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Text(
-                isExpired ? "Hết hạn" : "Đang hoạt động",
+                statusLabel,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 12.sp,
@@ -441,41 +469,34 @@ Widget subscriptionCard(UserDataEntity user) {
             ),
           ],
         ),
-
         SizedBox(height: 12.h),
-
-        /// Package name
         Text(
-          sub?.tier?.toUpperCase() ?? "FREE",
+          packageLabel,
           style: TextStyle(
             color: Colors.white,
             fontSize: 22.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
-
         SizedBox(height: 8.h),
-
-        /// Expire date
         Row(
           children: [
             const Icon(Icons.calendar_month, color: Colors.white, size: 18),
             SizedBox(width: 6.w),
-            Text(
-              sub?.currentPeriodEnd == null
-                  ? "Không có ngày hết hạn"
-                  : "Hết hạn: ${formatDate(sub!.currentPeriodEnd!)}",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14.sp,
+            Expanded(
+              child: Text(
+                sub?.currentPeriodEnd == null
+                    ? 'Khong co ngay het han'
+                    : 'Het han: ${formatDate(sub!.currentPeriodEnd!)}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                ),
               ),
             ),
           ],
         ),
-
         SizedBox(height: 12.h),
-
-        /// Remaining days badge
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
           decoration: BoxDecoration(
@@ -483,7 +504,11 @@ Widget subscriptionCard(UserDataEntity user) {
             borderRadius: BorderRadius.circular(16.r),
           ),
           child: Text(
-            isExpired ? "Đã hết hạn" : "Còn $remainingDays ngày",
+            isExpired
+                ? (isGuest ? 'Khach: da het han' : 'Da het han')
+                : (isGuest
+                    ? 'Khach: con $remainingDays ngay'
+                    : 'Con $remainingDays ngay'),
             style: TextStyle(
               color: isExpired ? Colors.red : AppColor.skyblue600,
               fontWeight: FontWeight.w600,

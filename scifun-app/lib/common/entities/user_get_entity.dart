@@ -56,6 +56,8 @@ class UserDataEntity extends Equatable {
     this.sex,
     this.dob,
     this.role,
+    this.isGuest,
+    this.daysRemaining,
     this.level,
     this.subscription,
   });
@@ -67,6 +69,8 @@ class UserDataEntity extends Equatable {
   final int? sex;
   final DateTime? dob;
   final String? role;
+  final bool? isGuest;
+  final int? daysRemaining;
   final String? level;
   final SubscriptionEntity? subscription;
 
@@ -79,6 +83,8 @@ class UserDataEntity extends Equatable {
       sex: json['sex'],
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
+      isGuest: json['isGuest'] == true,
+      daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
       level: json['level'],
       subscription: json['subscription'] == null
           ? null
@@ -94,6 +100,8 @@ class UserDataEntity extends Equatable {
         'sex': sex,
         'dob': dob?.toIso8601String(),
         'role': role,
+        'isGuest': isGuest,
+        'daysRemaining': daysRemaining,
         'level': level,
         'subscription': subscription?.toJson(),
       };
@@ -106,6 +114,8 @@ class UserDataEntity extends Equatable {
     int? sex,
     DateTime? dob,
     String? role,
+    bool? isGuest,
+    int? daysRemaining,
     String? level,
     SubscriptionEntity? subscription,
   }) {
@@ -117,14 +127,27 @@ class UserDataEntity extends Equatable {
       sex: sex ?? this.sex,
       dob: dob ?? this.dob,
       role: role ?? this.role,
+      isGuest: isGuest ?? this.isGuest,
+      daysRemaining: daysRemaining ?? this.daysRemaining,
       level: level ?? this.level,
       subscription: subscription ?? this.subscription,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [id, email, fullname, avatar, sex, dob, role, level, subscription];
+  List<Object?> get props => [
+        id,
+        email,
+        fullname,
+        avatar,
+        sex,
+        dob,
+        role,
+        isGuest,
+        daysRemaining,
+        level,
+        subscription,
+      ];
 }
 
 /// =======================
