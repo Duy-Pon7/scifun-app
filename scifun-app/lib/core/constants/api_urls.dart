@@ -157,3 +157,9 @@ class VideoApiUrl {
 
   static const String getVideoLessons = '/video-lesson/list';
 }
+
+class ChatApiUrls {
+  ChatApiUrls._();
+
+  static const String ask = '/chat/ask';
+}
