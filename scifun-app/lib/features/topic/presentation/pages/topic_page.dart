@@ -5,10 +5,12 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 import 'package:sci_fun/features/topic/domain/entity/topic_entity.dart';
@@ -31,11 +33,15 @@ class TopicPage extends StatefulWidget {
 
 class _TopicPageState extends State<TopicPage> {
   late final TopicCubit cubit;
+  String? _userLevel;
 
   @override
   void initState() {
     super.initState();
     cubit = sl<TopicCubit>();
+    _userLevel = _resolveCurrentUserLevel() ??
+        _normalizeLevel(sl<SharePrefsService>().getOnboardingLevel()) ??
+        'Beginner';
     cubit.loadInitial(filterId: widget.subjectId);
   }
 
@@ -216,6 +222,143 @@ class _TopicPageState extends State<TopicPage> {
     );
   }
 
+  String? _normalizeLevel(String? rawLevel) {
+    final level = (rawLevel ?? '').trim().toLowerCase();
+    if (level.isEmpty) {
+      return null;
+    }
+    if (level == 'beginner' ||
+        level == 'moi bat dau' ||
+        level == 'mới bắt đầu') {
+      return 'Beginner';
+    }
+    if (level == 'intermediate' ||
+        level == 'trung cap' ||
+        level == 'trung cấp') {
+      return 'Intermediate';
+    }
+    if (level == 'advanced' || level == 'nang cao' || level == 'nâng cao') {
+      return 'Advanced';
+    }
+    return null;
+  }
+
+  int? _levelRank(String? rawLevel) {
+    final normalized = _normalizeLevel(rawLevel);
+    if (normalized == 'Beginner') return 1;
+    if (normalized == 'Intermediate') return 2;
+    if (normalized == 'Advanced') return 3;
+    return null;
+  }
+
+  String? _resolveCurrentUserLevel() {
+    UserCubit? userCubit;
+    try {
+      userCubit = BlocProvider.of<UserCubit>(context);
+    } catch (_) {
+      userCubit = null;
+    }
+
+    if (userCubit == null) {
+      return null;
+    }
+
+    final state = userCubit.state;
+    if (state is UserLoaded) {
+      return _normalizeLevel(state.user.data?.level);
+    }
+    return null;
+  }
+
+  bool _needsHigherLevelConfirmation(String? topicLevel) {
+    final userRank = _levelRank(_userLevel) ?? 1;
+    final topicRank = _levelRank(topicLevel);
+
+    if (topicRank == null) {
+      return false;
+    }
+
+    return topicRank > userRank;
+  }
+
+  Future<void> _openTopic(TopicEntity topic) async {
+    final latestUserLevel = _resolveCurrentUserLevel();
+    if (latestUserLevel != null) {
+      _userLevel = latestUserLevel;
+    }
+
+    if (_needsHigherLevelConfirmation(topic.level)) {
+      final shouldContinue = await showChangeConfirmDialog(
+        context: context,
+        titleText: 'Bạn có chắc muốn tham gia không?',
+        messageText: 'Kiến thức của chủ đề này khó hơn mức hiện tại của bạn.',
+        confirmButtonText: 'Tham gia',
+      );
+
+      if (shouldContinue != true || !mounted) {
+        return;
+      }
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VideoPage(
+          topicId: topic.id ?? '',
+          topicName: topic.name ?? '',
+        ),
+      ),
+    );
+  }
+
+  Color _levelColor(String? level) {
+    final normalized = _normalizeLevel(level);
+    if (normalized == 'Advanced') return Colors.red.shade700;
+    if (normalized == 'Intermediate') return Colors.orange.shade700;
+    return Colors.green.shade700;
+  }
+
+  Widget _buildTopicLevelIndicator(String? level) {
+    final normalized = _normalizeLevel(level);
+    final rank = _levelRank(normalized) ?? 0;
+    final activeColor = _levelColor(normalized);
+    final label = normalized ?? 'Unknown';
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: activeColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: activeColor.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...List.generate(3, (index) {
+            final isActive = index < rank;
+            return Padding(
+              padding: EdgeInsets.only(right: index == 2 ? 0 : 2.w),
+              child: Icon(
+                Icons.keyboard_arrow_up_rounded,
+                size: 14.sp,
+                color: isActive ? activeColor : Colors.grey.shade400,
+              ),
+            );
+          }),
+          SizedBox(width: 6.w),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w700,
+              color: activeColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TopicCubit>.value(
@@ -265,29 +408,26 @@ class _TopicPageState extends State<TopicPage> {
                     topic.name ?? 'No title',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: topic.description != null
-                      ? Text(
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (topic.description != null &&
+                          topic.description!.trim().isNotEmpty)
+                        Text(
                           topic.description!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                        )
-                      : null,
+                        ),
+                      SizedBox(height: 6.h),
+                      _buildTopicLevelIndicator(topic.level),
+                    ],
+                  ),
                   trailing: Icon(
                     Icons.arrow_forward_ios,
                     size: 18.sp,
                     color: AppColor.skyblue600,
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VideoPage(
-                          topicId: topic.id ?? '',
-                          topicName: topic.name ?? '',
-                        ),
-                      ),
-                    );
-                  },
+                  onTap: () => _openTopic(topic),
                 ),
               );
             },

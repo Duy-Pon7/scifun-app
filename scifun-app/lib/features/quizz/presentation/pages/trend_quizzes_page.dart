@@ -5,8 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
+import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/question/presentation/page/test_page.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/trend_quizz_cubit.dart';
 
@@ -76,12 +79,11 @@ class TrendQuizzesList extends StatelessWidget {
                     final level = _normalizeLevel(quizz.level);
 
                     return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          slidePage(TestPage(quizzId: quizz.id ?? '')),
-                        );
-                      },
+                      onTap: () => _openTrendQuiz(
+                        context,
+                        quizzId: quizz.id ?? '',
+                        quizzLevel: level ?? quizz.level,
+                      ),
                       child: SizedBox(
                         width: 300.w,
                         child: Card(
@@ -277,6 +279,74 @@ class TrendQuizzesList extends StatelessWidget {
     if (lower == 'intermediate') return 'Intermediate';
     if (lower == 'advanced') return 'Advanced';
     return raw;
+  }
+
+  int? _levelRank(String? level) {
+    final normalized = _normalizeLevel(level);
+    if (normalized == 'Beginner') return 1;
+    if (normalized == 'Intermediate') return 2;
+    if (normalized == 'Advanced') return 3;
+    return null;
+  }
+
+  String _resolveCurrentUserLevel(BuildContext context) {
+    try {
+      final userState = context.read<UserCubit>().state;
+      if (userState is UserLoaded) {
+        final loadedLevel = _normalizeLevel(userState.user.data?.level);
+        if (loadedLevel != null) {
+          return loadedLevel;
+        }
+      }
+    } catch (_) {}
+
+    return _normalizeLevel(sl<SharePrefsService>().getOnboardingLevel()) ??
+        'Beginner';
+  }
+
+  bool _needsHigherLevelConfirmation({
+    required String userLevel,
+    required String? quizzLevel,
+  }) {
+    final userRank = _levelRank(userLevel) ?? 1;
+    final quizzRank = _levelRank(quizzLevel);
+    if (quizzRank == null) {
+      return false;
+    }
+    return quizzRank > userRank;
+  }
+
+  Future<void> _openTrendQuiz(
+    BuildContext context, {
+    required String quizzId,
+    required String? quizzLevel,
+  }) async {
+    final normalizedId = quizzId.trim();
+    if (normalizedId.isEmpty) {
+      return;
+    }
+
+    final userLevel = _resolveCurrentUserLevel(context);
+    if (_needsHigherLevelConfirmation(
+      userLevel: userLevel,
+      quizzLevel: quizzLevel,
+    )) {
+      final shouldContinue = await showChangeConfirmDialog(
+        context: context,
+        titleText: 'Bạn có chắc muốn tham gia không?',
+        messageText: 'Bài tập này kiến thức sẽ khó hơn mức hiện tại của bạn.',
+        confirmButtonText: 'Tham gia',
+      );
+
+      if (shouldContinue != true || !context.mounted) {
+        return;
+      }
+    }
+
+    Navigator.push(
+      context,
+      slidePage(TestPage(quizzId: normalizedId)),
+    );
   }
 
   int _levelChevronCount(String level) {

@@ -11,6 +11,7 @@ class SharePrefsService {
   static const String _keyUserData = 'user_data';
   static const String _keySelectedSubjectId = 'selected_subject_id';
   static const String _keySelectedSubjectName = 'selected_subject_name';
+  static const String _keyOnboardingLevel = 'onboarding_level';
   static const String _defaultSubjectName = 'Vật lý';
 
   SharePrefsService({required SharedPreferences prefs}) : _prefs = prefs {
@@ -79,6 +80,10 @@ class SharePrefsService {
 
   String? getSelectedSubjectName() {
     return _prefs.getString(_keySelectedSubjectName) ?? _defaultSubjectName;
+  }
+
+  String? getOnboardingLevel() {
+    return _prefs.getString(_keyOnboardingLevel);
   }
 
   Future<void> clearSelectedSubject() async {

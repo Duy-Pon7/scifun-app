@@ -56,6 +56,7 @@ class UserDataEntity extends Equatable {
     this.sex,
     this.dob,
     this.role,
+    this.level,
     this.subscription,
   });
 
@@ -66,6 +67,7 @@ class UserDataEntity extends Equatable {
   final int? sex;
   final DateTime? dob;
   final String? role;
+  final String? level;
   final SubscriptionEntity? subscription;
 
   factory UserDataEntity.fromJson(Map<String, dynamic> json) {
@@ -77,6 +79,7 @@ class UserDataEntity extends Equatable {
       sex: json['sex'],
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
+      level: json['level'],
       subscription: json['subscription'] == null
           ? null
           : SubscriptionEntity.fromJson(json['subscription']),
@@ -91,6 +94,7 @@ class UserDataEntity extends Equatable {
         'sex': sex,
         'dob': dob?.toIso8601String(),
         'role': role,
+        'level': level,
         'subscription': subscription?.toJson(),
       };
 
@@ -102,6 +106,7 @@ class UserDataEntity extends Equatable {
     int? sex,
     DateTime? dob,
     String? role,
+    String? level,
     SubscriptionEntity? subscription,
   }) {
     return UserDataEntity(
@@ -112,13 +117,14 @@ class UserDataEntity extends Equatable {
       sex: sex ?? this.sex,
       dob: dob ?? this.dob,
       role: role ?? this.role,
+      level: level ?? this.level,
       subscription: subscription ?? this.subscription,
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, email, fullname, avatar, sex, dob, role, subscription];
+      [id, email, fullname, avatar, sex, dob, role, level, subscription];
 }
 
 /// =======================

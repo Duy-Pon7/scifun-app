@@ -45,6 +45,7 @@ class DataModel extends DataEntity {
     required super.isVerified,
     required super.avatar,
     required super.role,
+    super.level,
     required super.sex,
     required super.subscription,
     required super.dob,
@@ -61,6 +62,7 @@ class DataModel extends DataEntity {
       isVerified: json["isVerified"],
       avatar: json["avatar"],
       role: json["role"],
+      level: json["level"],
       sex: json["sex"],
       subscription: json["subscription"] == null
           ? null
@@ -80,6 +82,7 @@ class DataModel extends DataEntity {
         "isVerified": isVerified,
         "avatar": avatar,
         "role": role,
+        "level": level,
         "sex": sex,
         "subscription": subscription?.toJson(),
         "dob": dob?.toIso8601String(),
@@ -96,6 +99,7 @@ class DataModel extends DataEntity {
         isVerified,
         avatar,
         role,
+        level,
         sex,
         subscription,
         dob,

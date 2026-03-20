@@ -22,6 +22,7 @@ abstract interface class UserRemoteDatasource {
     required String fullname,
     required DateTime dob,
     required int sex,
+    required String level,
     File? avatar,
   });
 }
@@ -70,11 +71,12 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
     required String fullname,
     required DateTime dob,
     required int sex,
+    required String level,
     File? avatar,
   }) async {
     try {
       log("PUT ${UserApiUrls.updateInfo}$userId");
-      log("BODY => fullname: $fullname, dob: $dob, sex: $sex");
+      log("BODY => fullname: $fullname, dob: $dob, sex: $sex, level: $level");
 
       MultipartFile? avatarMultipart;
       if (avatar != null) {
@@ -94,11 +96,12 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
         "fullname": fullname,
         "sex": sex,
         "dob": DateFormat("yyyy-MM-dd").format(dob),
+        "level": level,
         if (avatarMultipart != null) "avatar": avatarMultipart,
       });
 
       // Log a short summary of the outgoing form (do NOT log binary content)
-      log('Sending updateInfoUser request: userId=$userId, fullname=$fullname, dob=${DateFormat("yyyy-MM-dd").format(dob)}, sex=$sex, hasAvatar=${avatar != null}');
+      log('Sending updateInfoUser request: userId=$userId, fullname=$fullname, dob=${DateFormat("yyyy-MM-dd").format(dob)}, sex=$sex, level=$level, hasAvatar=${avatar != null}');
 
       final res = await dioClient.put(
         url: "${UserApiUrls.updateInfo}$userId",

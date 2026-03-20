@@ -35,6 +35,7 @@ class UserDataModel extends UserDataEntity {
     super.sex,
     super.dob,
     super.role,
+    super.level,
     SubscriptionModel? super.subscription,
   });
 
@@ -47,6 +48,7 @@ class UserDataModel extends UserDataEntity {
       sex: json['sex'],
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
+      level: json['level'],
       subscription: json['subscription'] == null
           ? null
           : SubscriptionModel.fromJson(json['subscription']),
@@ -62,6 +64,7 @@ class UserDataModel extends UserDataEntity {
         'sex': sex,
         'dob': dob?.toIso8601String(),
         'role': role,
+        'level': level,
         'subscription': subscription?.toJson(),
       };
 }

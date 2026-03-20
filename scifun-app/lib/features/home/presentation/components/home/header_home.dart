@@ -59,11 +59,13 @@ class _HeaderHomeState extends State<HeaderHome> {
                 state is UserLoaded ? state.user.data?.fullname : null;
             final avatarUrl =
                 state is UserLoaded ? state.user.data?.avatar : null;
+            final userLevel =
+                state is UserLoaded ? state.user.data?.level : null;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _textName(name: userName),
+                _textName(name: userName, level: userLevel),
                 _avatarWithMascot(avatarUrl: avatarUrl),
               ],
             );
@@ -74,19 +76,29 @@ class _HeaderHomeState extends State<HeaderHome> {
     );
   }
 
-  Widget _textName({required String? name}) {
+  Widget _textName({required String? name, required String? level}) {
     final subjectDisplayName = _subjectDisplayName(widget.subjectName);
+    final normalizedLevel = _normalizeLevel(level);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          subjectDisplayName,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 17.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w400,
-              ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              subjectDisplayName,
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontSize: 17.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
+            ),
+            if (normalizedLevel != null) ...[
+              SizedBox(width: 8.w),
+              _buildLevelBadge(normalizedLevel),
+            ],
+          ],
         ),
         Text(
           name?.trim().isNotEmpty == true ? name!.trim() : ' ',
@@ -105,6 +117,47 @@ class _HeaderHomeState extends State<HeaderHome> {
       return 'Vật lý';
     }
     return normalized;
+  }
+
+  String? _normalizeLevel(String? value) {
+    final raw = (value ?? '').trim();
+    if (raw.isEmpty) return null;
+    final lower = raw.toLowerCase();
+    if (lower == 'beginner') return 'Beginner';
+    if (lower == 'intermediate') return 'Intermediate';
+    if (lower == 'advanced') return 'Advanced';
+    return raw;
+  }
+
+  Color _levelColor(String level) {
+    final lower = level.toLowerCase();
+    if (lower == 'advanced') return Colors.red.shade100;
+    if (lower == 'intermediate') return Colors.orange.shade100;
+    return Colors.green.shade100;
+  }
+
+  Widget _buildLevelBadge(String level) {
+    final backgroundColor = _levelColor(level);
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+      decoration: BoxDecoration(
+        color: backgroundColor.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.45),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        level,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColor.hurricane900,
+              fontWeight: FontWeight.w700,
+              fontSize: 11.sp,
+            ),
+      ),
+    );
   }
 
   Widget _avatarWithMascot({required String? avatarUrl}) => SizedBox(

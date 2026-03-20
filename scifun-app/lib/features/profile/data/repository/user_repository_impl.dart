@@ -32,6 +32,7 @@ class UserRepositoryImpl implements UserRepository {
     required String fullname,
     required DateTime dob,
     required int sex,
+    required String level,
     File? avatar,
   }) async {
     try {
@@ -40,6 +41,7 @@ class UserRepositoryImpl implements UserRepository {
         fullname: fullname,
         dob: dob,
         sex: sex,
+        level: level,
         avatar: avatar,
       );
       return Right(res);

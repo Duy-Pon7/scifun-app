@@ -34,6 +34,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   DateTime? selectedBirthday;
   bool _isFirstLoad = true;
   int? _genderFieldValue;
+  String? _levelFieldValue;
   @override
   void initState() {
     super.initState();
@@ -63,6 +64,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           fullname: _fullnameCon.text.trim(),
           dob: selectedBirthday ?? DateTime(2000, 1, 1),
           sex: _genderFieldValue ?? 1,
+          level: _normalizeLevel(_levelFieldValue) ?? 'Beginner',
           avatar: selectedImage,
         );
       }
@@ -102,6 +104,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                 ? DateFormat('dd/MM/yyyy').format(user!.dob!)
                 : '';
             _genderFieldValue = user?.sex;
+            _levelFieldValue = _normalizeLevel(user?.level) ?? 'Beginner';
             // Note: API doesn't support email, phone, province/ward
             // _emailCon.text = user?.email ?? '';
             // _phoneCon.text = user?.phone ?? '';
@@ -144,6 +147,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                     ),
                   ],
                 ),
+                SizedBox(height: 16.h),
+                _levelField(),
                 SizedBox(height: 16.h),
                 SizedBox(height: 40.h),
                 _changeButton(),
@@ -274,7 +279,40 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         },
         suffixIcon: const Icon(Icons.calendar_month),
       );
+  Widget _levelField() => BlocProvider(
+        create: (context) => SelectCubit<String>(
+            _normalizeLevel(_levelFieldValue) ?? 'Beginner'),
+        child: BlocBuilder<SelectCubit<String>, String>(
+          builder: (context, state) {
+            return CustomizeDropdown<String>(
+              items: _levelOptions,
+              onChanged: (String? value) {
+                final normalized = _normalizeLevel(value) ?? 'Beginner';
+                context.read<SelectCubit<String>>().select(normalized);
+                _levelFieldValue = normalized;
+              },
+              hintText: 'Chon cap do',
+              value: _normalizeLevel(state) ?? 'Beginner',
+            );
+          },
+        ),
+      );
 
+  String? _normalizeLevel(String? value) {
+    final raw = (value ?? '').trim();
+    if (raw.isEmpty) return null;
+    final lower = raw.toLowerCase();
+    if (lower == 'beginner') return 'Beginner';
+    if (lower == 'intermediate') return 'Intermediate';
+    if (lower == 'advanced') return 'Advanced';
+    return raw;
+  }
+
+  Map<String, String> get _levelOptions => const {
+        'Beginner': 'Beginner',
+        'Intermediate': 'Intermediate',
+        'Advanced': 'Advanced',
+      };
   Widget _changeButton() => BasicButton(
         text: "Cập nhật",
         onPressed: _onChange,

@@ -62,6 +62,7 @@ class DataEntity extends Equatable {
     required this.isVerified,
     required this.avatar,
     required this.role,
+    this.level,
     required this.sex,
     required this.subscription,
     required this.dob,
@@ -76,6 +77,7 @@ class DataEntity extends Equatable {
   final bool? isVerified;
   final String? avatar;
   final String? role;
+  final String? level;
   final int? sex;
   final SubscriptionEntity? subscription;
   final DateTime? dob;
@@ -90,6 +92,7 @@ class DataEntity extends Equatable {
     bool? isVerified,
     String? avatar,
     String? role,
+    String? level,
     int? sex,
     SubscriptionEntity? subscription,
     DateTime? dob,
@@ -104,6 +107,7 @@ class DataEntity extends Equatable {
       isVerified: isVerified ?? this.isVerified,
       avatar: avatar ?? this.avatar,
       role: role ?? this.role,
+      level: level ?? this.level,
       sex: sex ?? this.sex,
       subscription: subscription ?? this.subscription,
       dob: dob ?? this.dob,
@@ -121,6 +125,7 @@ class DataEntity extends Equatable {
       isVerified: json["isVerified"],
       avatar: json["avatar"],
       role: json["role"],
+      level: json["level"],
       sex: json["sex"],
       subscription: json["subscription"] == null
           ? null
@@ -139,6 +144,7 @@ class DataEntity extends Equatable {
         "isVerified": isVerified,
         "avatar": avatar,
         "role": role,
+        "level": level,
         "sex": sex,
         "subscription": subscription?.toJson(),
         "dob": dob?.toIso8601String(),
@@ -155,6 +161,7 @@ class DataEntity extends Equatable {
         isVerified,
         avatar,
         role,
+        level,
         sex,
         subscription,
         dob,

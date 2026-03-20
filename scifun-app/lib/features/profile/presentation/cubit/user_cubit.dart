@@ -87,6 +87,7 @@ class UserCubit extends Cubit<UserState> {
     required String fullname,
     required DateTime dob,
     required int sex,
+    required String level,
     File? avatar,
   }) async {
     print('UserCubit.updateUser: userId=$userId, fullname=$fullname');
@@ -97,6 +98,7 @@ class UserCubit extends Cubit<UserState> {
         fullname: fullname,
         dob: dob,
         sex: sex,
+        level: level,
         avatar: avatar,
       );
 
@@ -124,6 +126,7 @@ class UserCubit extends Cubit<UserState> {
                 sex: returned.data!.sex,
                 dob: returned.data!.dob,
                 role: returned.data!.role,
+                level: returned.data!.level,
                 subscription: returned.data!.subscription != null
                     ? SubscriptionEntity(
                         status: returned.data!.subscription!.status,

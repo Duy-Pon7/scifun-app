@@ -18,6 +18,7 @@ class UpdateInfoUser implements Usecase<UserEntity?, UpdateInfoUserParams> {
       fullname: params.fullname,
       dob: params.dob,
       sex: params.sex,
+      level: params.level,
       avatar: params.avatar,
     );
   }
@@ -28,6 +29,7 @@ class UpdateInfoUserParams {
   final String fullname;
   final DateTime dob;
   final int sex;
+  final String level;
   final File? avatar;
 
   UpdateInfoUserParams({
@@ -35,6 +37,7 @@ class UpdateInfoUserParams {
     required this.fullname,
     required this.dob,
     required this.sex,
+    required this.level,
     this.avatar,
   });
 }

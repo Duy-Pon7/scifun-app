@@ -22,6 +22,7 @@ abstract interface class UserRepository {
     required String fullname,
     required DateTime dob,
     required int sex,
+    required String level,
     File? avatar,
   });
 }
