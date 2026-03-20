@@ -419,7 +419,7 @@ Widget subscriptionCard(UserDataEntity user) {
   final isExpired = remainingDays <= 0;
   final packageLabel = isGuest ? 'GUEST' : (sub?.tier?.toUpperCase() ?? 'FREE');
   final statusLabel =
-      isGuest ? 'Tai khoan khach' : (isExpired ? 'Het han' : 'Dang hoat dong');
+      isGuest ? 'Tài khoản khách' : (isExpired ? 'Hết hạn' : 'Đang hoạt động');
 
   return Container(
     padding: EdgeInsets.all(16.w),
@@ -445,7 +445,7 @@ Widget subscriptionCard(UserDataEntity user) {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Goi dang su dung',
+              'Gói đang sử dụng',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16.sp,
@@ -486,8 +486,8 @@ Widget subscriptionCard(UserDataEntity user) {
             Expanded(
               child: Text(
                 sub?.currentPeriodEnd == null
-                    ? 'Khong co ngay het han'
-                    : 'Het han: ${formatDate(sub!.currentPeriodEnd!)}',
+                    ? 'Không có ngày hết hạn'
+                    : 'Hết hạn: ${formatDate(sub!.currentPeriodEnd!)}',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14.sp,
@@ -505,10 +505,10 @@ Widget subscriptionCard(UserDataEntity user) {
           ),
           child: Text(
             isExpired
-                ? (isGuest ? 'Khach: da het han' : 'Da het han')
+                ? (isGuest ? 'Khách: đã hết hạn' : 'Đã hết hạn')
                 : (isGuest
-                    ? 'Khach: con $remainingDays ngay'
-                    : 'Con $remainingDays ngay'),
+                    ? 'Khách: còn $remainingDays ngày'
+                    : 'Còn $remainingDays ngày'),
             style: TextStyle(
               color: isExpired ? Colors.red : AppColor.skyblue600,
               fontWeight: FontWeight.w600,

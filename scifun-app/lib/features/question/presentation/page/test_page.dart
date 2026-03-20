@@ -157,7 +157,7 @@ class _TestPageState extends State<TestPage> {
 
     final selectedCurrent = selectedAnswers[questionId] ?? const <String>[];
     if (selectedCurrent.isEmpty) {
-      _showSnack('Vui long chon dap an truoc khi tiep tuc.');
+      _showSnack('Vui lòng chọn đáp án trước khi tiếp tục.');
       return;
     }
 
@@ -194,7 +194,7 @@ class _TestPageState extends State<TestPage> {
         .length;
 
     if (unansweredCount > 0) {
-      _showSnack('Ban con $unansweredCount cau chua tra loi.');
+      _showSnack('Bạn còn $unansweredCount câu chưa trả lời.');
       return;
     }
 
@@ -264,7 +264,7 @@ class _TestPageState extends State<TestPage> {
                             state.items.isEmpty) {
                           return Center(
                             child: Text(
-                              'Loi: ${state.error}',
+                              'Lỗi: ${state.error}',
                               style: TextStyle(
                                 color: const Color(0xFF4F4F4F),
                                 fontSize: 16.sp,
@@ -277,7 +277,7 @@ class _TestPageState extends State<TestPage> {
                         if (items.isEmpty) {
                           return const Center(
                             child: AppEmptyState(
-                              message: 'Khong co cau hoi',
+                              message: 'Không có câu hỏi',
                               animationSize: 140,
                             ),
                           );
@@ -300,9 +300,9 @@ class _TestPageState extends State<TestPage> {
                                 !isSubmitting &&
                                 !isCheckingAnswer;
                         final primaryLabel = isSubmitting
-                            ? 'DANG GUI...'
+                            ? 'ĐANG GỬI...'
                             : isCheckingAnswer
-                                ? 'DANG KIEM TRA...'
+                                ? 'ĐANG KIỂM TRA...'
                                 : isAnswerChecked
                                     ? (isLastQuestion ? 'NOP BAI' : 'TIEP TUC')
                                     : 'KIEM TRA';
@@ -445,7 +445,7 @@ class _TestPageState extends State<TestPage> {
                                 Padding(
                                   padding: EdgeInsets.only(top: 8.h),
                                   child: Text(
-                                    'Co the chon nhieu dap an',
+                                    'Có thể chọn nhiều đáp án',
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.w600,
@@ -458,8 +458,8 @@ class _TestPageState extends State<TestPage> {
                                   padding: EdgeInsets.only(top: 8.h),
                                   child: Text(
                                     currentAnswerIsCorrect
-                                        ? 'Ban da chon dung.'
-                                        : 'Cau nay chua dung. Dap an dung duoc to mau xanh.',
+                                        ? 'Bạn đã chọn đúng.'
+                                        : 'Câu này chưa đúng. Đáp án đúng được tô màu xanh.',
                                     style: TextStyle(
                                       fontSize: 13.sp,
                                       fontWeight: FontWeight.w700,
@@ -791,7 +791,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       setState(() {
         _messages.add(
           _QuizChatMessage(
-            text: 'Khong the gui cau hoi. Vui long thu lai.',
+            text: 'Không thể gửi câu hỏi. Vui lòng thử lại.',
             isUser: false,
           ),
         );
@@ -821,7 +821,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       }
     }
 
-    return 'He thong chua tra ve noi dung hop le.';
+    return 'Hệ thống chưa trả về nội dung hợp lệ.';
   }
 
   String _extractErrorText(DioException error) {
@@ -838,7 +838,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       return errorMessage.trim();
     }
 
-    return 'Co loi ket noi den tro ly AI.';
+    return 'Có lỗi kết nối đến trợ lý AI.';
   }
 
   String _cleanReplyText(String text) {
@@ -893,7 +893,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      'Tro ly AI (phien hien tai)',
+                      'Trợ lý AI (phiên hiện tại)',
                       style: TextStyle(
                         fontSize: 19.sp,
                         fontWeight: FontWeight.w700,
@@ -919,7 +919,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 30.w),
                         child: Text(
-                          'Chat AI chi luu trong phien hien tai.\nNhap cau hoi de bat dau.',
+                          'Chat AI chỉ lưu trong phiên hiện tại.\nNhập câu hỏi để bắt đầu.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF667085),
@@ -968,7 +968,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                       decoration: InputDecoration(
-                        hintText: 'Nhap cau hoi...',
+                        hintText: 'Nhập câu hỏi...',
                         hintStyle: TextStyle(
                           color: const Color(0xFF9AA4B2),
                           fontSize: 14.sp,

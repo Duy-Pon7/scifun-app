@@ -35,7 +35,7 @@ class TrendQuizzesList extends StatelessWidget {
           if (state is TrendQuizzLoading) {
             return const Center(
               child: AppLoadingIndicator(
-                message: 'Dang tai bai kiem tra thinh hanh...',
+                message: 'Đang tải bài kiểm tra thịnh hành...',
               ),
             );
           }
@@ -49,7 +49,7 @@ class TrendQuizzesList extends StatelessWidget {
           if (items.isEmpty) {
             return const Center(
               child: AppEmptyState(
-                message: 'Khong co bai kiem tra thinh hanh',
+                message: 'Không có bài kiểm tra thịnh hành',
                 animationSize: 120,
               ),
             );
@@ -61,7 +61,7 @@ class TrendQuizzesList extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
                 child: Text(
-                  'Bai kiem tra thinh hanh',
+                  'Bài kiểm tra thịnh hành',
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class TrendQuizzesList extends StatelessWidget {
                                               ),
                                               if (quizz.score != null)
                                                 Text(
-                                                  'Diem: ${(quizz.score! * 100).toStringAsFixed(0)}%',
+                                                  'Điểm: ${(quizz.score! * 100).toStringAsFixed(0)}%',
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -190,12 +190,12 @@ class TrendQuizzesList extends StatelessWidget {
                                           _buildLevelBadge(level),
                                         _buildMetaItem(
                                           icon: Icons.timer,
-                                          text: '${quizz.duration ?? 0} phut',
+                                          text: '${quizz.duration ?? 0} phút',
                                         ),
                                         _buildMetaItem(
                                           icon: Icons.help_outline,
                                           text:
-                                              '${quizz.questionCount ?? 0} cau',
+                                              '${quizz.questionCount ?? 0} câu',
                                         ),
                                       ],
                                     ),

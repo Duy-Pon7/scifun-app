@@ -42,7 +42,7 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
               state.items.isEmpty) {
             return const Center(
               child: AppLoadingIndicator(
-                message: 'Dang tai bang xep hang...',
+                message: 'Đang tải bảng xếp hạng...',
               ),
             );
           }
@@ -52,11 +52,11 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Loi khi tai bang xep hang: ${state.error}'),
+                  Text('Lỗi khi tải bảng xếp hạng: ${state.error}'),
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => context.read<SubjectCubit>().refresh(),
-                    child: const Text('Thu lai'),
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),
@@ -65,7 +65,7 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
 
           if (state.items.isEmpty) {
             return const Center(
-              child: AppEmptyState(message: 'Chua co du lieu bang xep hang'),
+              child: AppEmptyState(message: 'Chưa có dữ liệu bảng xếp hạng'),
             );
           }
 

@@ -111,7 +111,7 @@ class _TopicPageState extends State<TopicPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                'Chuyen mon hoc',
+                                'Chuyển môn học',
                                 style: TextStyle(
                                   fontSize: 17.sp,
                                   fontWeight: FontWeight.w700,
@@ -135,7 +135,7 @@ class _TopicPageState extends State<TopicPage> {
                             final subjectName =
                                 subject.name?.trim().isNotEmpty == true
                                     ? subject.name!.trim()
-                                    : 'Mon hoc';
+                                    : 'Môn học';
                             final isCurrent = subject.id == widget.subjectId;
 
                             return ListTile(
@@ -211,7 +211,7 @@ class _TopicPageState extends State<TopicPage> {
                     onPressed: () {
                       context.read<SubjectCubit>().loadInitial(searchQuery: '');
                     },
-                    child: const Text('Tai lai danh sach mon'),
+                    child: const Text('Tải lại danh sách môn'),
                   ),
                 ),
               );
@@ -367,7 +367,7 @@ class _TopicPageState extends State<TopicPage> {
         appBar: BasicAppbar(
           title: widget.subjectName,
           rightIcon: IconButton(
-            tooltip: 'Chuyen mon',
+            tooltip: 'Chuyển môn',
             icon: Icon(
               Icons.swap_horiz_rounded,
               color: AppColor.skyblue600,

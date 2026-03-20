@@ -83,7 +83,7 @@ class _PaginationListViewState<T> extends State<PaginationListView<T>> {
         if (state.items.isEmpty) {
           return widget.emptyWidget ??
               const Center(
-                child: AppEmptyState(message: 'Khong co du lieu'),
+                child: AppEmptyState(message: 'Không có dữ liệu'),
               );
         }
 

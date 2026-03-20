@@ -92,7 +92,7 @@ class _PaginationListViewHorizontalState<T>
             child: widget.emptyWidget ??
                 const Center(
                   child: AppEmptyState(
-                    message: 'Khong co du lieu',
+                    message: 'Không có dữ liệu',
                     animationSize: 96,
                     spacing: 6,
                   ),

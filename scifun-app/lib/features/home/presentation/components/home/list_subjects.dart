@@ -72,7 +72,7 @@ class ListSubjects extends StatelessWidget {
                   height: 150.h,
                   child: const Center(
                     child: AppEmptyState(
-                      message: 'Khong co mon hoc',
+                      message: 'Không có môn học',
                       animationSize: 90,
                       spacing: 4,
                     ),
@@ -166,7 +166,7 @@ class ListSubjects extends StatelessWidget {
               height: 150.h,
               child: const Center(
                 child: AppEmptyState(
-                  message: 'Khong co mon hoc',
+                  message: 'Không có môn học',
                   animationSize: 90,
                   spacing: 4,
                 ),

@@ -295,11 +295,11 @@ class _AdminChatPageState extends State<AdminChatPage> {
         content: text,
       );
       if (!sent && mounted) {
-        _showSnack('Tin nhan duoc xep hang, se gui khi ket noi lai.');
+        _showSnack('Tin nhắn được xếp hàng, sẽ gửi khi kết nối lại.');
       }
     } catch (e) {
       if (!mounted) return;
-      _showSnack('Gui tin nhan that bai: $e');
+      _showSnack('Gửi tin nhắn thất bại: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -412,7 +412,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
                           : _conversations.isEmpty
                               ? const Center(
                                   child: Text(
-                                    'Chua co cuoc hoi thoai',
+                                    'Chưa có cuộc hội thoại',
                                     style: TextStyle(color: Color(0xFF6B7483)),
                                   ),
                                 )
@@ -482,12 +482,12 @@ class _AdminChatPageState extends State<AdminChatPage> {
                     Expanded(
                       child: _activeConversationId == null
                           ? const Center(
-                              child: Text('Chon mot cuoc hoi thoai de bat dau'),
+                              child: Text('Chọn một cuộc hội thoại để bắt đầu'),
                             )
                           : _loadingMessages
                               ? const Center(
                                   child: AppLoadingIndicator(
-                                    message: 'Dang tai tin nhan...',
+                                    message: 'Đang tải tin nhắn...',
                                   ),
                                 )
                               : ListView.builder(
@@ -543,7 +543,7 @@ class _AdminErrorView extends StatelessWidget {
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: onRetry,
-              child: const Text('Thu lai'),
+              child: const Text('Thử lại'),
             ),
           ],
         ),
@@ -661,8 +661,8 @@ class _AdminChatInput extends StatelessWidget {
                 onSubmitted: (_) => onSend(),
                 decoration: InputDecoration(
                   hintText: enabled
-                      ? 'Nhap tin nhan cho user...'
-                      : 'Chon cuoc hoi thoai...',
+                      ? 'Nhập tin nhắn cho user...'
+                      : 'Chọn cuộc hội thoại...',
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(

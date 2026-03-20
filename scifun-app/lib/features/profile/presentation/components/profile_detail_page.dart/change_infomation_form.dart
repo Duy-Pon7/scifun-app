@@ -291,7 +291,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                 context.read<SelectCubit<String>>().select(normalized);
                 _levelFieldValue = normalized;
               },
-              hintText: 'Chon cap do',
+              hintText: 'Chọn cấp độ',
               value: _normalizeLevel(state) ?? 'Beginner',
             );
           },

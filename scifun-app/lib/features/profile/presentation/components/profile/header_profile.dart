@@ -98,7 +98,7 @@ class HeaderProfile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999.r),
                 ),
                 child: Text(
-                  'Tai khoan khach',
+                  'Tài khoản khách',
                   style: TextStyle(
                     color: const Color(0xFF8A6700),
                     fontWeight: FontWeight.w700,
