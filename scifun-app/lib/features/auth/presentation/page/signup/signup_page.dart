@@ -4,7 +4,12 @@ import 'package:sci_fun/features/auth/presentation/widget/background_auth.dart';
 import 'package:sci_fun/features/auth/presentation/widget/logo_title_widget.dart';
 
 class SignupPage extends StatelessWidget {
-  const SignupPage({super.key});
+  const SignupPage({
+    super.key,
+    this.isGuestConvertFlow = false,
+  });
+
+  final bool isGuestConvertFlow;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,9 @@ class SignupPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: LogoTitleWidget(
               title: "Đăng ký",
-              child: SignupForm(),
+              child: SignupForm(
+                isGuestConvertFlow: isGuestConvertFlow,
+              ),
             ),
           ),
         ),

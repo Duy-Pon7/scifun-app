@@ -106,7 +106,7 @@ class HeaderProfile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(999.r),
               ),
               child: Text(
-                'Con $remainingPackage',
+                'Còn $remainingPackage',
                 style: TextStyle(
                   color: AppColor.skyblue700,
                   fontWeight: FontWeight.w700,

@@ -21,8 +21,9 @@ class AuthApiUrls {
 class UserApiUrls {
   UserApiUrls._();
   static const String getInfo = '/user/get-user/'; //
-  //? Còn đang hiển thị lỗi change info. Chưa hoạt động
+  //? Con dang hien thi loi change info. Chua hoat dong
   static const String updateInfo = '/user/update-user/'; //
+  static const String guestConvert = '/user/guest/convert';
   static const String reviseInfo = '/users/update';
   static const String changePassword = '/auth/change-password';
 }

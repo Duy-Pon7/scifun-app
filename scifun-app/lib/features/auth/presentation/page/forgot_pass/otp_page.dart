@@ -15,6 +15,7 @@ class OtpPage extends StatefulWidget {
   final String confirmPassword;
   final bool? flag;
   final bool otpAlreadySent;
+  final bool isGuestConvertFlow;
   const OtpPage(
       {super.key,
       this.flag,
@@ -22,7 +23,8 @@ class OtpPage extends StatefulWidget {
       required this.phone,
       required this.password,
       required this.confirmPassword,
-      this.otpAlreadySent = false});
+      this.otpAlreadySent = false,
+      this.isGuestConvertFlow = false});
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -78,7 +80,8 @@ class _OtpPageState extends State<OtpPage> {
                   email: widget.email,
                   phoneNumber: widget.phone,
                   password: widget.password,
-                  confirmPassword: widget.confirmPassword),
+                  confirmPassword: widget.confirmPassword,
+                  isGuestConvertFlow: widget.isGuestConvertFlow),
             ),
           ),
         ),

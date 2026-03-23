@@ -11,6 +11,7 @@ import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_convert_page.dart';
 
 class OtpForm extends StatefulWidget {
   const OtpForm(
@@ -19,12 +20,14 @@ class OtpForm extends StatefulWidget {
       required this.email,
       required this.phoneNumber,
       required this.password,
-      required this.confirmPassword});
+      required this.confirmPassword,
+      this.isGuestConvertFlow = false});
   final bool? flag;
   final String email;
   final String phoneNumber;
   final String password;
   final String confirmPassword;
+  final bool isGuestConvertFlow;
 
   @override
   State<OtpForm> createState() => _OtpFormState();
@@ -85,11 +88,24 @@ class _OtpFormState extends State<OtpForm> {
               ),
             );
           } else {
-            Navigator.pushReplacement(
+            if (widget.isGuestConvertFlow) {
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SigninPage(),
-                ));
+                  builder: (context) => GuestSyncConvertPage(
+                    initialEmail: widget.email,
+                    initialPassword: widget.password,
+                    initialFullname: widget.phoneNumber,
+                  ),
+                ),
+              );
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SigninPage(),
+                  ));
+            }
           }
         } else if (state is OtpFailure) {
           ScaffoldMessenger.of(context).showSnackBar(

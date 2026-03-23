@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/auth/presentation/page/signup/signup_page.dart';
 
 class GuestSyncProcedurePage extends StatelessWidget {
   const GuestSyncProcedurePage({super.key});
@@ -9,7 +12,7 @@ class GuestSyncProcedurePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dong bo du lieu guest'),
+        title: const Text('Lo trinh dong bo guest'),
       ),
       body: SafeArea(
         child: Padding(
@@ -41,39 +44,43 @@ class GuestSyncProcedurePage extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Trang nay la placeholder cho luong dong bo du lieu tu tai khoan guest sang tai khoan chinh. API se duoc ket noi sau.',
+                'Ban se tao tai khoan moi, xac thuc OTP, sau do nhap lai thong tin de dong bo du lieu guest.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.black54,
                     ),
               ),
               SizedBox(height: 20.h),
-              _StepCard(
+              const _StepCard(
                 index: 1,
-                title: 'Xac nhan tai khoan',
+                title: 'Dang ky tai khoan',
                 description:
-                    'Kiem tra thong tin tai khoan guest va han su dung hien tai.',
+                    'Nhap email, mat khau, ho ten va tao tai khoan moi.',
               ),
               SizedBox(height: 10.h),
-              _StepCard(
+              const _StepCard(
                 index: 2,
-                title: 'Chuan bi du lieu',
-                description: 'Tap hop cac thong tin hoc tap can duoc dong bo.',
+                title: 'Xac thuc OTP',
+                description: 'Nhap ma OTP gui ve email de kich hoat tai khoan.',
               ),
               SizedBox(height: 10.h),
-              _StepCard(
+              const _StepCard(
                 index: 3,
-                title: 'Dong bo',
+                title: 'Dong bo du lieu',
                 description:
-                    'Gui yeu cau dong bo len server ngay khi API san sang.',
+                    'Nhap lai thong tin va nhan dong bo, he thong se dang xuat de dang nhap lai.',
               ),
               const Spacer(),
-              SizedBox(
+              BasicButton(
+                text: 'Bat dau',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    slidePage(const SignupPage(isGuestConvertFlow: true)),
+                  );
+                },
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: null,
-                  icon: const Icon(Icons.sync),
-                  label: const Text('Bat dau dong bo (sap cap nhat)'),
-                ),
+                fontSize: 17.sp,
+                backgroundColor: AppColor.skyblue400,
               ),
             ],
           ),

@@ -14,7 +14,12 @@ import 'package:sci_fun/features/auth/presentation/page/forgot_pass/otp_page.dar
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 
 class SignupForm extends StatefulWidget {
-  const SignupForm({super.key});
+  const SignupForm({
+    super.key,
+    this.isGuestConvertFlow = false,
+  });
+
+  final bool isGuestConvertFlow;
 
   @override
   State<SignupForm> createState() => _SignupFormState();
@@ -75,6 +80,7 @@ class _SignupFormState extends State<SignupForm> {
                 confirmPassword: _confirmPassCon.text.trim(),
                 // Server already sends OTP on successful signup; avoid re-sending
                 otpAlreadySent: true,
+                isGuestConvertFlow: widget.isGuestConvertFlow,
               ),
             ),
           );
@@ -235,4 +241,3 @@ class _SignupFormState extends State<SignupForm> {
         ),
       );
 }
-
