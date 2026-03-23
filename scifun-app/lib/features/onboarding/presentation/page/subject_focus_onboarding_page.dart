@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,16 +5,11 @@ import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
-import 'package:sci_fun/core/constants/api_urls.dart';
-import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/core/network/dio_client.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/features/onboarding/presentation/page/onboarding_generating_structure_page.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SubjectFocusOnboardingPage extends StatefulWidget {
   const SubjectFocusOnboardingPage({super.key});
@@ -176,63 +170,6 @@ class _SubjectFocusOnboardingPageState
     );
   }
 
-  String _mapSubjectForOnboarding(String? subjectName) {
-    final name = (subjectName ?? '').trim();
-    final normalized = name.toLowerCase();
-
-    if (normalized.contains('lý') ||
-        normalized.contains('lí') ||
-        normalized.contains('ly') ||
-        normalized.contains('li') ||
-        normalized.contains('physics')) {
-      return 'Lý';
-    }
-
-    if (normalized.contains('hóa') ||
-        normalized.contains('hoá') ||
-        normalized.contains('hoa') ||
-        normalized.contains('chem')) {
-      return 'Hóa';
-    }
-
-    if (normalized.contains('sinh') || normalized.contains('bio')) {
-      return 'Sinh';
-    }
-
-    return name;
-  }
-
-  String _extractOnboardingErrorMessage(Object error) {
-    if (error is DioException) {
-      final resData = error.response?.data;
-      if (resData is Map<String, dynamic>) {
-        final message = (resData['message'] ?? '').toString().trim();
-        if (message.isNotEmpty) {
-          return message;
-        }
-      }
-
-      if (error.type == DioExceptionType.connectionTimeout ||
-          error.type == DioExceptionType.sendTimeout ||
-          error.type == DioExceptionType.receiveTimeout ||
-          error.type == DioExceptionType.connectionError) {
-        return 'Không thể kết nối máy chủ, vui lòng thử lại.';
-      }
-
-      final fallback = (error.message ?? '').trim();
-      if (fallback.isNotEmpty) {
-        return fallback;
-      }
-    }
-
-    final fallback = error.toString().trim();
-    if (fallback.isNotEmpty) {
-      return fallback.replaceFirst('Exception: ', '');
-    }
-
-    return 'Lưu thông tin onboarding thất bại.';
-  }
-
   String? _getLevelDisplayLabel(String? levelValue) {
     if (levelValue == null || levelValue.isEmpty) {
       return null;
@@ -272,85 +209,35 @@ class _SubjectFocusOnboardingPageState
 
     final subjectName = subject.name?.trim().isNotEmpty == true
         ? subject.name!.trim()
-        : 'Môn học';
+        : 'Mon hoc';
 
-    if (mounted) {
-      setState(() {
-        _isSubmitting = true;
-      });
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => OnboardingGeneratingStructurePage(
+          subjectId: subjectId,
+          subjectName: subjectName,
+          ageRange: ageRange,
+          level: level,
+          referralPlatform: referralPlatform,
+          prefsInterestSubjectIdKey: _prefsInterestSubjectId,
+          prefsAgeRangeKey: _prefsAgeRange,
+          prefsLevelKey: _prefsLevel,
+          prefsReferralPlatformKey: _prefsReferralPlatform,
+        ),
+      ),
+    );
+
+    if (!mounted) {
+      return;
     }
 
-    try {
-      final response = await sl<DioClient>().post(
-        url: OnboardingApiUrls.submit,
-        data: {
-          'subject': _mapSubjectForOnboarding(subjectName),
-          'ageGroup': ageRange,
-          'level': level,
-          'referralSource': referralPlatform,
-        },
-      );
-
-      final data = response.data;
-      if (data is Map<String, dynamic>) {
-        final apiStatus = data['status'];
-        if (apiStatus is num && apiStatus.toInt() != 200) {
-          final message = (data['message'] ?? '').toString().trim();
-          throw Exception(
-            message.isNotEmpty ? message : 'Lưu thông tin onboarding thất bại.',
-          );
-        }
-      }
-
-      final statusCode = response.statusCode ?? 500;
-      if (statusCode < 200 || statusCode >= 300) {
-        throw Exception('Lưu thông tin onboarding thất bại.');
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_prefsInterestSubjectId, subjectId);
-      await prefs.setString(_prefsAgeRange, ageRange);
-      await prefs.setString(_prefsLevel, level);
-      await prefs.setString(_prefsReferralPlatform, referralPlatform);
-
-      // Xóa khóa onboarding cũ để tránh dữ liệu cũ.
-      await prefs.remove('onboarding_focus_subject_id');
-      await prefs.remove('onboarding_focus_subject_name');
-      await prefs.remove('onboarding_focus_level_index');
-      await prefs.remove('onboarding_focus_level_label');
-
-      await sl<SharePrefsService>().saveSelectedSubject(
-        subjectId: subjectId,
-        subjectName: subjectName,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const DashboardPage(),
-        ),
-        (route) => false,
-      );
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(_extractOnboardingErrorMessage(e)),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
-      }
-    }
+    setState(() {
+      _isSubmitting = false;
+    });
   }
 
   String _getQuestionForStep() {

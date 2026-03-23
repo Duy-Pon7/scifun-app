@@ -9,10 +9,12 @@ class AppLoadingIndicator extends StatelessWidget {
     super.key,
     this.size = 80,
     this.message = 'Đang tải...',
+    this.lottieAssetPath = appLoadingLottieAssetPath,
   });
 
   final double size;
   final String message;
+  final String lottieAssetPath;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class AppLoadingIndicator extends StatelessWidget {
           width: size,
           height: size,
           child: Lottie.asset(
-            appLoadingLottieAssetPath,
+            lottieAssetPath,
             repeat: true,
             fit: BoxFit.contain,
           ),

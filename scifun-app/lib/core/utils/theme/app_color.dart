@@ -164,9 +164,6 @@ class AppColor {
   static final Color inputIcon = Color(0xff2A2A2D).withValues(alpha: 0.6);
   static final Color unselect = Color(0xff999999);
   static final Color backgroundTab = Color(0xff7F7676).withValues(alpha: 0.12);
-  static final Color notComplete = Color(0xffFFCC00);
-  static final Color completed = Color(0xff34C759);
-  static final Color waitting = Color(0xff007AFF);
 
   static Color _currentByTheme({
     required Color physics,

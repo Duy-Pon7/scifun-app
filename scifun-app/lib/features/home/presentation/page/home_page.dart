@@ -271,17 +271,28 @@ class _HomePageState extends State<HomePage>
           alignment: Alignment.bottomRight,
           children: [
             Positioned(
-              right: 0,
-              left: 0,
-              bottom: 18.h,
+              right: 12.w,
+              bottom: 26.h,
               child: IgnorePointer(
                 child: SizedBox(
-                  width: 100.w,
-                  height: 100.w,
+                  width: 72.w,
+                  height: 72.w,
                   child: Lottie.asset(
                     'assets/lottie_json/cat_is_sleeping_and_rolling.json',
                     fit: BoxFit.contain,
                     repeat: true,
+                    delegates: LottieDelegates(
+                      values: [
+                        ValueDelegate.transformOpacity(
+                          ['White Solid 1', '**'],
+                          value: 0,
+                        ),
+                        ValueDelegate.opacity(
+                          ['White Solid 1', '**'],
+                          value: 0,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
