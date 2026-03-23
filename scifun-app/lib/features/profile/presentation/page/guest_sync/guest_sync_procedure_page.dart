@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/auth/presentation/page/signup/signup_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_convert_page.dart';
 
 class GuestSyncProcedurePage extends StatelessWidget {
   const GuestSyncProcedurePage({super.key});
@@ -11,8 +12,10 @@ class GuestSyncProcedurePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Lo trinh dong bo guest'),
+      appBar: const BasicAppbar(
+        title: 'Lộ trình đồng bộ guest',
+        showTitle: true,
+        showBack: true,
       ),
       body: SafeArea(
         child: Padding(
@@ -37,14 +40,14 @@ class GuestSyncProcedurePage extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
               Text(
-                'Thu tuc dong bo du lieu',
+                'Thủ tục đồng bộ dữ liệu',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
               ),
               SizedBox(height: 8.h),
               Text(
-                'Ban se tao tai khoan moi, xac thuc OTP, sau do nhap lai thong tin de dong bo du lieu guest.',
+                'Nhập thông tin tài khoản, nhấn đồng bộ để hệ thống gửi OTP, xác thực OTP thành công sẽ thoát ứng dụng.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.black54,
                     ),
@@ -52,30 +55,22 @@ class GuestSyncProcedurePage extends StatelessWidget {
               SizedBox(height: 20.h),
               const _StepCard(
                 index: 1,
-                title: 'Dang ky tai khoan',
-                description:
-                    'Nhap email, mat khau, ho ten va tao tai khoan moi.',
+                title: 'Nhập thông tin đồng bộ',
+                description: 'Nhập email, mật khẩu, họ tên rồi nhấn đồng bộ.',
               ),
               SizedBox(height: 10.h),
               const _StepCard(
                 index: 2,
-                title: 'Xac thuc OTP',
-                description: 'Nhap ma OTP gui ve email de kich hoat tai khoan.',
-              ),
-              SizedBox(height: 10.h),
-              const _StepCard(
-                index: 3,
-                title: 'Dong bo du lieu',
-                description:
-                    'Nhap lai thong tin va nhan dong bo, he thong se dang xuat de dang nhap lai.',
+                title: 'Xác thực OTP',
+                description: 'Nhập mã OTP gửi về email để kích hoạt tài khoản.',
               ),
               const Spacer(),
               BasicButton(
-                text: 'Bat dau',
+                text: 'Bắt đầu',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    slidePage(const SignupPage(isGuestConvertFlow: true)),
+                    slidePage(const GuestSyncConvertPage()),
                   );
                 },
                 width: double.infinity,

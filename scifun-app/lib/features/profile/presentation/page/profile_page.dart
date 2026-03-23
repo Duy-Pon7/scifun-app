@@ -1,17 +1,17 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
@@ -19,15 +19,15 @@ import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart'
 import 'package:sci_fun/features/chat/admin_chat_page.dart';
 import 'package:sci_fun/features/chat/chat_connection_config.dart';
 import 'package:sci_fun/features/chat/user_chat_page.dart';
+import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_page/change_infomation_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
 import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_procedure_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/policy/policy_page.dart';
-import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
-import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -38,6 +38,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late final UserCubit _userCubit;
+
   @override
   void initState() {
     super.initState();
@@ -158,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 14.h),
                       child: Text(
-                        "Trang cá nhân",
+                        'Trang cá nhân',
                         style: Theme.of(context).textTheme.titleLarge!.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -183,171 +184,36 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       child: BlocBuilder<UserCubit, UserState>(
                         builder: (context, state) {
-                          print(
-                              'ProfilePage BlocBuilder state: ${state.runtimeType}');
-                          if (state is UserLoaded) {
-                            final user = state.user.data;
-                            final remainingDays = user?.daysRemaining ?? 0;
+                          final user =
+                              state is UserLoaded ? state.user.data : null;
+                          final remainingDays = user?.daysRemaining ?? 0;
+                          final isGuest = user?.isGuest == true;
 
-                            print(
-                                'ProfilePage displaying user: ${user?.id} ${user?.fullname}');
-
-                            return Column(
-                              spacing: 16.h,
-                              children: [
-                                HeaderProfile(
-                                  imgUrl: user?.avatar ??
-                                      "https://cdn-icons-png.flaticon.com/512/8345/8345328.png",
-                                  name: user?.fullname ?? "Khách",
-                                  remainingPackage:
-                                      "${remainingDays < 0 ? 0 : remainingDays} ngay",
-                                  isGuest: user?.isGuest == true,
-                                  onGuestSyncTap: user?.isGuest == true
-                                      ? () {
-                                          Navigator.push(
-                                            context,
-                                            slidePage(
-                                              const GuestSyncProcedurePage(),
-                                            ),
-                                          );
-                                        }
-                                      : null,
-                                ),
-
-                                /// ===== GÓI ĐANG DÙNG =====
-                                if (user != null) subscriptionCard(user),
-
-                                Column(
-                                  spacing: 12.h,
-                                  children: [
-                                    _sectionTitle("Tài khoản"),
-                                    _itemNavigator(
-                                        Icons.person, "Thông tin cá nhân", () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChangeInfomationPage(),
-                                        ),
-                                      );
-                                    }),
-                                    _itemNavigator(
-                                        Icons.lock, "Đổi mật khẩu đăng nhập",
-                                        () {
-                                      Navigator.push(
-                                        context,
-                                        slidePage(const ChangePass()),
-                                      );
-                                    }),
-                                    _itemNavigator(
-                                        Icons.chat_bubble_outline_rounded,
-                                        "Chat hỗ trợ", () {
-                                      _openChatSupport();
-                                    }),
-                                    // Mua gói
-                                    _itemNavigator(
-                                        Icons.shopping_cart, "Mua gói", () {
-                                      Navigator.push(
-                                        context,
-                                        slidePage(const PlanListPage()),
-                                      );
-                                    }),
-                                    _sectionTitle("Liên hệ"),
-                                    _itemNavigator(
-                                        Icons.policy_rounded, "Chính sách", () {
-                                      Navigator.push(
-                                        context,
-                                        slidePage(const PolicyPage(
-                                          plainValue:
-                                              "Nội dung chính sách (tạm thời hardcode)",
-                                        )),
-                                      );
-                                    }),
-                                    _itemNavigator(
-                                        Icons.business_rounded, "Về chúng tôi",
-                                        () {
-                                      Navigator.push(
-                                        context,
-                                        slidePage(const AboutUsPage(
-                                          plainValue:
-                                              "Thông tin giới thiệu (tạm thời hardcode)",
-                                        )),
-                                      );
-                                    }),
-                                    _itemNavigator(
-                                        Icons.call_rounded, "Liên hệ hỗ trợ",
-                                        () {
-                                      Navigator.push(
-                                        context,
-                                        slidePage(
-                                            ContactPage(settings: const [])),
-                                      );
-                                    }),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        final shouldLogout =
-                                            await showLogoutConfirmDialog(
-                                          context: context,
+                          return Column(
+                            spacing: 16.h,
+                            children: [
+                              HeaderProfile(
+                                imgUrl: user?.avatar ??
+                                    'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
+                                name: user?.fullname ?? 'Khách',
+                                remainingPackage:
+                                    '${remainingDays < 0 ? 0 : remainingDays} ngày',
+                                isGuest: isGuest,
+                                onGuestSyncTap: isGuest
+                                    ? () {
+                                        Navigator.push(
+                                          context,
+                                          slidePage(
+                                            const GuestSyncProcedurePage(),
+                                          ),
                                         );
-                                        if (shouldLogout != true ||
-                                            !context.mounted) {
-                                          return;
-                                        }
-                                        await _logoutAndNavigateToSignin();
-                                      },
-                                      child: Container(
-                                        margin: EdgeInsets.all(6.w),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Icon(Icons.logout_rounded),
-                                            SizedBox(width: 4.w),
-                                            Text(
-                                              "Đăng xuất",
-                                              style: TextStyle(
-                                                fontFamily: 'Baloo2',
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          }
-
-                          // Nếu chưa có user => hiển thị nút đăng xuất
-                          return GestureDetector(
-                            onTap: () async {
-                              final shouldLogout =
-                                  await showLogoutConfirmDialog(
-                                context: context,
-                              );
-                              if (shouldLogout != true || !context.mounted) {
-                                return;
-                              }
-                              await _logoutAndNavigateToSignin();
-                            },
-                            child: Container(
-                              margin: EdgeInsets.all(6.w),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.logout_rounded),
-                                  SizedBox(width: 4.w),
-                                  Text(
-                                    "Đăng xuất",
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                ],
+                                      }
+                                    : null,
                               ),
-                            ),
+                              if (user != null) subscriptionCard(user),
+                              if (state is UserError) _errorStateBanner(state),
+                              _profileActions(),
+                            ],
                           );
                         },
                       ),
@@ -355,9 +221,116 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _profileActions() {
+    return Column(
+      spacing: 12.h,
+      children: [
+        _sectionTitle('Tài khoản'),
+        _itemNavigator(Icons.person, 'Thông tin cá nhân', () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ChangeInfomationPage(),
+            ),
+          );
+        }),
+        _itemNavigator(Icons.lock, 'Đổi mật khẩu đăng nhập', () {
+          Navigator.push(
+            context,
+            slidePage(const ChangePass()),
+          );
+        }),
+        _itemNavigator(Icons.chat_bubble_outline_rounded, 'Chat hỗ trợ', () {
+          _openChatSupport();
+        }),
+        _itemNavigator(Icons.shopping_cart, 'Mua gói', () {
+          Navigator.push(
+            context,
+            slidePage(const PlanListPage()),
+          );
+        }),
+        _sectionTitle('Liên hệ'),
+        _itemNavigator(Icons.policy_rounded, 'Chính sách', () {
+          Navigator.push(
+            context,
+            slidePage(const PolicyPage(
+              plainValue: 'Nội dung chính sách (tạm thời hardcode)',
+            )),
+          );
+        }),
+        _itemNavigator(Icons.business_rounded, 'Về chúng tôi', () {
+          Navigator.push(
+            context,
+            slidePage(const AboutUsPage(
+              plainValue: 'Thông tin giới thiệu (tạm thời hardcode)',
+            )),
+          );
+        }),
+        _itemNavigator(Icons.call_rounded, 'Liên hệ hỗ trợ', () {
+          Navigator.push(
+            context,
+            slidePage(ContactPage(settings: const [])),
+          );
+        }),
+        _logoutButton(),
+      ],
+    );
+  }
+
+  Widget _logoutButton() {
+    return GestureDetector(
+      onTap: () async {
+        final shouldLogout = await showLogoutConfirmDialog(
+          context: context,
+        );
+        if (shouldLogout != true || !context.mounted) {
+          return;
+        }
+        await _logoutAndNavigateToSignin();
+      },
+      child: Container(
+        margin: EdgeInsets.all(6.w),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.logout_rounded),
+            SizedBox(width: 4.w),
+            Text(
+              'Đăng xuất',
+              style: TextStyle(
+                fontFamily: 'Baloo2',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _errorStateBanner(UserError state) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: Colors.red.shade200),
+      ),
+      child: Text(
+        state.message,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Colors.red.shade700,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
@@ -418,9 +391,9 @@ class _ProfilePageState extends State<ProfilePage> {
 }
 
 String formatDate(DateTime date) {
-  return "${date.day.toString().padLeft(2, '0')}/"
-      "${date.month.toString().padLeft(2, '0')}/"
-      "${date.year}";
+  return '${date.day.toString().padLeft(2, '0')}/'
+      '${date.month.toString().padLeft(2, '0')}/'
+      '${date.year}';
 }
 
 Widget subscriptionCard(UserDataEntity user) {

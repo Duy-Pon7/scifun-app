@@ -16,15 +16,17 @@ class OtpPage extends StatefulWidget {
   final bool? flag;
   final bool otpAlreadySent;
   final bool isGuestConvertFlow;
-  const OtpPage(
-      {super.key,
-      this.flag,
-      required this.email,
-      required this.phone,
-      required this.password,
-      required this.confirmPassword,
-      this.otpAlreadySent = false,
-      this.isGuestConvertFlow = false});
+
+  const OtpPage({
+    super.key,
+    this.flag,
+    required this.email,
+    required this.phone,
+    required this.password,
+    required this.confirmPassword,
+    this.otpAlreadySent = false,
+    this.isGuestConvertFlow = false,
+  });
 
   @override
   State<OtpPage> createState() => _OtpPageState();
@@ -32,15 +34,16 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   late final blocAuth = context.read<AuthBloc>();
+
   @override
   void initState() {
-    // If OTP was already sent (flow from ForgotPassForm / ConfirmContent sent it), skip sending again
+    // If OTP was already sent (flow from ForgotPassForm / ConfirmContent sent it), skip sending again.
     if (!widget.otpAlreadySent) {
       if (widget.flag == true) {
         blocAuth.add(AuthSendResetEmail(email: widget.email));
       } else {
         // For signup flow we should send the initial OTP using SendEmail
-        // instead of calling ResendOtp which is intended for subsequent sends
+        // instead of calling ResendOtp which is intended for subsequent sends.
         blocAuth.add(AuthSendEmail(email: widget.email));
       }
     }
@@ -51,8 +54,8 @@ class _OtpPageState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BasicAppbar(
-        title: "Chi tiết lịch sử gói cước",
+      appBar: const BasicAppbar(
+        title: 'Xác thực OTP',
         showTitle: true,
         showBack: true,
       ),
@@ -62,13 +65,16 @@ class _OtpPageState extends State<OtpPage> {
           listeners: [
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                print("stateauth $state");
                 if (state is AuthMessageSuccess) {
-                  EasyLoading.showToast(state.message,
-                      toastPosition: EasyLoadingToastPosition.bottom);
+                  EasyLoading.showToast(
+                    state.message,
+                    toastPosition: EasyLoadingToastPosition.bottom,
+                  );
                 } else if (state is AuthFailure) {
-                  EasyLoading.showToast(state.message,
-                      toastPosition: EasyLoadingToastPosition.bottom);
+                  EasyLoading.showToast(
+                    state.message,
+                    toastPosition: EasyLoadingToastPosition.bottom,
+                  );
                 }
               },
             ),
@@ -76,12 +82,13 @@ class _OtpPageState extends State<OtpPage> {
           child: BackgroundAuth(
             child: SingleChildScrollView(
               child: OtpForm(
-                  flag: widget.flag,
-                  email: widget.email,
-                  phoneNumber: widget.phone,
-                  password: widget.password,
-                  confirmPassword: widget.confirmPassword,
-                  isGuestConvertFlow: widget.isGuestConvertFlow),
+                flag: widget.flag,
+                email: widget.email,
+                phoneNumber: widget.phone,
+                password: widget.password,
+                confirmPassword: widget.confirmPassword,
+                isGuestConvertFlow: widget.isGuestConvertFlow,
+              ),
             ),
           ),
         ),

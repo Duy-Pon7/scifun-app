@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/widget/basic_text_button.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
@@ -11,17 +16,19 @@ import 'package:sci_fun/features/auth/presentation/cubit/otp_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/cubit/otp_state.dart';
 import 'package:sci_fun/features/auth/presentation/page/forgot_pass/repass_page.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_convert_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class OtpForm extends StatefulWidget {
-  const OtpForm(
-      {super.key,
-      this.flag,
-      required this.email,
-      required this.phoneNumber,
-      required this.password,
-      required this.confirmPassword,
-      this.isGuestConvertFlow = false});
+  const OtpForm({
+    super.key,
+    this.flag,
+    required this.email,
+    required this.phoneNumber,
+    required this.password,
+    required this.confirmPassword,
+    this.isGuestConvertFlow = false,
+  });
+
   final bool? flag;
   final String email;
   final String phoneNumber;
@@ -37,14 +44,16 @@ class _OtpFormState extends State<OtpForm> {
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   final List<TextEditingController> _controllers =
       List.generate(6, (_) => TextEditingController());
+
   late final authBloc = context.read<AuthBloc>();
   late final otpCubit = context.read<OtpCubit>();
+
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    for (final controller in _controllers) {
       controller.dispose();
     }
-    for (var focusNode in _focusNodes) {
+    for (final focusNode in _focusNodes) {
       focusNode.dispose();
     }
     super.dispose();
@@ -56,30 +65,48 @@ class _OtpFormState extends State<OtpForm> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  Future<void> _clearSessionAndExitApp() async {
+    EasyLoading.show(
+      status: 'Đang thoát ứng dụng...',
+      maskType: EasyLoadingMaskType.black,
+    );
+
+    try {
+      await sl<SharePrefsService>().clear();
+      const storage = FlutterSecureStorage();
+      await storage.delete(key: 'access_token');
+      await sl<IsAuthorizedCubit>().logout();
+      sl<UserCubit>().clear();
+      resetSingleton();
+    } catch (_) {}
+
+    await EasyLoading.dismiss();
+    await SystemNavigator.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     String maskedEmail() {
       final email = widget.email;
       if (email.isEmpty) return '';
+
       final len = email.length;
       if (len >= 7) {
         return email.replaceRange(0, 5, '*****');
-      } else {
-        return email.replaceRange(
-            0, len, List.generate(len, (_) => '*').join());
       }
+      return email.replaceRange(0, len, List.generate(len, (_) => '*').join());
     }
 
     return BlocListener<OtpCubit, OtpState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is OtpSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Mã OTP chính xác"),
+            const SnackBar(
+              content: Text('Mã OTP chính xác'),
               backgroundColor: Colors.green,
             ),
           );
-          print(widget.flag);
+
           if (widget.flag == true) {
             Navigator.pushReplacement(
               context,
@@ -89,28 +116,20 @@ class _OtpFormState extends State<OtpForm> {
             );
           } else {
             if (widget.isGuestConvertFlow) {
+              await _clearSessionAndExitApp();
+            } else {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => GuestSyncConvertPage(
-                    initialEmail: widget.email,
-                    initialPassword: widget.password,
-                    initialFullname: widget.phoneNumber,
-                  ),
+                  builder: (context) => SigninPage(),
                 ),
               );
-            } else {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SigninPage(),
-                  ));
             }
           }
         } else if (state is OtpFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Mã OTP không chính xác"),
+            const SnackBar(
+              content: Text('Mã OTP không chính xác'),
               backgroundColor: Colors.red,
             ),
           );
@@ -124,7 +143,7 @@ class _OtpFormState extends State<OtpForm> {
         } else if (state is OtpResendSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Mã OTP đã được gửi lại."),
+              content: Text('Mã OTP đã được gửi lại.'),
               backgroundColor: Colors.green,
             ),
           );
@@ -141,14 +160,14 @@ class _OtpFormState extends State<OtpForm> {
               spacing: 12.h,
               children: [
                 Text(
-                  "Nhập mã xác minh",
+                  'Nhập mã xác minh',
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         color: AppColor.skyblue500,
                         fontWeight: FontWeight.w700,
                       ),
                 ),
                 Text(
-                  "Mã đã được gửi đến gmail ${maskedEmail()}",
+                  'Mã đã được gửi đến email ${maskedEmail()}',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.w400,
                         fontSize: 17.sp,
@@ -159,37 +178,39 @@ class _OtpFormState extends State<OtpForm> {
             Column(
               spacing: 12.h,
               children: [
-                _optRow(),
+                _otpRow(),
                 BlocBuilder<OtpCubit, OtpState>(
                   builder: (context, state) {
                     if (state is OtpCountdownState) {
                       if (state.canResend) {
                         return BasicTextButton(
-                          text: "Gửi lại mã mới",
+                          text: 'Gửi lại mã mới',
                           textColor: AppColor.skyblue600,
                           fontSize: 17.sp,
                           fontWeight: FontWeight.w400,
                           onPressed: () async {
                             await otpCubit.resendOtp();
                             authBloc.add(AuthResendOtp(email: widget.email));
-                            for (var controller in _controllers) {
+                            for (final controller in _controllers) {
                               controller.clear();
                             }
                             _focusNodes[0].requestFocus();
                           },
                         );
-                      } else {
-                        return Text(
-                          "Có thể gửi lại mã sau ${_formatTime(state.remainingTime)}",
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 17.sp,
-                                    color: AppColor.hurricane800
-                                        .withValues(alpha: 0.3),
-                                  ),
-                        );
                       }
+
+                      return Text(
+                        'Có thể gửi lại mã sau ${_formatTime(state.remainingTime)}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17.sp,
+                              color:
+                                  AppColor.hurricane800.withValues(alpha: 0.3),
+                            ),
+                      );
                     }
                     return const SizedBox.shrink();
                   },
@@ -234,7 +255,7 @@ class _OtpFormState extends State<OtpForm> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(
-                color: Color(0xff413E3E).withValues(alpha: 0.3),
+                color: const Color(0xff413E3E).withValues(alpha: 0.3),
                 width: 0.5.w,
               ),
             ),
@@ -272,7 +293,7 @@ class _OtpFormState extends State<OtpForm> {
     );
   }
 
-  Widget _optRow() => Row(
+  Widget _otpRow() => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
           6,

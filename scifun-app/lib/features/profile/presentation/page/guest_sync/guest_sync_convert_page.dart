@@ -2,17 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
+import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/auth/presentation/page/forgot_pass/otp_page.dart';
 
 class GuestSyncConvertPage extends StatefulWidget {
   const GuestSyncConvertPage({
@@ -57,7 +55,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
 
   String _extractServerMessage(
     dynamic data, {
-    String fallback = 'Dong bo du lieu that bai',
+    String fallback = 'Đồng bộ dữ liệu thất bại',
   }) {
     if (data == null) return fallback;
 
@@ -84,21 +82,20 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
     return fallback;
   }
 
-  Future<void> _logoutAndNavigateToSignin() async {
-    await sl<SharePrefsService>().clear();
-    const storage = FlutterSecureStorage();
-    await storage.delete(key: 'access_token');
-    await sl<IsAuthorizedCubit>().logout();
-    sl<UserCubit>().clear();
-    resetSingleton();
-
-    if (!mounted) {
-      return;
-    }
-
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const SigninPage()),
-      (route) => false,
+  void _navigateToOtpPage() {
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      slidePage(
+        OtpPage(
+          email: _emailCon.text.trim(),
+          phone: _fullnameCon.text.trim(),
+          password: _passwordCon.text,
+          confirmPassword: _passwordCon.text,
+          otpAlreadySent: true,
+          isGuestConvertFlow: true,
+        ),
+      ),
     );
   }
 
@@ -110,7 +107,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
     setState(() => _isSubmitting = true);
 
     EasyLoading.show(
-      status: 'Dang dong bo...',
+      status: 'Đang đồng bộ...',
       maskType: EasyLoadingMaskType.black,
     );
 
@@ -137,7 +134,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
 
       final message = _extractServerMessage(
         res.data,
-        fallback: 'Dong bo du lieu thanh cong',
+        fallback: 'Đồng bộ thành công, vui lòng nhập OTP',
       );
       await EasyLoading.dismiss();
       EasyLoading.showToast(
@@ -145,12 +142,12 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
         toastPosition: EasyLoadingToastPosition.bottom,
       );
 
-      await _logoutAndNavigateToSignin();
+      _navigateToOtpPage();
     } on DioException catch (e) {
       await EasyLoading.dismiss();
       final message = _extractServerMessage(
         e.response?.data,
-        fallback: e.message ?? 'Dong bo du lieu that bai',
+        fallback: e.message ?? 'Đồng bộ dữ liệu thất bại',
       );
       EasyLoading.showToast(
         message,
@@ -159,7 +156,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
     } catch (_) {
       await EasyLoading.dismiss();
       EasyLoading.showToast(
-        'Dong bo du lieu that bai',
+        'Đồng bộ dữ liệu thất bại',
         toastPosition: EasyLoadingToastPosition.bottom,
       );
     } finally {
@@ -174,8 +171,10 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Dong bo tai khoan guest'),
+        appBar: const BasicAppbar(
+          title: 'Đồng bộ tài khoản guest',
+          showTitle: true,
+          showBack: true,
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -193,19 +192,19 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Text(
-                      'Nhap thong tin tai khoan moi. Sau khi dong bo thanh cong, he thong se dang xuat de ban dang nhap lai.',
+                      'Nhập thông tin tài khoản, nhấn đồng bộ để hệ thống gửi OTP xác nhận.',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
                   SizedBox(height: 16.h),
                   BasicInputField(
                     controller: _fullnameCon,
-                    hintText: 'Ho va ten',
+                    hintText: 'Họ và tên',
                     textInputAction: TextInputAction.next,
                     prefixIcon: const Icon(Icons.person_outline_rounded),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Vui long nhap ho va ten';
+                        return 'Vui lòng nhập họ và tên';
                       }
                       return null;
                     },
@@ -220,11 +219,11 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     validator: (value) {
                       final email = (value ?? '').trim();
                       if (email.isEmpty) {
-                        return 'Vui long nhap email';
+                        return 'Vui lòng nhập email';
                       }
                       final emailReg = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
                       if (!emailReg.hasMatch(email)) {
-                        return 'Email khong hop le';
+                        return 'Email không hợp lệ';
                       }
                       return null;
                     },
@@ -232,7 +231,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                   SizedBox(height: 12.h),
                   BasicInputField(
                     controller: _passwordCon,
-                    hintText: 'Mat khau',
+                    hintText: 'Mật khẩu',
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,
                     obscureText: _obscurePassword,
@@ -250,17 +249,17 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     validator: (value) {
                       final pass = value ?? '';
                       if (pass.isEmpty) {
-                        return 'Vui long nhap mat khau';
+                        return 'Vui lòng nhập mật khẩu';
                       }
                       if (pass.length < 6) {
-                        return 'Mat khau phai tu 6 ky tu';
+                        return 'Mật khẩu phải từ 6 ký tự';
                       }
                       return null;
                     },
                   ),
                   SizedBox(height: 24.h),
                   BasicButton(
-                    text: _isSubmitting ? 'Dang dong bo...' : 'Dong bo du lieu',
+                    text: _isSubmitting ? 'Đang đồng bộ...' : 'Đồng bộ dữ liệu',
                     onPressed: _submitSync,
                     width: double.infinity,
                     fontSize: 17.sp,
