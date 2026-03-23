@@ -51,7 +51,7 @@ class UserDataModel extends UserDataEntity {
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
       isGuest: json['isGuest'] == true,
-      daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
+      daysRemaining: UserDataEntity.resolveDaysRemaining(json),
       level: json['level'],
       subscription: json['subscription'] == null
           ? null

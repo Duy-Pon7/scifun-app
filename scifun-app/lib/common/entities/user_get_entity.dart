@@ -62,6 +62,32 @@ class UserDataEntity extends Equatable {
     this.subscription,
   });
 
+  static int? resolveDaysRemaining(Map<String, dynamic> json) {
+    final apiDaysRemaining = (json['daysRemaining'] as num?)?.toInt();
+    final isGuest = json['isGuest'] == true;
+    if (!isGuest) {
+      return apiDaysRemaining;
+    }
+
+    final rawExpiredAt = json['expiredAt']?.toString().trim();
+    if (rawExpiredAt == null || rawExpiredAt.isEmpty) {
+      return apiDaysRemaining;
+    }
+
+    final expiredAt = DateTime.tryParse(rawExpiredAt);
+    if (expiredAt == null) {
+      return apiDaysRemaining;
+    }
+
+    final diffMs = expiredAt.toUtc().millisecondsSinceEpoch -
+        DateTime.now().toUtc().millisecondsSinceEpoch;
+    if (diffMs <= 0) {
+      return 0;
+    }
+
+    return (diffMs / Duration.millisecondsPerDay).ceil();
+  }
+
   final String? id;
   final String? email;
   final String? fullname;
@@ -84,7 +110,7 @@ class UserDataEntity extends Equatable {
       dob: DateTime.tryParse(json['dob'] ?? ''),
       role: json['role'],
       isGuest: json['isGuest'] == true,
-      daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
+      daysRemaining: resolveDaysRemaining(json),
       level: json['level'],
       subscription: json['subscription'] == null
           ? null

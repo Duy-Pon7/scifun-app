@@ -24,6 +24,7 @@ import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_page/change_infomation_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_procedure_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/policy/policy_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
 import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
@@ -201,6 +202,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                   remainingPackage:
                                       "${remainingDays < 0 ? 0 : remainingDays} ngay",
                                   isGuest: user?.isGuest == true,
+                                  onGuestSyncTap: user?.isGuest == true
+                                      ? () {
+                                          Navigator.push(
+                                            context,
+                                            slidePage(
+                                              const GuestSyncProcedurePage(),
+                                            ),
+                                          );
+                                        }
+                                      : null,
                                 ),
 
                                 /// ===== GÓI ĐANG DÙNG =====

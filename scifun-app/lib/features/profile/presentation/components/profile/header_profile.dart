@@ -14,11 +14,13 @@ class HeaderProfile extends StatelessWidget {
     required this.name,
     required this.remainingPackage,
     required this.isGuest,
+    this.onGuestSyncTap,
   });
   final String imgUrl;
   final String name;
   final String remainingPackage;
   final bool isGuest;
+  final VoidCallback? onGuestSyncTap;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,28 @@ class HeaderProfile extends StatelessWidget {
                   ),
                 ),
               ),
+              if (isGuest && onGuestSyncTap != null)
+                Positioned(
+                  right: -4.w,
+                  bottom: 0,
+                  child: GestureDetector(
+                    onTap: onGuestSyncTap,
+                    child: Container(
+                      width: 30.w,
+                      height: 30.w,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF7B6C),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.w),
+                      ),
+                      child: Icon(
+                        Icons.sync_rounded,
+                        color: Colors.white,
+                        size: 16.w,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
