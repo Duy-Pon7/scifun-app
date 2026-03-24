@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -76,7 +77,7 @@ class TrendQuizzesList extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final quizz = items[index];
                     final isPro = quizz.score != null && quizz.score! > 0.8;
-                    final level = _normalizeLevel(quizz.level);
+                    final level = LevelHelper.normalize(quizz.level);
 
                     return GestureDetector(
                       onTap: () => _openTrendQuiz(
@@ -241,6 +242,7 @@ class TrendQuizzesList extends StatelessWidget {
   Widget _buildLevelBadge(String level) {
     final color = _levelColor(level);
     final chevronCount = _levelChevronCount(level);
+    final displayLevel = LevelHelper.toVietnamese(level);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -259,7 +261,7 @@ class TrendQuizzesList extends StatelessWidget {
           ),
           SizedBox(width: 6.w),
           AutoSizeText(
-            level,
+            displayLevel,
             style: TextStyle(
               fontSize: 11.sp,
               color: color,
@@ -271,37 +273,24 @@ class TrendQuizzesList extends StatelessWidget {
     );
   }
 
-  String? _normalizeLevel(String? value) {
-    final raw = (value ?? '').trim();
-    if (raw.isEmpty) return null;
-    final lower = raw.toLowerCase();
-    if (lower == 'beginner') return 'Beginner';
-    if (lower == 'intermediate') return 'Intermediate';
-    if (lower == 'advanced') return 'Advanced';
-    return raw;
-  }
-
   int? _levelRank(String? level) {
-    final normalized = _normalizeLevel(level);
-    if (normalized == 'Beginner') return 1;
-    if (normalized == 'Intermediate') return 2;
-    if (normalized == 'Advanced') return 3;
-    return null;
+    return LevelHelper.rank(level);
   }
 
   String _resolveCurrentUserLevel(BuildContext context) {
     try {
       final userState = context.read<UserCubit>().state;
       if (userState is UserLoaded) {
-        final loadedLevel = _normalizeLevel(userState.user.data?.level);
+        final loadedLevel = LevelHelper.normalize(userState.user.data?.level);
         if (loadedLevel != null) {
           return loadedLevel;
         }
       }
     } catch (_) {}
 
-    return _normalizeLevel(sl<SharePrefsService>().getOnboardingLevel()) ??
-        'Beginner';
+    return LevelHelper.normalize(
+            sl<SharePrefsService>().getOnboardingLevel()) ??
+        LevelHelper.beginner;
   }
 
   bool _needsHigherLevelConfirmation({
@@ -350,16 +339,13 @@ class TrendQuizzesList extends StatelessWidget {
   }
 
   int _levelChevronCount(String level) {
-    final lower = level.toLowerCase();
-    if (lower == 'advanced') return 3;
-    if (lower == 'intermediate') return 2;
-    return 1;
+    return LevelHelper.rank(level) ?? 1;
   }
 
   Color _levelColor(String level) {
-    final lower = level.toLowerCase();
-    if (lower == 'advanced') return Colors.red.shade700;
-    if (lower == 'intermediate') return Colors.orange.shade700;
+    final normalized = LevelHelper.normalize(level);
+    if (normalized == LevelHelper.advanced) return Colors.red.shade700;
+    if (normalized == LevelHelper.intermediate) return Colors.orange.shade700;
     return Colors.green.shade700;
   }
 }

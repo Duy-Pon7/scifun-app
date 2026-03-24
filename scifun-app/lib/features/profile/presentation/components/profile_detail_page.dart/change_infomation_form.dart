@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
+import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
@@ -64,7 +65,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           fullname: _fullnameCon.text.trim(),
           dob: selectedBirthday ?? DateTime(2000, 1, 1),
           sex: _genderFieldValue ?? 1,
-          level: _normalizeLevel(_levelFieldValue) ?? 'Beginner',
+          level:
+              LevelHelper.normalize(_levelFieldValue) ?? LevelHelper.beginner,
           avatar: selectedImage,
         );
       }
@@ -104,7 +106,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                 ? DateFormat('dd/MM/yyyy').format(user!.dob!)
                 : '';
             _genderFieldValue = user?.sex;
-            _levelFieldValue = _normalizeLevel(user?.level) ?? 'Beginner';
+            _levelFieldValue =
+                LevelHelper.normalize(user?.level) ?? LevelHelper.beginner;
             // Note: API doesn't support email, phone, province/ward
             // _emailCon.text = user?.email ?? '';
             // _phoneCon.text = user?.phone ?? '';
@@ -281,37 +284,28 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
       );
   Widget _levelField() => BlocProvider(
         create: (context) => SelectCubit<String>(
-            _normalizeLevel(_levelFieldValue) ?? 'Beginner'),
+            LevelHelper.normalize(_levelFieldValue) ?? LevelHelper.beginner),
         child: BlocBuilder<SelectCubit<String>, String>(
           builder: (context, state) {
             return CustomizeDropdown<String>(
               items: _levelOptions,
               onChanged: (String? value) {
-                final normalized = _normalizeLevel(value) ?? 'Beginner';
+                final normalized =
+                    LevelHelper.normalize(value) ?? LevelHelper.beginner;
                 context.read<SelectCubit<String>>().select(normalized);
                 _levelFieldValue = normalized;
               },
               hintText: 'Chọn cấp độ',
-              value: _normalizeLevel(state) ?? 'Beginner',
+              value: LevelHelper.normalize(state) ?? LevelHelper.beginner,
             );
           },
         ),
       );
 
-  String? _normalizeLevel(String? value) {
-    final raw = (value ?? '').trim();
-    if (raw.isEmpty) return null;
-    final lower = raw.toLowerCase();
-    if (lower == 'beginner') return 'Beginner';
-    if (lower == 'intermediate') return 'Intermediate';
-    if (lower == 'advanced') return 'Advanced';
-    return raw;
-  }
-
   Map<String, String> get _levelOptions => const {
-        'Beginner': 'Beginner',
-        'Intermediate': 'Intermediate',
-        'Advanced': 'Advanced',
+        LevelHelper.beginner: 'Mới bắt đầu',
+        LevelHelper.intermediate: 'Trung cấp',
+        LevelHelper.advanced: 'Nâng cao',
       };
   Widget _changeButton() => BasicButton(
         text: "Cập nhật",

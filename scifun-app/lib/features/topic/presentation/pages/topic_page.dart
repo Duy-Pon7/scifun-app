@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -40,8 +41,8 @@ class _TopicPageState extends State<TopicPage> {
     super.initState();
     cubit = sl<TopicCubit>();
     _userLevel = _resolveCurrentUserLevel() ??
-        _normalizeLevel(sl<SharePrefsService>().getOnboardingLevel()) ??
-        'Beginner';
+        LevelHelper.normalize(sl<SharePrefsService>().getOnboardingLevel()) ??
+        LevelHelper.beginner;
     cubit.loadInitial(filterId: widget.subjectId);
   }
 
@@ -222,35 +223,6 @@ class _TopicPageState extends State<TopicPage> {
     );
   }
 
-  String? _normalizeLevel(String? rawLevel) {
-    final level = (rawLevel ?? '').trim().toLowerCase();
-    if (level.isEmpty) {
-      return null;
-    }
-    if (level == 'beginner' ||
-        level == 'moi bat dau' ||
-        level == 'mới bắt đầu') {
-      return 'Beginner';
-    }
-    if (level == 'intermediate' ||
-        level == 'trung cap' ||
-        level == 'trung cấp') {
-      return 'Intermediate';
-    }
-    if (level == 'advanced' || level == 'nang cao' || level == 'nâng cao') {
-      return 'Advanced';
-    }
-    return null;
-  }
-
-  int? _levelRank(String? rawLevel) {
-    final normalized = _normalizeLevel(rawLevel);
-    if (normalized == 'Beginner') return 1;
-    if (normalized == 'Intermediate') return 2;
-    if (normalized == 'Advanced') return 3;
-    return null;
-  }
-
   String? _resolveCurrentUserLevel() {
     UserCubit? userCubit;
     try {
@@ -265,14 +237,14 @@ class _TopicPageState extends State<TopicPage> {
 
     final state = userCubit.state;
     if (state is UserLoaded) {
-      return _normalizeLevel(state.user.data?.level);
+      return LevelHelper.normalize(state.user.data?.level);
     }
     return null;
   }
 
   bool _needsHigherLevelConfirmation(String? topicLevel) {
-    final userRank = _levelRank(_userLevel) ?? 1;
-    final topicRank = _levelRank(topicLevel);
+    final userRank = LevelHelper.rank(_userLevel) ?? 1;
+    final topicRank = LevelHelper.rank(topicLevel);
 
     if (topicRank == null) {
       return false;
@@ -312,17 +284,18 @@ class _TopicPageState extends State<TopicPage> {
   }
 
   Color _levelColor(String? level) {
-    final normalized = _normalizeLevel(level);
-    if (normalized == 'Advanced') return Colors.red.shade700;
-    if (normalized == 'Intermediate') return Colors.orange.shade700;
+    final normalized = LevelHelper.normalize(level);
+    if (normalized == LevelHelper.advanced) return Colors.red.shade700;
+    if (normalized == LevelHelper.intermediate) return Colors.orange.shade700;
     return Colors.green.shade700;
   }
 
   Widget _buildTopicLevelIndicator(String? level) {
-    final normalized = _normalizeLevel(level);
-    final rank = _levelRank(normalized) ?? 0;
+    final normalized = LevelHelper.normalize(level);
+    final rank = LevelHelper.rank(normalized) ?? 0;
     final activeColor = _levelColor(normalized);
-    final label = normalized ?? 'Unknown';
+    final label =
+        normalized != null ? LevelHelper.toVietnamese(normalized) : 'Chưa rõ';
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),

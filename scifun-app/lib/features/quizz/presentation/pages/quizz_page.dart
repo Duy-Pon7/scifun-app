@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
@@ -209,7 +210,7 @@ class _QuizzPageState extends State<QuizzPage> {
   }
 
   Widget _buildSubtitle(QuizzEntity quizz) {
-    final level = _normalizeLevel(quizz.level ?? quizz.topic?.level);
+    final level = LevelHelper.normalize(quizz.level ?? quizz.topic?.level);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,6 +273,7 @@ class _QuizzPageState extends State<QuizzPage> {
   Widget _buildLevelBadge(String level) {
     final color = _levelColor(level);
     final chevronCount = _levelChevronCount(level);
+    final displayLevel = LevelHelper.toVietnamese(level);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -290,7 +292,7 @@ class _QuizzPageState extends State<QuizzPage> {
           ),
           SizedBox(width: 6.w),
           Text(
-            level,
+            displayLevel,
             style: TextStyle(
               fontSize: 11.sp,
               color: color,
@@ -302,27 +304,14 @@ class _QuizzPageState extends State<QuizzPage> {
     );
   }
 
-  String? _normalizeLevel(String? value) {
-    final raw = (value ?? '').trim();
-    if (raw.isEmpty) return null;
-    final lower = raw.toLowerCase();
-    if (lower == 'beginner') return 'Beginner';
-    if (lower == 'intermediate') return 'Intermediate';
-    if (lower == 'advanced') return 'Advanced';
-    return raw;
-  }
-
   int _levelChevronCount(String level) {
-    final lower = level.toLowerCase();
-    if (lower == 'advanced') return 3;
-    if (lower == 'intermediate') return 2;
-    return 1;
+    return LevelHelper.rank(level) ?? 1;
   }
 
   Color _levelColor(String level) {
-    final lower = level.toLowerCase();
-    if (lower == 'advanced') return Colors.red.shade700;
-    if (lower == 'intermediate') return Colors.orange.shade700;
+    final normalized = LevelHelper.normalize(level);
+    if (normalized == LevelHelper.advanced) return Colors.red.shade700;
+    if (normalized == LevelHelper.intermediate) return Colors.orange.shade700;
     return Colors.green.shade700;
   }
 }

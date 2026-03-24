@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -78,7 +79,7 @@ class _HeaderHomeState extends State<HeaderHome> {
 
   Widget _textName({required String? name, required String? level}) {
     final subjectDisplayName = _subjectDisplayName(widget.subjectName);
-    final normalizedLevel = _normalizeLevel(level);
+    final normalizedLevel = LevelHelper.normalize(level);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,25 +120,16 @@ class _HeaderHomeState extends State<HeaderHome> {
     return normalized;
   }
 
-  String? _normalizeLevel(String? value) {
-    final raw = (value ?? '').trim();
-    if (raw.isEmpty) return null;
-    final lower = raw.toLowerCase();
-    if (lower == 'beginner') return 'Beginner';
-    if (lower == 'intermediate') return 'Intermediate';
-    if (lower == 'advanced') return 'Advanced';
-    return raw;
-  }
-
   Color _levelColor(String level) {
-    final lower = level.toLowerCase();
-    if (lower == 'advanced') return Colors.red.shade100;
-    if (lower == 'intermediate') return Colors.orange.shade100;
+    final normalized = LevelHelper.normalize(level);
+    if (normalized == LevelHelper.advanced) return Colors.red.shade100;
+    if (normalized == LevelHelper.intermediate) return Colors.orange.shade100;
     return Colors.green.shade100;
   }
 
   Widget _buildLevelBadge(String level) {
     final backgroundColor = _levelColor(level);
+    final displayLevel = LevelHelper.toVietnamese(level);
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
@@ -150,7 +142,7 @@ class _HeaderHomeState extends State<HeaderHome> {
         ),
       ),
       child: Text(
-        level,
+        displayLevel,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColor.hurricane900,
               fontWeight: FontWeight.w700,
