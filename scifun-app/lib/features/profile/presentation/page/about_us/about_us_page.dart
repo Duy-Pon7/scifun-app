@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
-import 'package:sci_fun/core/utils/assets/app_image.dart';
 
 class AboutUsPage extends StatelessWidget {
   final String? plainValue;
@@ -26,8 +26,8 @@ class AboutUsPage extends StatelessWidget {
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16.r),
-                  child: Image.asset(
-                    AppImage.aboutus,
+                  child: Lottie.asset(
+                    'assets/lottie_json/cat.json',
                     width: double.infinity,
                     height: 260.h,
                     fit: BoxFit.cover,
