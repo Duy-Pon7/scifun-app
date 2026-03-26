@@ -304,8 +304,8 @@ class _TestPageState extends State<TestPage> {
                             : isCheckingAnswer
                                 ? 'ĐANG KIỂM TRA...'
                                 : isAnswerChecked
-                                    ? (isLastQuestion ? 'NOP BAI' : 'TIEP TUC')
-                                    : 'KIEM TRA';
+                                    ? (isLastQuestion ? 'NỘP BÀI' : 'TIẾP TỤC')
+                                    : 'KIỂM TRA';
                         final accent = AppColor.skyblue500;
                         final accentDark = AppColor.skyblue700;
                         final accentLight = AppColor.skyblue100;
@@ -642,7 +642,14 @@ class _TestPageState extends State<TestPage> {
                         heroTag: 'test_page_chat_fab',
                         backgroundColor: AppColor.skyblue500,
                         onPressed: _onChatButtonPressed,
-                        child: const Icon(Icons.chat_bubble_outline),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            width: 40.w,
+                            height: 40.w,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -893,7 +900,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      'Trợ lý AI (phiên hiện tại)',
+                      'Trợ lý AI',
                       style: TextStyle(
                         fontSize: 19.sp,
                         fontWeight: FontWeight.w700,

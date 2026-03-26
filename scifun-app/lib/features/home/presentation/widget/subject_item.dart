@@ -12,6 +12,7 @@ class SubjectItem extends StatelessWidget {
     this.selectedBackgroundColor,
     this.selectedBorderColor,
     this.selectedTextColor,
+    this.cardWidth,
   });
 
   final String subjectName;
@@ -21,6 +22,7 @@ class SubjectItem extends StatelessWidget {
   final Color? selectedBackgroundColor;
   final Color? selectedBorderColor;
   final Color? selectedTextColor;
+  final double? cardWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class SubjectItem extends StatelessWidget {
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
             margin: EdgeInsets.only(top: 34.h),
-            width: 125.w,
+            width: cardWidth ?? 125.w,
             height: 160.h,
             padding: EdgeInsets.fromLTRB(10.w, 46.h, 10.w, 12.h),
             decoration: BoxDecoration(

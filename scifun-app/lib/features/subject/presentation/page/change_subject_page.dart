@@ -5,6 +5,7 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -68,7 +69,9 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
 
           final subjects = state.items
               .where((subject) => (subject.id ?? '').isNotEmpty)
-              .toList();
+              .toList(growable: false);
+          final selectedSubjectId =
+              (sl<SharePrefsService>().getSelectedSubjectId() ?? '').trim();
 
           if (subjects.isEmpty) {
             return const Center(
@@ -82,40 +85,18 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
             separatorBuilder: (_, __) => SizedBox(height: 10.h),
             itemBuilder: (_, index) {
               final subject = subjects[index];
+              final subjectId = (subject.id ?? '').trim();
               final subjectName = subject.name?.trim().isNotEmpty == true
                   ? subject.name!.trim()
                   : 'Môn học';
+              final subjectDescription = (subject.description ?? '').trim();
+              final accentColor = AppColor.subject500(subjectName);
+              final pressedAccentColor = AppColor.subject600(subjectName);
+              final softAccentColor = AppColor.subject100(subjectName);
+              final isCurrentSubject = selectedSubjectId == subjectId;
 
-              return ListTile(
-                tileColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14.r),
-                  side: BorderSide(
-                    color: AppColor.skyblue600.withValues(alpha: 0.25),
-                  ),
-                ),
-                leading: _SubjectLeadingImage(subject: subject),
-                title: Text(
-                  subjectName,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                subtitle: (subject.description ?? '').trim().isEmpty
-                    ? null
-                    : Text(
-                        subject.description!.trim(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                trailing: Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 16.sp,
-                  color: Colors.black54,
-                ),
-                onTap: () async {
-                  final subjectId = subject.id ?? '';
+              return BasicButton(
+                onPressed: () async {
                   if (subjectId.isEmpty) {
                     return;
                   }
@@ -131,6 +112,62 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
 
                   Navigator.pop(context);
                 },
+                width: double.infinity,
+                height: 112.h,
+                borderRadius: BorderRadius.circular(14.r),
+                backgroundColor: accentColor,
+                buttonColor: pressedAccentColor,
+                textColor: Colors.white,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                child: Row(
+                  children: [
+                    _SubjectLeadingImage(
+                      subject: subject,
+                      softAccentColor: softAccentColor,
+                      accentColor: pressedAccentColor,
+                    ),
+                    SizedBox(width: 12.w),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            subjectName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                          if (subjectDescription.isNotEmpty) ...[
+                            SizedBox(height: 4.h),
+                            Text(
+                              subjectDescription,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: Colors.white.withValues(alpha: 0.92),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Icon(
+                      isCurrentSubject
+                          ? Icons.check_circle_rounded
+                          : Icons.arrow_forward_ios_rounded,
+                      size: isCurrentSubject ? 20.sp : 17.sp,
+                      color: Colors.white.withValues(alpha: 0.96),
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -143,9 +180,13 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
 class _SubjectLeadingImage extends StatelessWidget {
   const _SubjectLeadingImage({
     required this.subject,
+    required this.softAccentColor,
+    required this.accentColor,
   });
 
   final SubjectEntity subject;
+  final Color softAccentColor;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -153,19 +194,37 @@ class _SubjectLeadingImage extends StatelessWidget {
     final hasNetworkImage =
         imageUrl.startsWith('http://') || imageUrl.startsWith('https://');
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10.r),
-      child: Container(
-        width: 44.w,
-        height: 44.w,
-        color: AppColor.skyblue600.withValues(alpha: 0.12),
+    return Container(
+      width: 56.w,
+      height: 56.w,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.r),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.42),
+          width: 1.w,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(9.r),
         child: hasNetworkImage
             ? Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.book_rounded),
+                errorBuilder: (_, __, ___) => _buildFallbackImage(),
               )
-            : const Icon(Icons.book_rounded),
+            : _buildFallbackImage(),
+      ),
+    );
+  }
+
+  Widget _buildFallbackImage() {
+    return Container(
+      color: softAccentColor,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.book_rounded,
+        color: accentColor,
+        size: 24.sp,
       ),
     );
   }

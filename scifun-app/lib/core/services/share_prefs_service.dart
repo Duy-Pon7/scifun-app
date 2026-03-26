@@ -12,6 +12,8 @@ class SharePrefsService {
   static const String _keySelectedSubjectId = 'selected_subject_id';
   static const String _keySelectedSubjectName = 'selected_subject_name';
   static const String _keyOnboardingLevel = 'onboarding_level';
+  static const String _keyBackgroundMusicEnabled = 'bgm_enabled';
+  static const String _keyBackgroundMusicVolume = 'bgm_volume';
   static const String _defaultSubjectName = 'Vật lý';
 
   SharePrefsService({required SharedPreferences prefs}) : _prefs = prefs {
@@ -84,6 +86,25 @@ class SharePrefsService {
 
   String? getOnboardingLevel() {
     return _prefs.getString(_keyOnboardingLevel);
+  }
+
+  Future<void> saveBackgroundMusicEnabled(bool isEnabled) async {
+    await _prefs.setBool(_keyBackgroundMusicEnabled, isEnabled);
+  }
+
+  bool getBackgroundMusicEnabled() {
+    return _prefs.getBool(_keyBackgroundMusicEnabled) ?? true;
+  }
+
+  Future<void> saveBackgroundMusicVolume(double volume) async {
+    final normalized = volume.clamp(0.0, 1.0).toDouble();
+    await _prefs.setDouble(_keyBackgroundMusicVolume, normalized);
+  }
+
+  double getBackgroundMusicVolume() {
+    final saved = _prefs.getDouble(_keyBackgroundMusicVolume);
+    if (saved == null) return 0.2;
+    return saved.clamp(0.0, 1.0).toDouble();
   }
 
   Future<void> clearSelectedSubject() async {

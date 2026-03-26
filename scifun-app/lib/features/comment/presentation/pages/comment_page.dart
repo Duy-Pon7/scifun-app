@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sci_fun/core/services/realtime_service.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -6,6 +7,7 @@ import 'package:sci_fun/features/comment/presentation/cubit/comment_pagination_c
 import 'package:sci_fun/features/comment/data/model/comment_model.dart';
 import 'package:sci_fun/features/comment/domain/entity/comment_entity.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class CommentPage extends StatefulWidget {
   const CommentPage({super.key});
@@ -51,6 +53,7 @@ class _CommentPageState extends State<CommentPage> {
   void _send() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
+    final messenger = ScaffoldMessenger.of(context);
 
     try {
       final success =
@@ -58,19 +61,20 @@ class _CommentPageState extends State<CommentPage> {
       if (success) {
         _controller.clear();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
+        if (!mounted) return;
+        messenger.showSnackBar(
           const SnackBar(
             content: Text(
-                'Không thể gửi bình luận — sẽ thử lại tự động khi kết nối trở lại'),
+                'Khong the gui binh luan, vui long thu lai khi ket noi on dinh'),
           ),
         );
       }
     } catch (e, st) {
-      // Defensive: prevent any exception from escaping the gesture handler
-      print('Unexpected error when sending comment: $e\n$st');
-      ScaffoldMessenger.of(context).showSnackBar(
+      debugPrint('Unexpected error when sending comment: $e\\n$st');
+      if (!mounted) return;
+      messenger.showSnackBar(
         const SnackBar(
-          content: Text('Lỗi khi gửi bình luận — thử lại sau'),
+          content: Text('Loi khi gui binh luan, thu lai sau'),
         ),
       );
     }
@@ -143,12 +147,7 @@ class _CommentPageState extends State<CommentPage> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
           child: Row(
             children: [
-              // Placeholder avatar of current user
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: Theme.of(context).primaryColor,
-                child: const Icon(Icons.person, size: 18, color: Colors.white),
-              ),
+              _buildComposerAvatar(context),
               const SizedBox(width: 8),
               Expanded(
                 child: Row(
@@ -274,6 +273,88 @@ class _CommentPageState extends State<CommentPage> {
       backgroundColor: Colors.grey.shade400,
       child: Text(initials.isEmpty ? '?' : initials,
           style: const TextStyle(color: Colors.white)),
+    );
+  }
+
+  Widget _buildComposerAvatar(BuildContext context) {
+    UserCubit? userCubit;
+    try {
+      userCubit = BlocProvider.of<UserCubit>(context);
+    } catch (_) {
+      userCubit = null;
+    }
+
+    if (userCubit == null) {
+      return _buildCurrentUserAvatar(context, null, null);
+    }
+
+    return BlocBuilder<UserCubit, UserState>(
+      bloc: userCubit,
+      builder: (context, state) {
+        if (state is UserLoaded) {
+          return _buildCurrentUserAvatar(
+            context,
+            state.user.data?.avatar,
+            state.user.data?.fullname,
+          );
+        }
+        return _buildCurrentUserAvatar(context, null, null);
+      },
+    );
+  }
+
+  Widget _buildCurrentUserAvatar(
+    BuildContext context,
+    String? avatarUrl,
+    String? fullName,
+  ) {
+    final trimmedUrl = (avatarUrl ?? '').trim();
+    if (trimmedUrl.isNotEmpty) {
+      return CircleAvatar(
+        radius: 18,
+        backgroundColor: Colors.grey.shade200,
+        child: ClipOval(
+          child: Image.network(
+            trimmedUrl,
+            width: 36,
+            height: 36,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildCurrentUserFallback(context),
+          ),
+        ),
+      );
+    }
+
+    final initials = (fullName ?? '')
+        .trim()
+        .split(' ')
+        .where((s) => s.isNotEmpty)
+        .map((s) => s[0])
+        .take(2)
+        .join();
+
+    if (initials.isNotEmpty) {
+      return CircleAvatar(
+        radius: 18,
+        backgroundColor: Theme.of(context).primaryColor,
+        child: Text(
+          initials.toUpperCase(),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      );
+    }
+
+    return _buildCurrentUserFallback(context);
+  }
+
+  Widget _buildCurrentUserFallback(BuildContext context) {
+    return CircleAvatar(
+      radius: 18,
+      backgroundColor: Theme.of(context).primaryColor,
+      child: const Icon(Icons.person, size: 18, color: Colors.white),
     );
   }
 

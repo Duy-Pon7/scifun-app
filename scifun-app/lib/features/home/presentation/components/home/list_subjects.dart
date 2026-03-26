@@ -66,7 +66,11 @@ class ListSubjects extends StatelessWidget {
             }
 
             if (state is PaginationSuccess<SubjectEntity>) {
-              final items = state.items;
+              final items = state.items
+                  .where((subject) => (subject.id ?? '').trim().isNotEmpty)
+                  .take(3)
+                  .toList(growable: false);
+
               if (items.isEmpty) {
                 return SizedBox(
                   height: 150.h,
@@ -82,60 +86,73 @@ class ListSubjects extends StatelessWidget {
 
               return SizedBox(
                 height: 150.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: items.length,
-                  padding: EdgeInsets.symmetric(horizontal: 8.w),
-                  separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                  itemBuilder: (context, index) {
-                    final subject = items[index];
-                    final subjectId = (subject.id ?? '').trim();
-                    final subjectName = subject.name?.trim().isNotEmpty == true
-                        ? subject.name!.trim()
-                        : 'M\u00f4n h\u1ecdc';
-                    final isSelected = activeSelectedSubjectId == subjectId;
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var index = 0; index < items.length; index++) ...[
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            final subject = items[index];
+                            final subjectId = (subject.id ?? '').trim();
+                            final subjectName =
+                                subject.name?.trim().isNotEmpty == true
+                                    ? subject.name!.trim()
+                                    : 'M\u00f4n h\u1ecdc';
+                            final isSelected =
+                                activeSelectedSubjectId == subjectId;
 
-                    return SubjectItem(
-                      subjectName: subjectName,
-                      imagePath: subject.image ?? '',
-                      isSelected: isSelected,
-                      selectedBackgroundColor: AppColor.subject100(subjectName),
-                      selectedBorderColor: AppColor.subject500(subjectName),
-                      selectedTextColor: AppColor.subject700(subjectName),
-                      onTap: () async {
-                        if (subjectId.isEmpty) {
-                          return;
-                        }
-
-                        if (activeSelectedSubjectId.isNotEmpty &&
-                            activeSelectedSubjectId != subjectId) {
-                          final shouldChange =
-                              await showSubjectChangeConfirmDialog(
-                            context: context,
-                            nextSubjectName: subjectName,
-                          );
-                          if (shouldChange != true || !context.mounted) {
-                            return;
-                          }
-                        }
-
-                        onSubjectSelected?.call(subjectId, subjectName);
-                        if (!context.mounted) {
-                          return;
-                        }
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TopicPage(
-                              subjectId: subjectId,
+                            return SubjectItem(
                               subjectName: subjectName,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                              imagePath: subject.image ?? '',
+                              isSelected: isSelected,
+                              cardWidth: double.infinity,
+                              selectedBackgroundColor:
+                                  AppColor.subject100(subjectName),
+                              selectedBorderColor:
+                                  AppColor.subject500(subjectName),
+                              selectedTextColor:
+                                  AppColor.subject700(subjectName),
+                              onTap: () async {
+                                if (subjectId.isEmpty) {
+                                  return;
+                                }
+
+                                if (activeSelectedSubjectId.isNotEmpty &&
+                                    activeSelectedSubjectId != subjectId) {
+                                  final shouldChange =
+                                      await showSubjectChangeConfirmDialog(
+                                    context: context,
+                                    nextSubjectName: subjectName,
+                                  );
+                                  if (shouldChange != true ||
+                                      !context.mounted) {
+                                    return;
+                                  }
+                                }
+
+                                onSubjectSelected?.call(subjectId, subjectName);
+                                if (!context.mounted) {
+                                  return;
+                                }
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TopicPage(
+                                      subjectId: subjectId,
+                                      subjectName: subjectName,
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      if (index < items.length - 1) SizedBox(width: 8.w),
+                    ],
+                  ],
                 ),
               );
             }

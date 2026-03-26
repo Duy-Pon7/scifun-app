@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/core/utils/theme/app_theme.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
@@ -52,6 +56,10 @@ void main() async {
       ),
     ),
   );
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_bootstrapSound());
+  });
 }
 
 void _configureEasyLoading() {
@@ -63,8 +71,30 @@ void _configureEasyLoading() {
     ..dismissOnTap = false;
 }
 
+Future<void> _bootstrapSound() async {
+  try {
+    final prefs = sl<SharePrefsService>();
+    final isBackgroundMusicEnabled = prefs.getBackgroundMusicEnabled();
+    final backgroundMusicVolume = prefs.getBackgroundMusicVolume();
+
+    await SoundService.instance.init();
+    await SoundService.instance.setLoopVolume(backgroundMusicVolume);
+    await SoundService.instance.setLoopEnabled(isBackgroundMusicEnabled);
+    await SoundService.instance.playLoop(
+      SoundLoopTrack.gameBackground,
+      volume: backgroundMusicVolume,
+    );
+  } catch (_) {
+    // Continue app startup even if background music cannot start.
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  void _unlockAudioAfterUserGesture() {
+    unawaited(SoundService.instance.registerUserGesture());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,22 +103,26 @@ class MyApp extends StatelessWidget {
       builder: (context, _, __) {
         return BlocBuilder<IsAuthorizedCubit, bool>(
           builder: (context, isAuthorized) {
-            return MaterialApp(
-              locale: const Locale('vi'),
-              supportedLocales: const [
-                Locale('vi'),
-                Locale('en'),
-              ],
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              debugShowCheckedModeBanner: false,
-              title: 'Sci Fun',
-              theme: AppTheme.theme,
-              builder: EasyLoading.init(),
-              home: isAuthorized ? DashboardPage() : const SigninPage(),
+            return Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) => _unlockAudioAfterUserGesture(),
+              child: MaterialApp(
+                locale: const Locale('vi'),
+                supportedLocales: const [
+                  Locale('vi'),
+                  Locale('en'),
+                ],
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                debugShowCheckedModeBanner: false,
+                title: 'Sci Fun',
+                theme: AppTheme.theme,
+                builder: EasyLoading.init(),
+                home: isAuthorized ? DashboardPage() : const SigninPage(),
+              ),
             );
           },
         );

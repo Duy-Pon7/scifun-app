@@ -1,4 +1,5 @@
-﻿import 'dart:convert';
+import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
@@ -117,6 +119,147 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const SigninPage()),
       (route) => false,
+    );
+  }
+
+  Future<void> _toggleBackgroundMusic(bool isEnabled) async {
+    final prefs = sl<SharePrefsService>();
+    await prefs.saveBackgroundMusicEnabled(isEnabled);
+    await SoundService.instance.setLoopEnabled(isEnabled);
+
+    if (!isEnabled) return;
+    final volume = prefs.getBackgroundMusicVolume();
+    await SoundService.instance.playLoop(
+      SoundLoopTrack.gameBackground,
+      volume: volume,
+    );
+  }
+
+  Future<void> _setBackgroundMusicVolume(double volume) async {
+    await sl<SharePrefsService>().saveBackgroundMusicVolume(volume);
+    await SoundService.instance.setLoopVolume(volume);
+  }
+
+  Future<void> _openSoundSettings() async {
+    final prefs = sl<SharePrefsService>();
+    var isBackgroundMusicEnabled = prefs.getBackgroundMusicEnabled();
+    var backgroundMusicVolume = prefs.getBackgroundMusicVolume();
+
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        final bottomPadding = MediaQuery.of(sheetContext).viewPadding.bottom;
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding:
+                  EdgeInsets.fromLTRB(18.w, 10.h, 18.w, 14.h + bottomPadding),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(22.r),
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 54.w,
+                      height: 5.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD3D8E1),
+                        borderRadius: BorderRadius.circular(999.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    'Âm thanh',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF6FAFF),
+                      borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(color: AppColor.skyblue100),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.music_note_rounded,
+                          color: AppColor.skyblue600,
+                          size: 22.sp,
+                        ),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Text(
+                            'Nhạc nền',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
+                        Switch.adaptive(
+                          value: isBackgroundMusicEnabled,
+                          activeColor: AppColor.skyblue600,
+                          onChanged: (value) {
+                            setModalState(() {
+                              isBackgroundMusicEnabled = value;
+                            });
+                            unawaited(_toggleBackgroundMusic(value));
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10.h),
+                  Text(
+                    'Âm lượng nhạc nền ${(backgroundMusicVolume * 100).round()}%',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF4F4F4F),
+                        ),
+                  ),
+                  Slider(
+                    value: backgroundMusicVolume,
+                    min: 0,
+                    max: 1,
+                    divisions: 20,
+                    activeColor: AppColor.skyblue500,
+                    inactiveColor: AppColor.skyblue100,
+                    onChanged: (value) {
+                      setModalState(() {
+                        backgroundMusicVolume = value;
+                      });
+                      unawaited(SoundService.instance.setLoopVolume(value));
+                    },
+                    onChangeEnd: (value) {
+                      unawaited(_setBackgroundMusicVolume(value));
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -249,6 +392,9 @@ class _ProfilePageState extends State<ProfilePage> {
         }),
         _itemNavigator(Icons.chat_bubble_outline_rounded, 'Chat hỗ trợ', () {
           _openChatSupport();
+        }),
+        _itemNavigator(Icons.volume_up_rounded, 'Âm thanh', () {
+          _openSoundSettings();
         }),
         _itemNavigator(Icons.shopping_cart, 'Mua gói', () {
           Navigator.push(
