@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lottie/lottie.dart';
 import 'package:sci_fun/common/helper/get_category_score.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -22,6 +23,8 @@ class QuizResultPage extends StatefulWidget {
 }
 
 class _QuizResultPageState extends State<QuizResultPage> {
+  static const String _congratsLottieAsset = 'assets/lottie_json/congrats.json';
+  static const String _lowScoreLottieAsset = 'assets/lottie_json/star.json';
   bool _didLaunchConfetti = false;
 
   @override
@@ -80,66 +83,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFE5E5),
-                  borderRadius: BorderRadius.circular(24.0),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 32.h),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      Icons.emoji_events,
-                      size: 120.sp,
-                      color: const Color(0xFFFFC107),
-                    ),
-                    Positioned(
-                      left: 20.w,
-                      top: 20.h,
-                      child: Icon(
-                        Icons.star,
-                        size: 24.sp,
-                        color: const Color(0xFFFFD700),
-                      ),
-                    ),
-                    Positioned(
-                      right: 30.w,
-                      top: 40.h,
-                      child: Container(
-                        width: 16.w,
-                        height: 16.h,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFF6B9D),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 40.w,
-                      bottom: 30.h,
-                      child: Container(
-                        width: 12.w,
-                        height: 12.h,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFFD700),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 20.w,
-                      bottom: 40.h,
-                      child: Icon(
-                        Icons.star,
-                        size: 16.sp,
-                        color: const Color(0xFFFFD700),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildResultAnimationCard(shouldCelebrate),
               SizedBox(height: 24.h),
               Text(
                 performanceTitle,
@@ -254,6 +198,28 @@ class _QuizResultPageState extends State<QuizResultPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildResultAnimationCard(bool shouldCelebrate) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFE5E5),
+        borderRadius: BorderRadius.circular(24.0),
+      ),
+      padding: EdgeInsets.symmetric(vertical: 20.h),
+      child: shouldCelebrate
+          ? Lottie.asset(
+              _congratsLottieAsset,
+              height: 170.h,
+              fit: BoxFit.contain,
+            )
+          : Lottie.asset(
+              _lowScoreLottieAsset,
+              height: 170.h,
+              fit: BoxFit.contain,
+            ),
     );
   }
 }

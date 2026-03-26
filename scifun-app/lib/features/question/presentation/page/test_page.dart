@@ -39,6 +39,8 @@ class _TestPageState extends State<TestPage> {
   bool isCheckingAnswer = false;
   bool currentAnswerIsCorrect = false;
   Set<String> checkedCorrectAnswerIds = <String>{};
+  bool isExplanationExpanded = false;
+  String currentExplanation = '';
 
   // Store selected answer IDs by question ID.
   final Map<String, List<String>> selectedAnswers = {};
@@ -67,6 +69,21 @@ class _TestPageState extends State<TestPage> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+
+  Widget _buildExitButton(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20.r),
+      onTap: () => Navigator.of(context).pop(),
+      child: Padding(
+        padding: EdgeInsets.all(4.w),
+        child: Icon(
+          Icons.close_rounded,
+          size: 28.sp,
+          color: const Color(0xFFB8B8B8),
+        ),
+      ),
     );
   }
 
@@ -106,6 +123,7 @@ class _TestPageState extends State<TestPage> {
   void _applyCheckResult({
     required QuestionEntity question,
     required Set<String> correctIds,
+    required String explanation,
   }) {
     if (!mounted) return;
     final questionId = question.id;
@@ -122,6 +140,8 @@ class _TestPageState extends State<TestPage> {
       isAnswerChecked = true;
       currentAnswerIsCorrect = isCorrect;
       checkedCorrectAnswerIds = correctIds;
+      currentExplanation = explanation;
+      isExplanationExpanded = false;
     });
   }
 
@@ -165,6 +185,8 @@ class _TestPageState extends State<TestPage> {
       isCheckingAnswer = true;
       checkedCorrectAnswerIds = <String>{};
       currentAnswerIsCorrect = false;
+      currentExplanation = '';
+      isExplanationExpanded = false;
     });
 
     await questionByIdCubit.fetchQuestionById(questionId);
@@ -180,6 +202,8 @@ class _TestPageState extends State<TestPage> {
         isCheckingAnswer = false;
         currentAnswerIsCorrect = false;
         checkedCorrectAnswerIds = <String>{};
+        currentExplanation = '';
+        isExplanationExpanded = false;
       });
       return;
     }
@@ -254,32 +278,57 @@ class _TestPageState extends State<TestPage> {
                         PaginationState<QuestionEntity>>(
                       builder: (context, state) {
                         if (state is PaginationLoading<QuestionEntity>) {
-                          return const Center(
-                            child: AppLoadingIndicator(
-                                message: 'Đang vào bài học...'),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildExitButton(context),
+                              const Expanded(
+                                child: Center(
+                                  child: AppLoadingIndicator(
+                                      message: 'Đang vào bài học...'),
+                                ),
+                              ),
+                            ],
                           );
                         }
 
                         if (state is PaginationError<QuestionEntity> &&
                             state.items.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'Lỗi: ${state.error}',
-                              style: TextStyle(
-                                color: const Color(0xFF4F4F4F),
-                                fontSize: 16.sp,
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildExitButton(context),
+                              Expanded(
+                                child: Center(
+                                  child: Text(
+                                    'Lỗi: ${state.error}',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: const Color(0xFF4F4F4F),
+                                      fontSize: 16.sp,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           );
                         }
 
                         final items = state.items;
                         if (items.isEmpty) {
-                          return const Center(
-                            child: AppEmptyState(
-                              message: 'Không có câu hỏi',
-                              animationSize: 140,
-                            ),
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildExitButton(context),
+                              const Expanded(
+                                child: Center(
+                                  child: AppEmptyState(
+                                    message: 'Không có câu hỏi',
+                                    animationSize: 140,
+                                  ),
+                                ),
+                              ),
+                            ],
                           );
                         }
 
@@ -310,6 +359,8 @@ class _TestPageState extends State<TestPage> {
                         final accentDark = AppColor.skyblue700;
                         final accentLight = AppColor.skyblue100;
                         final accentMid = AppColor.skyblue300;
+                        final explanationText = currentExplanation.trim();
+                        final hasExplanation = explanationText.isNotEmpty;
 
                         return MultiBlocListener(
                           listeners: [
@@ -340,9 +391,15 @@ class _TestPageState extends State<TestPage> {
                                               fetchedQuestion)
                                           : _extractCorrectAnswerIds(
                                               activeQuestion);
+                                  final explanation =
+                                      (fetchedQuestion.id == activeQuestion.id
+                                              ? fetchedQuestion.explanation
+                                              : activeQuestion.explanation)
+                                          ?.trim();
                                   _applyCheckResult(
                                     question: activeQuestion,
                                     correctIds: correctIds,
+                                    explanation: explanation ?? '',
                                   );
                                 } else if (questionByIdState
                                     is QuestionByIdError) {
@@ -351,6 +408,9 @@ class _TestPageState extends State<TestPage> {
                                     question: activeQuestion,
                                     correctIds: _extractCorrectAnswerIds(
                                         activeQuestion),
+                                    explanation:
+                                        activeQuestion.explanation?.trim() ??
+                                            '',
                                   );
                                 }
                               },
@@ -361,18 +421,7 @@ class _TestPageState extends State<TestPage> {
                             children: [
                               Row(
                                 children: [
-                                  InkWell(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                    onTap: () => Navigator.of(context).pop(),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(4.w),
-                                      child: Icon(
-                                        Icons.close_rounded,
-                                        size: 28.sp,
-                                        color: const Color(0xFFB8B8B8),
-                                      ),
-                                    ),
-                                  ),
+                                  _buildExitButton(context),
                                   SizedBox(width: 8.w),
                                   Expanded(
                                     child: ClipRRect(
@@ -466,6 +515,80 @@ class _TestPageState extends State<TestPage> {
                                       color: currentAnswerIsCorrect
                                           ? const Color(0xFF1B5E20)
                                           : const Color(0xFFB71C1C),
+                                    ),
+                                  ),
+                                ),
+                              if (isAnswerChecked && hasExplanation)
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10.h),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    onTap: () {
+                                      setState(() {
+                                        isExplanationExpanded =
+                                            !isExplanationExpanded;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 12.w, vertical: 10.h),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(12.r),
+                                        border: Border.all(
+                                          color: accent.withValues(alpha: 0.35),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              'Giải thích',
+                                              style: TextStyle(
+                                                fontSize: 13.sp,
+                                                fontWeight: FontWeight.w700,
+                                                color: accentDark,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            isExplanationExpanded
+                                                ? Icons
+                                                    .keyboard_arrow_up_rounded
+                                                : Icons
+                                                    .keyboard_arrow_down_rounded,
+                                            color: accentDark,
+                                            size: 22.sp,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (isAnswerChecked &&
+                                  hasExplanation &&
+                                  isExplanationExpanded)
+                                Padding(
+                                  padding: EdgeInsets.only(top: 8.h),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w, vertical: 10.h),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      border: Border.all(
+                                        color: AppColor.hurricane200,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      explanationText,
+                                      style: TextStyle(
+                                        fontSize: 13.sp,
+                                        color: const Color(0xFF3D3D3D),
+                                        height: 1.45,
+                                      ),
                                     ),
                                   ),
                                 ),
