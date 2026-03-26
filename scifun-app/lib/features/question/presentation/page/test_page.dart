@@ -765,13 +765,10 @@ class _TestPageState extends State<TestPage> {
                         heroTag: 'test_page_chat_fab',
                         backgroundColor: AppColor.skyblue500,
                         onPressed: _onChatButtonPressed,
-                        child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            width: 40.w,
-                            height: 40.w,
-                            fit: BoxFit.cover,
-                          ),
+                        child: Icon(
+                          Icons.pets_rounded,
+                          size: 24.sp,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -921,7 +918,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       setState(() {
         _messages.add(
           _QuizChatMessage(
-            text: 'Không thể gửi câu hỏi. Vui lòng thử lại.',
+            text: 'Mèo chưa gửi được câu hỏi này. Bạn thử lại giúp mình nhé!',
             isUser: false,
           ),
         );
@@ -951,7 +948,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
       }
     }
 
-    return 'Hệ thống chưa trả về nội dung hợp lệ.';
+    return 'Mèo chưa đọc được phản hồi hợp lệ từ hệ thống. Bạn thử hỏi lại nha!';
   }
 
   String _extractErrorText(DioException error) {
@@ -959,16 +956,16 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
     if (responseData is Map<String, dynamic>) {
       final message = responseData['message'];
       if (message is String && message.trim().isNotEmpty) {
-        return message.trim();
+        return 'Mèo báo: ${message.trim()}';
       }
     }
 
     final errorMessage = error.message;
     if (errorMessage != null && errorMessage.trim().isNotEmpty) {
-      return errorMessage.trim();
+      return 'Mèo gặp trục trặc: ${errorMessage.trim()}';
     }
 
-    return 'Có lỗi kết nối đến trợ lý AI.';
+    return 'Mèo bị rớt kết nối mất rồi. Bạn thử lại sau ít giây nhé!';
   }
 
   String _cleanReplyText(String text) {
@@ -1016,14 +1013,14 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
               child: Row(
                 children: [
                   Icon(
-                    Icons.smart_toy_outlined,
+                    Icons.pets_rounded,
                     color: AppColor.skyblue600,
                     size: 24.sp,
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
-                      'Trợ lý AI',
+                      'Trợ lý Mèo',
                       style: TextStyle(
                         fontSize: 19.sp,
                         fontWeight: FontWeight.w700,
@@ -1049,7 +1046,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 30.w),
                         child: Text(
-                          'Chat AI chỉ lưu trong phiên hiện tại.\nNhập câu hỏi để bắt đầu.',
+                          'Meo meo, Mèo chỉ nhớ cuộc trò chuyện trong phiên này.\nGửi câu hỏi để Mèo hỗ trợ bạn ngay!',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF667085),
@@ -1098,7 +1095,7 @@ class _QuizChatSheetState extends State<_QuizChatSheet> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _sendMessage(),
                       decoration: InputDecoration(
-                        hintText: 'Nhập câu hỏi...',
+                        hintText: 'Hỏi Mèo điều bạn đang thắc mắc...',
                         hintStyle: TextStyle(
                           color: const Color(0xFF9AA4B2),
                           fontSize: 14.sp,
@@ -1214,7 +1211,7 @@ class _ChatTypingBubble extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE3E8EF)),
         ),
         child: Text(
-          'Đang suy nghĩ...',
+          'Mèo đang nghĩ đáp án hay nhất...',
           style: TextStyle(
             fontSize: fontSize,
             color: const Color(0xFF667085),

@@ -6,6 +6,7 @@ import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/realtime_service.dart';
+import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/comment/data/model/comment_model.dart';
 import 'package:sci_fun/features/comment/domain/entity/comment_entity.dart';
 import 'package:sci_fun/features/comment/presentation/cubit/comment_pagination_cubit.dart';
@@ -19,10 +20,11 @@ class CommentPage extends StatefulWidget {
 }
 
 class _CommentPageState extends State<CommentPage> {
-  static const Color _forumCyan = Color(0xFF35CFE3);
-  static const Color _forumBlue = Color(0xFF039CC2);
-  static const Color _forumDeep = Color(0xFF0A6B88);
-  static const Color _forumSurface = Color(0xFFF3FBFD);
+  Color get _forumCyan => AppColor.skyblue400;
+  Color get _forumBlue => AppColor.skyblue600;
+  Color get _forumDeep => AppColor.skyblue800;
+  Color get _forumSurface => AppColor.skyblue50;
+  Color get _forumTint => AppColor.skyblue100;
 
   final TextEditingController _controller = TextEditingController();
   late final CommentPaginationCubit _commentPaginationCubit;
@@ -153,7 +155,7 @@ class _CommentPageState extends State<CommentPage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
@@ -259,7 +261,7 @@ class _CommentPageState extends State<CommentPage> {
   }
 
   Widget _buildRealtimeChip(bool connected) {
-    final Color chipColor = connected ? const Color(0xFF33A853) : const Color(0xFFD64242);
+    final Color chipColor = connected ? _forumBlue : const Color(0xFFD64242);
     final IconData chipIcon =
         connected ? Icons.cloud_done_rounded : Icons.cloud_off_rounded;
 
@@ -344,7 +346,7 @@ class _CommentPageState extends State<CommentPage> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: canSend
-                      ? const LinearGradient(
+                      ? LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [_forumCyan, _forumBlue],
@@ -491,7 +493,7 @@ class _CommentPageState extends State<CommentPage> {
                     ),
                     child: Text(
                       '${c.repliesCount} phản hồi',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: _forumBlue,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -546,10 +548,10 @@ class _CommentPageState extends State<CommentPage> {
         .join();
 
     return CircleAvatar(
-      backgroundColor: const Color(0xFFDBF4FA),
+      backgroundColor: _forumTint,
       child: Text(
         initials.isEmpty ? '?' : initials.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           color: _forumBlue,
           fontWeight: FontWeight.w800,
         ),
