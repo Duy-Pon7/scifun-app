@@ -77,8 +77,6 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
   Widget build(BuildContext context) {
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, state) {
-        print(
-            "ChangeInfomationForm listener state: ${state.runtimeType} - $state");
         if (state is UserError) {
           EasyLoading.dismiss();
           EasyLoading.showToast(state.message);
@@ -88,8 +86,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
             maskType: EasyLoadingMaskType.black,
           );
         } else if (state is UserUpdated) {
-          // Chỉ báo thành công khi là UserUpdated (cập nhật thực), không phải UserLoaded thường
-          print("ChangeInfomationForm: showing success toast");
+          // Chỉ báo thành công khi là UserUpdated (cập nhật thực), không phải UserLoaded thường.
           EasyLoading.dismiss();
           EasyLoading.showToast("Cập nhật thông tin thành công",
               toastPosition: EasyLoadingToastPosition.bottom);
@@ -119,41 +116,112 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           return Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20.h),
-                _avatarField(),
-                SizedBox(height: 40.h),
-                _fullnameField(),
-                SizedBox(height: 16.h),
-                Row(
-                  children: [
-                    Expanded(child: _birthdayField()),
-                    SizedBox(width: 16.w),
-                    Expanded(
-                      child: BlocProvider(
-                        create: (context) =>
-                            SelectCubit<int>(_genderFieldValue ?? 1),
-                        child: BlocBuilder<SelectCubit<int>, int>(
-                          builder: (context, state) {
-                            return CustomizeDropdown<int?>(
-                              items: {1: "Nam", 2: "Nữ"},
-                              onChanged: (int? v) {
-                                context.read<SelectCubit<int>>().select(v ?? 1);
-                                _genderFieldValue = v;
-                              },
-                              hintText: "Chọn giới tính",
-                              value: state,
-                            );
-                          },
+                SizedBox(height: 4.h),
+                Center(child: _avatarField()),
+                SizedBox(height: 12.h),
+                Center(
+                  child: Text(
+                    'Ảnh đại diện',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: AppColor.hurricane700,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                SizedBox(height: 16.h),
-                _levelField(),
-                SizedBox(height: 16.h),
-                SizedBox(height: 40.h),
+                SizedBox(height: 22.h),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 14.w, vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.r),
+                    border: Border.all(
+                      color: AppColor.skyblue100.withValues(alpha: 0.9),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.skyblue500.withValues(alpha: 0.08),
+                        blurRadius: 20.r,
+                        offset: Offset(0, 8.h),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _sectionTitle('Thông tin cơ bản'),
+                      SizedBox(height: 14.h),
+                      _fieldLabel('Họ và tên'),
+                      _fullnameField(),
+                      SizedBox(height: 14.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _fieldLabel('Ngày sinh'),
+                                _birthdayField(),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _fieldLabel('Giới tính'),
+                                BlocProvider(
+                                  create: (context) =>
+                                      SelectCubit<int>(_genderFieldValue ?? 1),
+                                  child: BlocBuilder<SelectCubit<int>, int>(
+                                    builder: (context, state) {
+                                      return CustomizeDropdown<int?>(
+                                        items: {1: "Nam", 2: "Nữ"},
+                                        onChanged: (int? v) {
+                                          context
+                                              .read<SelectCubit<int>>()
+                                              .select(v ?? 1);
+                                          _genderFieldValue = v;
+                                        },
+                                        hintText: "Chọn giới tính",
+                                        value: state,
+                                        backgroundColorButton:
+                                            const Color(0xFFF9FCFF),
+                                        paddingButton: EdgeInsets.symmetric(
+                                          horizontal: 14.w,
+                                          vertical: 13.h,
+                                        ),
+                                        borderRadiusButton:
+                                            BorderRadius.circular(14.r),
+                                        borderButton: Border.all(
+                                          color: AppColor.skyblue100
+                                              .withValues(alpha: 0.95),
+                                          width: 1.2,
+                                        ),
+                                        suffixIconInActive:
+                                            Icons.keyboard_arrow_down_rounded,
+                                        suffixIconActive:
+                                            Icons.keyboard_arrow_up_rounded,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 14.h),
+                      _fieldLabel('Trình độ'),
+                      _levelField(),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 22.h),
                 _changeButton(),
               ],
             ),
@@ -183,40 +251,65 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         }
 
         return Stack(
+          clipBehavior: Clip.none,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(100.r),
-              child: image != null
-                  ? Image.file(
-                      image,
-                      width: 96.w,
-                      height: 96.w,
-                      fit: BoxFit.cover,
-                    )
-                  : CustomNetworkAssetImage(
-                      imagePath: avatarUrl,
-                      width: 96.w,
-                      height: 96.w,
-                    ),
+            Container(
+              width: 116.w,
+              height: 116.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    AppColor.skyblue200.withValues(alpha: 0.8),
+                    AppColor.skyblue400.withValues(alpha: 0.6),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              padding: EdgeInsets.all(4.w),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100.r),
+                child: image != null
+                    ? Image.file(
+                        image,
+                        width: 108.w,
+                        height: 108.w,
+                        fit: BoxFit.cover,
+                      )
+                    : CustomNetworkAssetImage(
+                        imagePath: avatarUrl,
+                        width: 108.w,
+                        height: 108.w,
+                      ),
+              ),
             ),
             Positioned(
-              bottom: 0,
-              right: 0,
+              bottom: 2.h,
+              right: -2.w,
               child: GestureDetector(
                 onTap: () async {
                   await context.read<SelectImageCubit>().pickImage();
                 },
                 child: Container(
-                  width: 28.w,
-                  height: 28.w,
+                  width: 32.w,
+                  height: 32.w,
                   decoration: BoxDecoration(
                     color: AppColor.skyblue400,
                     shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColor.skyblue600.withValues(alpha: 0.35),
+                        blurRadius: 10.r,
+                        offset: Offset(0, 4.h),
+                      ),
+                    ],
                   ),
                   child: Icon(
-                    Icons.edit,
+                    Icons.edit_rounded,
                     color: Colors.white,
-                    size: 16.w,
+                    size: 17.w,
                   ),
                 ),
               ),
@@ -229,6 +322,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
 
   Widget _fullnameField() => BasicInputField(
         controller: _fullnameCon,
+        hintText: 'Nhập họ tên của bạn',
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Họ tên không được để trống';
@@ -236,12 +330,50 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           return null;
         },
         textInputAction: TextInputAction.next,
-        suffixIcon: const Icon(Icons.edit),
+        style: TextStyle(
+          color: AppColor.hurricane950,
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
+        ),
+        hintStyle: TextStyle(
+          color: AppColor.hurricane400,
+          fontSize: 15.sp,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
+        borderRadius: BorderRadius.circular(14.r),
+        fillColor: const Color(0xFFF9FCFF),
+        enabledBorder: _fieldBorder(color: AppColor.skyblue100, width: 1.2),
+        focusedBorder: _fieldBorder(color: AppColor.skyblue500, width: 1.4),
+        errorBorder: _fieldBorder(color: Colors.red.shade300, width: 1.2),
+        suffixIcon: Padding(
+          padding: EdgeInsets.only(right: 8.w),
+          child: Icon(
+            Icons.edit_rounded,
+            color: AppColor.skyblue500,
+            size: 20.sp,
+          ),
+        ),
       );
 
   Widget _birthdayField() => BasicInputField(
         controller: _birthdayCon,
+        hintText: 'Chọn ngày sinh',
         readOnly: true,
+        style: TextStyle(
+          color: AppColor.hurricane950,
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
+        ),
+        hintStyle: TextStyle(
+          color: AppColor.hurricane400,
+          fontSize: 15.sp,
+        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
+        borderRadius: BorderRadius.circular(14.r),
+        fillColor: const Color(0xFFF9FCFF),
+        enabledBorder: _fieldBorder(color: AppColor.skyblue100, width: 1.2),
+        focusedBorder: _fieldBorder(color: AppColor.skyblue500, width: 1.4),
+        errorBorder: _fieldBorder(color: Colors.red.shade300, width: 1.2),
         onTap: () async {
           DateTime initial = selectedBirthday ?? DateTime(2000);
           DateTime? picked = await showDatePicker(
@@ -280,7 +412,14 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
           }
           return null;
         },
-        suffixIcon: const Icon(Icons.calendar_month),
+        suffixIcon: Padding(
+          padding: EdgeInsets.only(right: 8.w),
+          child: Icon(
+            Icons.calendar_month_rounded,
+            color: AppColor.skyblue500,
+            size: 20.sp,
+          ),
+        ),
       );
   Widget _levelField() => BlocProvider(
         create: (context) => SelectCubit<String>(
@@ -297,6 +436,18 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
               },
               hintText: 'Chọn cấp độ',
               value: LevelHelper.normalize(state) ?? LevelHelper.beginner,
+              backgroundColorButton: const Color(0xFFF9FCFF),
+              paddingButton: EdgeInsets.symmetric(
+                horizontal: 14.w,
+                vertical: 13.h,
+              ),
+              borderRadiusButton: BorderRadius.circular(14.r),
+              borderButton: Border.all(
+                color: AppColor.skyblue100.withValues(alpha: 0.95),
+                width: 1.2,
+              ),
+              suffixIconInActive: Icons.keyboard_arrow_down_rounded,
+              suffixIconActive: Icons.keyboard_arrow_up_rounded,
             );
           },
         ),
@@ -312,7 +463,44 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         onPressed: _onChange,
         width: double.infinity,
         fontSize: 18.sp,
-        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 20.w),
+        padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 20.w),
+        borderRadius: BorderRadius.circular(16.r),
         backgroundColor: AppColor.skyblue400,
+        buttonColor: AppColor.skyblue600,
       );
+
+  Widget _sectionTitle(String text) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+            color: AppColor.hurricane950,
+            fontWeight: FontWeight.w700,
+            fontSize: 17.sp,
+          ),
+    );
+  }
+
+  Widget _fieldLabel(String text) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 7.h),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+              color: AppColor.hurricane700,
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
+    );
+  }
+
+  OutlineInputBorder _fieldBorder({
+    required Color color,
+    required double width,
+  }) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14.r),
+      borderSide: BorderSide(color: color, width: width),
+    );
+  }
 }

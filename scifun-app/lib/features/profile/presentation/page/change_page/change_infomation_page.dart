@@ -29,14 +29,43 @@ class ChangeInfomationPage extends StatelessWidget {
         ),
       ],
       child: Scaffold(
+        backgroundColor: const Color(0xFFF4F8FC),
         appBar: BasicAppbar(
           title: "Thông tin cá nhân",
           showTitle: true,
           showBack: true,
         ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: ChangeInfomationForm(),
+        body: Stack(
+          children: [
+            Positioned(
+              top: -90.h,
+              right: -70.w,
+              child: Container(
+                width: 220.w,
+                height: 220.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFE7F7FD),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 170.h,
+              left: -80.w,
+              child: Container(
+                width: 170.w,
+                height: 170.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFF0FBFF),
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(16.w, 10.h, 16.w, 24.h),
+              child: const ChangeInfomationForm(),
+            ),
+          ],
         ),
       ),
     );
