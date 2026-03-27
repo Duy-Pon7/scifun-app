@@ -329,7 +329,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         builder: (context, state) {
                           final user =
                               state is UserLoaded ? state.user.data : null;
-                          final remainingDays = user?.daysRemaining ?? 0;
+                          final remainingDays = user == null
+                              ? 0
+                              : _resolveUserRemainingDays(user);
                           final isGuest = user?.isGuest == true;
 
                           return Column(
@@ -339,8 +341,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 imgUrl: user?.avatar ??
                                     'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
                                 name: user?.fullname ?? 'Khách',
-                                remainingPackage:
-                                    '${remainingDays < 0 ? 0 : remainingDays} ngày',
+                                remainingPackage: '$remainingDays ngày',
                                 isGuest: isGuest,
                                 onGuestSyncTap: isGuest
                                     ? () {
@@ -542,11 +543,69 @@ String formatDate(DateTime date) {
       '${date.year}';
 }
 
+int _remainingDaysFromDate(DateTime? endDate) {
+  if (endDate == null) {
+    return 0;
+  }
+
+  final diffMs = endDate.toUtc().millisecondsSinceEpoch -
+      DateTime.now().toUtc().millisecondsSinceEpoch;
+  if (diffMs <= 0) {
+    return 0;
+  }
+
+  return (diffMs / Duration.millisecondsPerDay).ceil();
+}
+
+int _resolveUserRemainingDays(UserDataEntity user) {
+  final apiDays = user.daysRemaining;
+  if (user.isGuest == true) {
+    if (apiDays == null) {
+      return 0;
+    }
+    return apiDays < 0 ? 0 : apiDays;
+  }
+
+  final subscriptionEnd = user.subscription?.currentPeriodEnd;
+  if (subscriptionEnd != null) {
+    return _remainingDaysFromDate(subscriptionEnd);
+  }
+
+  if (apiDays == null) {
+    return 0;
+  }
+  return apiDays < 0 ? 0 : apiDays;
+}
+
+bool _isUserSubscriptionExpired(
+  UserDataEntity user, {
+  required int remainingDays,
+}) {
+  if (user.isGuest == true) {
+    return remainingDays <= 0;
+  }
+
+  final sub = user.subscription;
+  final normalizedStatus = sub?.status?.trim().toUpperCase();
+  final hasEndDate = sub?.currentPeriodEnd != null;
+
+  if (normalizedStatus == 'ACTIVE') {
+    return hasEndDate ? remainingDays <= 0 : false;
+  }
+
+  if (normalizedStatus != null && normalizedStatus.isNotEmpty) {
+    return true;
+  }
+
+  return hasEndDate ? remainingDays <= 0 : false;
+}
+
 Widget subscriptionCard(UserDataEntity user) {
   final sub = user.subscription;
   final isGuest = user.isGuest == true;
-  final remainingDays = user.daysRemaining ?? 0;
-  final isExpired = remainingDays <= 0;
+  final remainingDays = _resolveUserRemainingDays(user);
+  final isExpired =
+      _isUserSubscriptionExpired(user, remainingDays: remainingDays);
   final packageLabel = isGuest ? 'GUEST' : (sub?.tier?.toUpperCase() ?? 'FREE');
   final statusLabel =
       isGuest ? 'Tài khoản khách' : (isExpired ? 'Hết hạn' : 'Đang hoạt động');

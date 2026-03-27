@@ -62,30 +62,47 @@ class UserDataEntity extends Equatable {
     this.subscription,
   });
 
-  static int? resolveDaysRemaining(Map<String, dynamic> json) {
-    final apiDaysRemaining = (json['daysRemaining'] as num?)?.toInt();
-    final isGuest = json['isGuest'] == true;
-    if (!isGuest) {
-      return apiDaysRemaining;
+  static int? _resolvePositiveDaysFromDate(DateTime? date) {
+    if (date == null) {
+      return null;
     }
 
-    final rawExpiredAt = json['expiredAt']?.toString().trim();
-    if (rawExpiredAt == null || rawExpiredAt.isEmpty) {
-      return apiDaysRemaining;
-    }
-
-    final expiredAt = DateTime.tryParse(rawExpiredAt);
-    if (expiredAt == null) {
-      return apiDaysRemaining;
-    }
-
-    final diffMs = expiredAt.toUtc().millisecondsSinceEpoch -
+    final diffMs = date.toUtc().millisecondsSinceEpoch -
         DateTime.now().toUtc().millisecondsSinceEpoch;
+
     if (diffMs <= 0) {
       return 0;
     }
 
     return (diffMs / Duration.millisecondsPerDay).ceil();
+  }
+
+  static int? resolveDaysRemaining(Map<String, dynamic> json) {
+    final apiDaysRemaining = (json['daysRemaining'] as num?)?.toInt();
+    if (apiDaysRemaining != null) {
+      return apiDaysRemaining < 0 ? 0 : apiDaysRemaining;
+    }
+
+    final isGuest = json['isGuest'] == true;
+    if (!isGuest) {
+      final subscription = json['subscription'];
+      if (subscription is Map<String, dynamic>) {
+        final subscriptionEnd = DateTime.tryParse(
+          subscription['currentPeriodEnd']?.toString() ?? '',
+        );
+        return _resolvePositiveDaysFromDate(subscriptionEnd);
+      }
+
+      return null;
+    }
+
+    final rawExpiredAt = json['expiredAt']?.toString().trim();
+    if (rawExpiredAt == null || rawExpiredAt.isEmpty) {
+      return null;
+    }
+
+    final expiredAt = DateTime.tryParse(rawExpiredAt);
+    return _resolvePositiveDaysFromDate(expiredAt);
   }
 
   final String? id;

@@ -1,21 +1,27 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
+import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
+import 'package:sci_fun/features/plan/domain/entity/checkout_response.dart';
 import 'package:sci_fun/features/plan/domain/entity/plan_entity.dart';
 import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
-import 'package:sci_fun/features/plan/domain/usecase/verify_payment.dart';
-import 'dart:async';
-import 'package:app_links/app_links.dart';
+import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_procedure_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sci_fun/features/plan/presentation/page/verify_payment_page.dart';
 
 class PlanListPage extends StatefulWidget {
   const PlanListPage({super.key});
@@ -25,6 +31,9 @@ class PlanListPage extends StatefulWidget {
 }
 
 class _PlanListPageState extends State<PlanListPage> {
+  static const _pendingPaymentRefKey = 'pending_payment_ref';
+  static const _pendingDurationDaysKey = 'pending_durationDays';
+
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _uriSub;
 
@@ -34,118 +43,160 @@ class _PlanListPageState extends State<PlanListPage> {
     _initDeepLinks();
   }
 
-  void _initDeepLinks() async {
+  bool _isPaymentCallbackUri(Uri uri) {
+    final scheme = uri.scheme.toLowerCase();
+    final host = uri.host.toLowerCase();
+
+    if (scheme != 'myapp' && scheme != 'yourapp') {
+      return false;
+    }
+
+    return host == 'payment' || host == 'payment-result';
+  }
+
+  bool _isPaymentSuccess(Uri uri) {
+    final resultCode =
+        uri.queryParameters['resultCode'] ?? uri.queryParameters['resultcode'];
+    if (resultCode != null) {
+      return resultCode == '0';
+    }
+
+    final status = uri.queryParameters['status']?.toLowerCase();
+    if (status == null) {
+      return false;
+    }
+
+    return status == '1' ||
+        status == 'success' ||
+        status == 'succeeded' ||
+        status == 'paid';
+  }
+
+  String _callbackStatus(Uri uri) {
+    final resultCode =
+        uri.queryParameters['resultCode'] ?? uri.queryParameters['resultcode'];
+    if (resultCode != null) {
+      return 'resultCode=$resultCode';
+    }
+    final status = uri.queryParameters['status'];
+    if (status != null) {
+      return 'status=$status';
+    }
+    return 'unknown';
+  }
+
+  Future<void> _showPaymentResultDialog({
+    required String title,
+    required String message,
+  }) async {
+    if (!mounted) return;
+
+    await showChangeConfirmDialog(
+      context: context,
+      titleText: title,
+      messageText: message,
+      cancelButtonText: 'Đóng',
+      confirmButtonText: 'OK',
+    );
+  }
+
+  Future<void> _clearPendingPayment() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingPaymentRefKey);
+    await prefs.remove(_pendingDurationDaysKey);
+
+    // Cleanup old keys kept for backward compatibility.
+    await prefs.remove('pending_appTransId');
+    await prefs.remove('pending_durationDays');
+  }
+
+  Future<bool> _refreshPremiumState() async {
+    final isAuthorizedCubit = context.read<IsAuthorizedCubit>();
+    final proCubit = context.read<ProCubit>();
+
+    isAuthorizedCubit.isAuthorized();
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    if (token == null) return false;
+
+    return proCubit.isCheckPro(token: token);
+  }
+
+  Future<void> _handlePaymentCallback(
+    Uri uri, {
+    required bool isInitialLink,
+  }) async {
+    if (!_isPaymentCallbackUri(uri)) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final paymentRef = prefs.getString(_pendingPaymentRefKey) ??
+        prefs.getString('pending_appTransId');
+
+    final callbackSource = isInitialLink ? 'Initial link' : 'Callback';
+    debugPrint('$callbackSource from MoMo: $uri');
+
+    if (!_isPaymentSuccess(uri)) {
+      await _showPaymentResultDialog(
+        title: 'Thanh toán chưa thành công',
+        message: 'Thanh toán chưa thành công (${_callbackStatus(uri)}).',
+      );
+      return;
+    }
+
+    if (mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(
+          child: AppLoadingIndicator(
+            message: 'Đang cập nhật trạng thái thanh toán...',
+          ),
+        ),
+      );
+    }
+
+    bool isPro = false;
+    try {
+      isPro = await _refreshPremiumState();
+      await _clearPendingPayment();
+    } finally {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+
+    final paymentSuffix =
+        paymentRef != null && paymentRef.isNotEmpty ? ' ($paymentRef)' : '';
+
+    if (isPro) {
+      await _showPaymentResultDialog(
+        title: 'Thanh toán thành công',
+        message: 'Thanh toán MoMo thành công$paymentSuffix.',
+      );
+      return;
+    }
+
+    await _showPaymentResultDialog(
+      title: 'Đã nhận callback MoMo',
+      message:
+          'Đã nhận callback MoMo$paymentSuffix. Nếu gói chưa cập nhật, chờ 10-30 giây rồi kiểm tra lại.',
+    );
+  }
+
+  Future<void> _initDeepLinks() async {
     _appLinks = AppLinks();
 
-    // Khi app mở lại từ ZaloPay
-    _uriSub = _appLinks.uriLinkStream.listen((Uri uri) async {
-      if (uri.scheme == "myapp" && uri.host == "payment") {
-        print("Return from ZaloPay: $uri");
+    _uriSub = _appLinks.uriLinkStream.listen(
+      (Uri uri) => _handlePaymentCallback(uri, isInitialLink: false),
+      onError: (Object error) {
+        debugPrint('Deep link stream error: $error');
+      },
+    );
 
-        final status = uri.queryParameters["status"];
-
-        // Lấy appTransId và durationDays đã lưu từ SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        final appTransId = prefs.getString('pending_appTransId');
-        final durationDays = prefs.getInt('pending_durationDays');
-
-        if (appTransId != null && durationDays != null) {
-          // show loading
-          if (mounted) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (_) => const Center(
-                child: AppLoadingIndicator(
-                  message: 'Đang xác thực thanh toán...',
-                ),
-              ),
-            );
-          }
-
-          final res = await sl<VerifyPayment>().call(VerifyPaymentParams(
-              appTransId: appTransId, durationDays: durationDays));
-
-          // close loading
-          if (mounted) Navigator.of(context).pop();
-
-          // Xóa dữ liệu pending sau khi xác thực
-          await prefs.remove('pending_appTransId');
-          await prefs.remove('pending_durationDays');
-
-          res.fold(
-            (failure) => ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(failure.message))),
-            (message) async {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Thanh toán xác thực: $message')),
-              );
-            },
-          );
-        } else {
-          // fallback: show status only
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Kết quả thanh toán: status=$status')),
-            );
-          }
-        }
-      }
-    });
-
-    // App được mở từ trạng thái terminated
     final initialUri = await _appLinks.getInitialLink();
-    if (initialUri != null &&
-        initialUri.scheme == "myapp" &&
-        initialUri.host == "payment") {
-      print("Initial link from ZaloPay: $initialUri");
-
-      final status = initialUri.queryParameters["status"];
-
-      // Lấy appTransId và durationDays đã lưu từ SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      final appTransId = prefs.getString('pending_appTransId');
-      final durationDays = prefs.getInt('pending_durationDays');
-
-      if (appTransId != null && durationDays != null) {
-        // show loading
-        if (mounted) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => const Center(
-              child: AppLoadingIndicator(
-                message: 'Đang xác thực thanh toán...',
-              ),
-            ),
-          );
-        }
-
-        final res = await sl<VerifyPayment>().call(VerifyPaymentParams(
-            appTransId: appTransId, durationDays: durationDays));
-
-        // close loading
-        if (mounted) Navigator.of(context).pop();
-
-        // Xóa dữ liệu pending sau khi xác thực
-        await prefs.remove('pending_appTransId');
-        await prefs.remove('pending_durationDays');
-
-        res.fold(
-          (failure) => ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(failure.message))),
-          (message) => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Initial link: thanh toán xác thực: $message')),
-          ),
-        );
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Initial link: status=$status')),
-          );
-        }
-      }
+    if (initialUri != null) {
+      await _handlePaymentCallback(initialUri, isInitialLink: true);
     }
   }
 
@@ -163,22 +214,6 @@ class _PlanListPageState extends State<PlanListPage> {
         backgroundColor: const Color(0xFFF6F7FB),
         appBar: const BasicAppbar(
           title: 'Gói dịch vụ',
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const VerifyPaymentPage(),
-              ),
-            );
-          },
-          backgroundColor: AppColor.skyblue500,
-          icon: const Icon(Icons.verified_outlined, color: Colors.white),
-          label: const Text(
-            'Xác nhận thanh toán',
-            style: TextStyle(color: Colors.white),
-          ),
         ),
         body: Padding(
           padding: EdgeInsets.all(16.w),
@@ -228,9 +263,80 @@ class _PlanListPageState extends State<PlanListPage> {
 }
 
 class _PlanCard extends StatelessWidget {
+  static const _pendingPaymentRefKey = 'pending_payment_ref';
+  static const _pendingDurationDaysKey = 'pending_durationDays';
+
   final Plan plan;
 
   const _PlanCard({required this.plan});
+
+  Future<bool> _isGuestAccount(BuildContext context) async {
+    final userState = context.read<UserCubit>().state;
+    if (userState is UserLoaded) {
+      return userState.user.data?.isGuest == true;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token');
+    if (token == null || token.isEmpty) return false;
+
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return false;
+
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final map = jsonDecode(payload);
+      if (map is! Map<String, dynamic>) return false;
+
+      final claim = map['isGuest'];
+      if (claim is bool) return claim;
+      if (claim is String) return claim.toLowerCase() == 'true';
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _savePendingPayment(CheckoutResponse response) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final paymentRef = response.paymentRef;
+    if (paymentRef.isNotEmpty) {
+      await prefs.setString(_pendingPaymentRefKey, paymentRef);
+
+      // Keep old key for backward compatibility with older screens.
+      await prefs.setString('pending_appTransId', paymentRef);
+    }
+
+    await prefs.setInt(_pendingDurationDaysKey, response.durationDays);
+    await prefs.setInt('pending_durationDays', response.durationDays);
+  }
+
+  Future<bool> _launchPayment(CheckoutResponse response) async {
+    final preferredUrl = response.preferredLaunchUrl;
+    final fallbackUrl = response.payUrl;
+
+    if (preferredUrl.isNotEmpty && await canLaunchUrlString(preferredUrl)) {
+      final launchedPreferred = await launchUrlString(
+        preferredUrl,
+        mode: LaunchMode.externalApplication,
+      );
+      if (launchedPreferred) return true;
+    }
+
+    if (fallbackUrl.isNotEmpty && fallbackUrl != preferredUrl) {
+      if (await canLaunchUrlString(fallbackUrl)) {
+        return launchUrlString(
+          fallbackUrl,
+          mode: LaunchMode.externalApplication,
+        );
+      }
+    }
+
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -250,7 +356,6 @@ class _PlanCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// Header
           Row(
             children: [
               Expanded(
@@ -265,10 +370,7 @@ class _PlanCard extends StatelessWidget {
               _DurationBadge(days: plan.durationDays),
             ],
           ),
-
           SizedBox(height: 12.h),
-
-          /// Price
           Text(
             plan.price != null
                 ? '${_formatPrice(plan.price!)} VND'
@@ -279,10 +381,7 @@ class _PlanCard extends StatelessWidget {
               color: Colors.blue,
             ),
           ),
-
           SizedBox(height: 12.h),
-
-          /// Description (placeholder)
           Text(
             'Truy cập đầy đủ các tính năng học tập và nội dung nâng cao.',
             style: TextStyle(
@@ -290,10 +389,7 @@ class _PlanCard extends StatelessWidget {
               color: Colors.grey[600],
             ),
           ),
-
           SizedBox(height: 16.h),
-
-          /// Button
           SizedBox(
             width: double.infinity,
             height: 44.h,
@@ -305,10 +401,19 @@ class _PlanCard extends StatelessWidget {
                 backgroundColor: AppColor.skyblue400,
               ),
               onPressed: () async {
+                final isGuest = await _isGuestAccount(context);
+                if (!context.mounted) return;
+                if (isGuest) {
+                  Navigator.push(
+                    context,
+                    slidePage(const GuestSyncProcedurePage()),
+                  );
+                  return;
+                }
+
                 final price = plan.price ?? 0;
                 final durationDays = plan.durationDays ?? 7;
 
-                // show loading
                 showDialog(
                   context: context,
                   barrierDismissible: false,
@@ -320,56 +425,40 @@ class _PlanCard extends StatelessWidget {
                 );
 
                 final res = await sl<CreateCheckout>().call(
-                    CreateCheckoutParams(
-                        price: price, durationDays: durationDays));
+                  CreateCheckoutParams(
+                      price: price, durationDays: durationDays),
+                );
 
-                // close loading
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
 
                 res.fold(
                   (failure) => ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text(failure.message))),
                   (checkoutResponse) async {
                     try {
-                      // Lưu appTransId và durationDays vào SharedPreferences
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setString(
-                          'pending_appTransId', checkoutResponse.appTransId);
-                      await prefs.setInt('pending_durationDays',
-                          checkoutResponse.durationDays);
+                      await _savePendingPayment(checkoutResponse);
 
-                      final payUrl = checkoutResponse.payUrl;
-
-                      // Debug: in ra payUrl để kiểm tra
-                      print("PayUrl from server: $payUrl");
-                      print("AppTransId: ${checkoutResponse.appTransId}");
-                      print("DurationDays: ${checkoutResponse.durationDays}");
-
-                      // Thử mở app ZaloPay Sandbox trước
-                      // ZaloPay Sandbox có scheme: zalopay-sandbox-ca://
-                      // ZaloPay production có scheme: zalopay://
-                      final zaloPaySandboxUrl = payUrl.replaceFirst(
-                          'https://', 'zalopay-sandbox-ca://');
-
-                      bool launched = false;
-                      if (await canLaunchUrlString(zaloPaySandboxUrl)) {
-                        launched = await launchUrlString(zaloPaySandboxUrl,
-                            mode: LaunchMode.externalApplication);
-                        print("Launched ZaloPay Sandbox app: $launched");
-                      }
-
-                      // Nếu không mở được app ZaloPay, fallback mở trình duyệt
-                      if (!launched) {
-                        print("Fallback to browser: $payUrl");
-                        await launchUrlString(payUrl,
-                            mode: LaunchMode.externalApplication);
+                      final launched = await _launchPayment(checkoutResponse);
+                      if (!launched && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Không thể mở đường dẫn thanh toán MoMo'),
+                          ),
+                        );
                       }
                     } catch (e) {
-                      print("Error launching payment: $e");
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Không thể mở đường dẫn thanh toán')),
-                      );
+                      debugPrint('Error launching payment: $e');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Không thể mở đường dẫn thanh toán MoMo'),
+                          ),
+                        );
+                      }
                     }
                   },
                 );
@@ -383,7 +472,7 @@ class _PlanCard extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
