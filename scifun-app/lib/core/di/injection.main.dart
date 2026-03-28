@@ -123,6 +123,8 @@ Future<void> _profile() async {
     ..registerFactory(() => BuyPackagesUseCase(repository: sl()))
     ..registerFactory(() => GetInstructions(packagesRepository: sl()))
     ..registerFactory(() => GetHistoryPackages(packagesRepository: sl()))
+    ..registerFactory(() => GetOrderHistory(packagesRepository: sl()))
+    ..registerFactory(() => OrderHistoryCubit(getOrderHistory: sl()))
     ..registerLazySingleton(() => PackageBloc(
           getPackage: sl(),
           buyPackages: sl(),

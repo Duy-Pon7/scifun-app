@@ -96,8 +96,10 @@ import 'package:sci_fun/features/profile/domain/repository/user_repository.dart'
 import 'package:sci_fun/features/profile/domain/usecase/buy_packages.dart';
 import 'package:sci_fun/features/profile/domain/usecase/get_history_packages.dart';
 import 'package:sci_fun/features/profile/domain/usecase/get_instructions.dart';
+import 'package:sci_fun/features/profile/domain/usecase/get_order_history.dart';
 import 'package:sci_fun/features/profile/domain/usecase/get_packages.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/order_history_cubit.dart';
 import 'package:sci_fun/features/question/data/datasource/question_remote_datasource.dart';
 import 'package:sci_fun/features/question/data/repository/question_repository_impl.dart';
 import 'package:sci_fun/features/question/domain/repository/question_repository.dart';

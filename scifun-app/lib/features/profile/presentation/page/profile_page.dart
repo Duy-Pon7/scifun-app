@@ -29,6 +29,7 @@ import 'package:sci_fun/features/profile/presentation/page/change_page/change_in
 import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
 import 'package:sci_fun/features/profile/presentation/page/contact/contact_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_procedure_page.dart';
+import 'package:sci_fun/features/profile/presentation/page/package/order_history_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/policy/policy_page.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -403,6 +404,12 @@ class _ProfilePageState extends State<ProfilePage> {
             slidePage(const PlanListPage()),
           );
         }),
+        _itemNavigator(Icons.receipt_long_rounded, 'Lịch sử mua gói', () {
+          Navigator.push(
+            context,
+            slidePage(const OrderHistoryPage()),
+          );
+        }),
         _sectionTitle('Liên hệ'),
         _itemNavigator(Icons.policy_rounded, 'Chính sách', () {
           Navigator.push(
@@ -423,7 +430,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _itemNavigator(Icons.call_rounded, 'Liên hệ hỗ trợ', () {
           Navigator.push(
             context,
-            slidePage(ContactPage(settings: const [])),
+            slidePage(ContactPage(settings: mockContactSettings)),
           );
         }),
         _logoutButton(),

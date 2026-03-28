@@ -5,6 +5,7 @@ import 'package:sci_fun/core/error/failure.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/features/profile/data/datasource/packages_remote_datasource.dart';
 import 'package:sci_fun/features/profile/data/models/instructions_model.dart';
+import 'package:sci_fun/features/profile/data/models/order_history_model.dart';
 import 'package:sci_fun/features/profile/data/models/package_history_model.dart';
 import 'package:sci_fun/features/profile/data/models/packages_model.dart';
 import 'package:sci_fun/features/profile/domain/repository/packages_repository.dart';
@@ -38,6 +39,20 @@ class PackagesRepositoryImpl implements PackagesRepository {
       {required int page}) async {
     try {
       final res = await packagesRemoteDatasource.getHistoryPackage(page: page);
+      return Right(res);
+    } on ServerException catch (e) {
+      return Left(Failure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserOrderHistoryModel>> getOrderHistory({
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final res = await packagesRemoteDatasource.getOrderHistory(
+          page: page, limit: limit);
       return Right(res);
     } on ServerException catch (e) {
       return Left(Failure(message: e.message));

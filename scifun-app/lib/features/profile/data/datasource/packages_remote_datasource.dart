@@ -7,10 +7,15 @@ import 'package:sci_fun/core/constants/message_constants.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/features/profile/data/models/instructions_model.dart';
+import 'package:sci_fun/features/profile/data/models/order_history_model.dart';
 import 'package:sci_fun/features/profile/data/models/package_history_model.dart';
 import 'package:sci_fun/features/profile/data/models/packages_model.dart';
 
 abstract interface class PackagesRemoteDatasource {
+  Future<UserOrderHistoryModel> getOrderHistory({
+    required int page,
+    required int limit,
+  });
   Future<List<NotificationModel>> getHistoryPackage({
     required int page,
   });
@@ -89,7 +94,6 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
         throw ServerException();
       }
 
-
       final responseData = ResponseModel<List<PackagesModel>>.fromJson(
         res.data,
         (json) => (json as List)
@@ -131,6 +135,45 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
       } else {
         throw ServerException(message: res.statusMessage ?? 'Unknown error');
       }
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<UserOrderHistoryModel> getOrderHistory({
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final res = await dioClient.get(
+        url: '${OrdersApiUrl.getUserOrders}?page=$page&limit=$limit',
+      );
+
+      if (res.statusCode != 200) {
+        throw ServerException(message: res.statusMessage ?? 'Unknown error');
+      }
+
+      final json = res.data;
+      if (json is! Map<String, dynamic>) {
+        throw ServerException(message: 'Invalid response format');
+      }
+
+      final status = json['status'];
+      if (status != 200) {
+        throw ServerException(
+          message: json['message']?.toString() ?? MessageConstant.failedGetInfo,
+        );
+      }
+
+      final data = json['data'];
+      if (data is! Map<String, dynamic>) {
+        throw ServerException(message: 'Missing order history data');
+      }
+
+      return UserOrderHistoryModel.fromJson(data);
+    } on ServerException {
+      rethrow;
     } catch (e) {
       throw ServerException(message: e.toString());
     }

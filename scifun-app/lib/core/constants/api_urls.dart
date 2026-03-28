@@ -39,6 +39,12 @@ class PlansApiUrl {
   static const String getPlansList = '/plans/list';
 }
 
+class OrdersApiUrl {
+  OrdersApiUrl._();
+
+  static const String getUserOrders = '/orders/user-get';
+}
+
 class CommentApiUrl {
   CommentApiUrl._();
 

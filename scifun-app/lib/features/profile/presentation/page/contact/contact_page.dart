@@ -12,6 +12,29 @@ class ContactPage extends StatelessWidget {
   final List<SettingsEntity> settings;
   const ContactPage({super.key, required this.settings});
 
+  static const String _fallbackAddressHtml = '''
+<p>
+<b>SciFun - Học tập khoa học thú vị</b><br>
+Chúng tôi luôn sẵn sàng lắng nghe ý kiến, phản hồi và hỗ trợ bạn trong quá trình học tập.
+Nếu có bất kỳ thắc mắc hoặc góp ý nào, hãy liên hệ với chúng tôi qua các kênh bên dưới.
+</p>
+<p>
+Địa chỉ: 123 Đường Khoa Học, Quận Tri Thức, TP. Học Tập<br>
+Hotline: 0912 345 678<br>
+Email: support@scifun.vn
+</p>
+''';
+  static const String _fallbackHotline = '0912 345 678';
+  static const String _fallbackEmail = 'support@scifun.vn';
+  static const String _fallbackZalo = '0912 345 678';
+  static const String _fallbackFacebookName = 'SciFun Official';
+  static const String _fallbackFacebookUrl =
+      'https://www.facebook.com/scifun.official';
+  static const String _fallbackInstagramUrl =
+      'https://www.instagram.com/scifun.official';
+  static const String _fallbackWhatsappUrl = 'https://wa.me/84912345678';
+  static const String _fallbackLineUrl = 'https://line.me/R/ti/p/@scifun';
+
   String getSettingValue(String key) {
     return settings
             .firstWhere(
@@ -33,8 +56,30 @@ class ContactPage extends StatelessWidget {
         '';
   }
 
+  String getSettingValueOrFallback(String key, String fallbackValue) {
+    final value = getSettingValue(key).trim();
+    return value.isNotEmpty ? value : fallbackValue;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final addressHtml =
+        getSettingValueOrFallback('address', _fallbackAddressHtml);
+    final hotline = getSettingValueOrFallback('hotline', _fallbackHotline);
+    final email = getSettingValueOrFallback('email', _fallbackEmail);
+    final zalo = getSettingValueOrFallback('zalo', _fallbackZalo);
+    final facebookUrl =
+        getSettingValueOrFallback('facebook', _fallbackFacebookUrl);
+    final facebookDisplay = getSettingValueOrFallback(
+      'facebookDisplay',
+      _fallbackFacebookName,
+    );
+    final instagramUrl =
+        getSettingValueOrFallback('instagram', _fallbackInstagramUrl);
+    final whatsappUrl =
+        getSettingValueOrFallback('whatsapp', _fallbackWhatsappUrl);
+    final lineUrl = getSettingValueOrFallback('line', _fallbackLineUrl);
+
     return GestureDetector(
       onTap: FocusScope.of(context).unfocus,
       child: Scaffold(
@@ -70,9 +115,7 @@ class ContactPage extends StatelessWidget {
                     ),
                     SizedBox(height: 8.h),
                     Html(
-                      data: getSettingValue('address').isNotEmpty
-                          ? getSettingValue('address')
-                          : '''<p>Chào mừng bạn đến với SciFun!<br>Chúng tôi luôn sẵn sàng lắng nghe ý kiến, phản hồi và hỗ trợ bạn trong quá trình học tập. Nếu có bất kỳ thắc mắc hoặc góp ý nào, hãy liên hệ với chúng tôi qua các kênh bên dưới hoặc gửi email về địa chỉ: <b>support@scifun.vn</b>.</p><p>Địa chỉ: 123 Đường Khoa Học, Quận Tri Thức, TP. Học Tập<br>Hotline: 0123 456 789</p>''',
+                      data: addressHtml,
                       style: {
                         "body": Style(
                           fontSize: FontSize(16.sp),
@@ -88,19 +131,19 @@ class ContactPage extends StatelessWidget {
                       children: [
                         SocialCircleButton(
                           imageUrl: AppImage.facebook,
-                          linkUrl: 'https://www.facebook.com/',
+                          linkUrl: facebookUrl,
                         ),
                         SocialCircleButton(
                           imageUrl: AppImage.instagram,
-                          linkUrl: 'https://www.instagram.com/',
+                          linkUrl: instagramUrl,
                         ),
                         SocialCircleButton(
                           imageUrl: AppImage.whatsapp,
-                          linkUrl: 'https://www.whatsapp.com/',
+                          linkUrl: whatsappUrl,
                         ),
                         SocialCircleButton(
                           imageUrl: AppImage.line,
-                          linkUrl: 'https://line.me/',
+                          linkUrl: lineUrl,
                         ),
                       ],
                     ),
@@ -112,26 +155,26 @@ class ContactPage extends StatelessWidget {
                         children: [
                           TextWithCopyIcon(
                             label: 'Sđt:',
-                            value: getSettingValue('hotline'),
-                            copyValue: getSettingValue('hotline'),
+                            value: hotline,
+                            copyValue: hotline,
                             dividerColor: AppColor.border,
                           ),
                           TextWithCopyIcon(
                             label: 'Email:',
-                            value: getSettingValue('email'),
-                            copyValue: getSettingValue('email'),
+                            value: email,
+                            copyValue: email,
                             dividerColor: AppColor.border,
                           ),
                           TextWithCopyIcon(
                             label: 'Zalo:',
-                            value: getSettingValue('hotline'),
-                            copyValue: getSettingValue('hotline'),
+                            value: zalo,
+                            copyValue: zalo,
                             dividerColor: AppColor.border,
                           ),
                           TextWithCopyIcon(
                             label: 'Facebook:',
-                            value: 'Thi Lớp 10',
-                            copyValue: 'https://www.facebook.com/thilop10',
+                            value: facebookDisplay,
+                            copyValue: facebookUrl,
                             dividerColor: AppColor.border,
                           )
                         ],
