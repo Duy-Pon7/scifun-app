@@ -379,7 +379,7 @@ class _ProfilePageState extends State<ProfilePage> {
       spacing: 12.h,
       children: [
         _sectionTitle('Tài khoản'),
-        _itemNavigator(Symbols.person, 'Thông tin cá nhân', () {
+        _itemNavigator(Symbols.person_rounded, 'Thông tin cá nhân', () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -387,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }),
-        _itemNavigator(Symbols.lock, 'Đổi mật khẩu đăng nhập', () {
+        _itemNavigator(Symbols.lock_rounded, 'Đổi mật khẩu đăng nhập', () {
           Navigator.push(
             context,
             slidePage(const ChangePass()),
@@ -399,7 +399,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _itemNavigator(Symbols.volume_up_rounded, 'Âm thanh', () {
           _openSoundSettings();
         }),
-        _itemNavigator(Symbols.shopping_cart, 'Mua gói', () {
+        _itemNavigator(Symbols.shopping_cart_rounded, 'Mua gói', () {
           Navigator.push(
             context,
             slidePage(const PlanListPage()),
@@ -678,7 +678,7 @@ Widget subscriptionCard(UserDataEntity user) {
         SizedBox(height: 8.h),
         Row(
           children: [
-            const Icon(Symbols.calendar_month, color: Colors.white, size: 18),
+            const Icon(Symbols.calendar_month_rounded, color: Colors.white, size: 18),
             SizedBox(width: 6.w),
             Expanded(
               child: Text(

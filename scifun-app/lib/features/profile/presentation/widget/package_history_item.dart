@@ -168,7 +168,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     ),
                     child: Center(
                       child: Icon(
-                        Symbols.arrow_forward,
+                        Symbols.arrow_forward_rounded,
                         size: 17.sp,
                         color: AppColor.skyblue600, // Màu icon
                       ),

@@ -216,7 +216,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     hintText: 'Email',
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Symbols.email),
+                    prefixIcon: const Icon(Symbols.email_rounded),
                     validator: (value) {
                       final email = (value ?? '').trim();
                       if (email.isEmpty) {
@@ -240,8 +240,8 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
-                            ? Symbols.visibility
-                            : Symbols.visibility_off,
+                            ? Symbols.visibility_rounded
+                            : Symbols.visibility_off_rounded,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);

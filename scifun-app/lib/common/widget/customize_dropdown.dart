@@ -151,7 +151,7 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                                 Visibility(
                                   visible: isSelected,
                                   child: Icon(
-                                    Symbols.check,
+                                    Symbols.check_rounded,
                                     color: Colors.white,
                                     size: 20.sp,
                                   ),
@@ -252,8 +252,8 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                     SizedBox(width: 4.w),
                     Icon(
                       state
-                          ? (widget.suffixIconActive ?? Symbols.expand_less)
-                          : (widget.suffixIconInActive ?? Symbols.expand_more),
+                          ? (widget.suffixIconActive ?? Symbols.expand_less_rounded)
+                          : (widget.suffixIconInActive ?? Symbols.expand_more_rounded),
                       size: 22.sp,
                       color: state
                           ? AppColor.skyblue50

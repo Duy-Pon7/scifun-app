@@ -680,7 +680,7 @@ class _AdminChatInput extends StatelessWidget {
               radius: 24,
               backgroundColor: enabled ? Colors.blue : const Color(0xFFB8C2D3),
               child: IconButton(
-                icon: const Icon(Symbols.send, color: Colors.white),
+                icon: const Icon(Symbols.send_rounded, color: Colors.white),
                 onPressed: enabled ? onSend : null,
               ),
             ),

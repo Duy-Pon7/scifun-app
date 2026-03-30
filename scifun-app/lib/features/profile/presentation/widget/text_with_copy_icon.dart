@@ -49,7 +49,7 @@ class TextWithCopyIcon extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Symbols.content_copy,
+                  Symbols.content_copy_rounded,
                   size: 20,
                   color: AppColor.hurricane50, // màu icon
                 ),

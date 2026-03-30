@@ -36,8 +36,8 @@ class FaqsPage extends StatelessWidget {
                   borderColor: AppColor.border,
                   iconColor: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12.r),
-                  iconExpand: Symbols.keyboard_arrow_down,
-                  iconCollapse: Symbols.keyboard_arrow_up,
+                  iconExpand: Symbols.keyboard_arrow_down_rounded,
+                  iconCollapse: Symbols.keyboard_arrow_up_rounded,
                   child: Html(
                     data: faq.answer,
                     style: {

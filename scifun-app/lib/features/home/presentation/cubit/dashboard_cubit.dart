@@ -27,11 +27,11 @@ class DashboardCubit extends Cubit<int> {
   ];
 
   final List<IconData> icons = [
-    Symbols.home,
+    Symbols.home_rounded,
     Symbols.bar_chart_rounded,
-    Symbols.assignment,
-    Symbols.notifications,
-    Symbols.person,
+    Symbols.assignment_rounded,
+    Symbols.notifications_rounded,
+    Symbols.person_rounded,
   ];
 
   void choosePage(int index) => emit(index);

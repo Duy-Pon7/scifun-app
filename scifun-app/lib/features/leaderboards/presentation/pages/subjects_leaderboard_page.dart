@@ -30,7 +30,7 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
         rightIcon: GestureDetector(
           onTap: () => context.read<SubjectCubit>().refresh(),
           child: Icon(
-            Symbols.refresh,
+            Symbols.refresh_rounded,
             color: AppColor.skyblue600,
             size: 24,
           ),
@@ -175,7 +175,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             const Icon(
-              Symbols.arrow_forward_ios,
+              Symbols.arrow_forward_ios_rounded,
               color: Colors.white,
               size: 18,
             ),
@@ -205,7 +205,7 @@ class _FallbackSubjectImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
-        Symbols.book,
+        Symbols.book_rounded,
         color: pressedAccentColor,
       ),
     );

@@ -100,11 +100,11 @@ class _SearchPageState extends State<SearchPage> {
                                       topic.image!,
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, __, ___) => const Icon(
-                                          Symbols.image_not_supported),
+                                          Symbols.image_not_supported_rounded),
                                     ),
                                   ),
                                 )
-                              : Icon(Symbols.play_lesson,
+                              : Icon(Symbols.play_lesson_rounded,
                                   color: AppColor.skyblue600),
                           title: Text(topic.name ?? 'No title',
                               style: TextStyle(fontWeight: FontWeight.bold)),
@@ -115,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
                                   overflow: TextOverflow.ellipsis,
                                 )
                               : null,
-                          trailing: Icon(Symbols.arrow_forward_ios,
+                          trailing: Icon(Symbols.arrow_forward_ios_rounded,
                               size: 18.sp, color: AppColor.skyblue600),
                           onTap: () {
                             showModalBottomSheet(
@@ -204,7 +204,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: Padding(
                     padding: EdgeInsets.only(right: 7.w),
                     child: Icon(
-                      Symbols.cancel,
+                      Symbols.cancel_rounded,
                       color: AppColor.hurricane800.withValues(alpha: 0.6),
                     ),
                   ),
@@ -268,7 +268,7 @@ class _SearchPageState extends State<SearchPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Symbols.history, color: AppColor.skyblue600, size: 24.sp),
+            Icon(Symbols.history_rounded, color: AppColor.skyblue600, size: 24.sp),
             SizedBox(width: 12.w),
             Text(text,
                 style: TextStyle(

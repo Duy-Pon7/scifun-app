@@ -291,7 +291,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
   //       },
   //       hintText: "Email",
   //       textInputAction: TextInputAction.next,
-  //       suffixIcon: const Icon(Symbols.edit),
+  //       suffixIcon: const Icon(Symbols.edit_rounded),
   //     );
   Widget _fullnameField() => BasicInputField(
         controller: _fullnameCon,
@@ -303,7 +303,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
         },
         hintText: "Họ và tên",
         textInputAction: TextInputAction.next,
-        suffixIcon: const Icon(Symbols.edit),
+        suffixIcon: const Icon(Symbols.edit_rounded),
       );
 
   Widget _birthdayField() => BasicInputField(
@@ -348,7 +348,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
           }
           return null;
         },
-        suffixIcon: const Icon(Symbols.calendar_month),
+        suffixIcon: const Icon(Symbols.calendar_month_rounded),
       );
 
   Widget _changeButton() => BasicButton(

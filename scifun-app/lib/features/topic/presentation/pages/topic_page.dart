@@ -188,11 +188,11 @@ class _TopicPageState extends State<TopicPage> {
                               topic.image!,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) =>
-                                  const Icon(Symbols.image_not_supported),
+                                  const Icon(Symbols.image_not_supported_rounded),
                             ),
                           ),
                         )
-                      : Icon(Symbols.play_lesson, color: AppColor.skyblue600),
+                      : Icon(Symbols.play_lesson_rounded, color: AppColor.skyblue600),
                   title: Text(
                     topic.name ?? 'No title',
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -212,7 +212,7 @@ class _TopicPageState extends State<TopicPage> {
                     ],
                   ),
                   trailing: Icon(
-                    Symbols.arrow_forward_ios,
+                    Symbols.arrow_forward_ios_rounded,
                     size: 18.sp,
                     color: AppColor.skyblue600,
                   ),

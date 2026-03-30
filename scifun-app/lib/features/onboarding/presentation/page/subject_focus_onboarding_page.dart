@@ -502,7 +502,7 @@ class _SubjectFocusOnboardingPageState
           Icon(
             isSelected
                 ? Symbols.check_circle_rounded
-                : Symbols.radio_button_unchecked,
+                : Symbols.radio_button_unchecked_rounded,
             color: isSelected
                 ? Colors.white.withValues(alpha: 0.95)
                 : accentColor.withValues(alpha: 0.75),
@@ -668,7 +668,7 @@ class _SubjectFocusOnboardingPageState
           Icon(
             isSelected
                 ? Symbols.check_circle_rounded
-                : Symbols.radio_button_unchecked,
+                : Symbols.radio_button_unchecked_rounded,
             color: isSelected ? _selectedTextColor : _textSecondaryColor,
             size: 20.sp,
           ),
@@ -681,7 +681,7 @@ class _SubjectFocusOnboardingPageState
     final normalized = label.trim().toLowerCase();
 
     if (normalized.contains('google')) {
-      return Symbols.travel_explore;
+      return Symbols.travel_explore_rounded;
     }
     if (normalized.contains('facebook')) {
       return Symbols.thumb_up_rounded;

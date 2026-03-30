@@ -151,7 +151,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passOldCon,
               hintText: "Mật khẩu cũ",
               prefixIcon: Icon(
-                Symbols.password,
+                Symbols.password_rounded,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -168,7 +168,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -185,7 +185,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passNewCon,
               hintText: "Mật khẩu mới",
               prefixIcon: Icon(
-                Symbols.password,
+                Symbols.password_rounded,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -202,7 +202,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -219,7 +219,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passNewAgainCon,
               hintText: "Nhập lại mật khẩu",
               prefixIcon: Icon(
-                Symbols.password,
+                Symbols.password_rounded,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -240,7 +240,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),

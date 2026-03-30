@@ -97,61 +97,60 @@ class _QuizzPageState extends State<QuizzPage> {
                     width: isQuizPro ? 2 : 1,
                   ),
                 ),
-                child: Stack(
-                  children: [
-                    ListTile(
-                      leading: _buildLeading(quizz),
-                      title: _buildTitle(quizz, isQuizPro),
-                      subtitle: _buildSubtitle(quizz),
-                      onTap: () {
-                        if (isLocked) {
-                          Navigator.push(
-                            context,
-                            slidePage(const PlanListPage()),
-                          );
-                          return;
-                        }
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () {
+                    if (isLocked) {
+                      Navigator.push(
+                        context,
+                        slidePage(const PlanListPage()),
+                      );
+                      return;
+                    }
 
-                        Navigator.push(
-                          context,
-                          slidePage(
-                            TestPage(
-                              quizzId: quizz.id ?? '',
+                    Navigator.push(
+                      context,
+                      slidePage(
+                        TestPage(
+                          quizzId: quizz.id ?? '',
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(12.w),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLeading(quizz),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Opacity(
+                            opacity: isLocked ? 0.72 : 1,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildTitle(quizz, isQuizPro),
+                                SizedBox(height: 6.h),
+                                _buildSubtitle(quizz),
+                              ],
                             ),
                           ),
-                        );
-                      },
+                        ),
+                        if (isLocked) ...[
+                          SizedBox(width: 8.w),
+                          Padding(
+                            padding: EdgeInsets.only(top: 2.h),
+                            child: Icon(
+                              Symbols.lock_rounded,
+                              size: 18.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    if (isQuizPro)
-                      Positioned(
-                        top: 8.h,
-                        right: 8.w,
-                        child: Icon(
-                          Symbols.star,
-                          color: AppColor.skyblue600,
-                          size: 18.sp,
-                        ),
-                      ),
-                    if (isLocked)
-                      Positioned.fill(
-                        child: IgnorePointer(
-                          ignoring: true,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.7),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Symbols.lock,
-                                size: 36,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -173,12 +172,25 @@ class _QuizzPageState extends State<QuizzPage> {
             quizz.topic!.subject!.image!,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) =>
-                const Icon(Symbols.image_not_supported),
+                const Icon(Symbols.image_not_supported_rounded),
           ),
         ),
       );
     }
-    return Icon(Symbols.quiz, color: AppColor.skyblue600);
+    return Container(
+      width: 56.w,
+      height: 56.h,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: AppColor.skyblue600.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Icon(
+        Symbols.quiz_rounded,
+        color: AppColor.skyblue600,
+        size: 24.sp,
+      ),
+    );
   }
 
   Widget _buildTitle(QuizzEntity quizz, bool isQuizPro) {
@@ -236,16 +248,16 @@ class _QuizzPageState extends State<QuizzPage> {
           children: [
             if (level != null) _buildLevelBadge(level),
             _buildMetaItem(
-              icon: Symbols.timer,
+              icon: Symbols.timer_rounded,
               text: '${quizz.duration ?? 0} phút',
             ),
             _buildMetaItem(
-              icon: Symbols.help_outline,
+              icon: Symbols.help_outline_rounded,
               text: '${quizz.questionCount ?? 0} câu',
             ),
             if (quizz.uniqueUserCount != null && quizz.uniqueUserCount! > 0)
               _buildMetaItem(
-                icon: Symbols.people,
+                icon: Symbols.people_rounded,
                 text: '${quizz.uniqueUserCount}',
               ),
           ],

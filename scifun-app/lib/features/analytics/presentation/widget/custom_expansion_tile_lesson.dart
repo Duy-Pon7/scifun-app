@@ -22,8 +22,8 @@ class CustomExpansionTileLesson extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
     this.borderColor = Colors.grey,
-    this.iconExpand = Symbols.expand_more,
-    this.iconCollapse = Symbols.expand_less,
+    this.iconExpand = Symbols.expand_more_rounded,
+    this.iconCollapse = Symbols.expand_less_rounded,
     this.iconColor = Colors.black,
     this.titleFontSize = 16.0,
     required this.completedCount,
@@ -70,7 +70,7 @@ class _CustomExpansionTileLessonState extends State<CustomExpansionTileLesson> {
                     child: Row(
                       children: [
                         Icon(
-                          Symbols.folder_open, // hoặc Symbols.topic_outlined
+                          Symbols.folder_open_rounded, // hoặc Symbols.topic_outlined_rounded
                           color: AppColor.skyblue600, // giống ảnh bạn gửi
                           size: 20.sp,
                         ),

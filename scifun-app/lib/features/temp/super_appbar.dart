@@ -24,7 +24,7 @@ class BasicAppBarScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     PopupMenuButton<String>(
-                        icon: Icon(Symbols.menu),
+                        icon: Icon(Symbols.menu_rounded),
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
                               PopupMenuItem<String>(
@@ -38,7 +38,7 @@ class BasicAppBarScreen extends StatelessWidget {
                             ]),
                     Text("data"),
                     PopupMenuButton<String>(
-                        icon: Icon(Symbols.menu),
+                        icon: Icon(Symbols.menu_rounded),
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
                               PopupMenuItem<String>(

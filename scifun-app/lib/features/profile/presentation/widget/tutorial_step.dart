@@ -44,7 +44,7 @@ void showTutorialBottomSheet(
                 // Icon đóng bên phải
                 IconButton(
                   icon: Icon(
-                    Symbols.cancel,
+                    Symbols.cancel_rounded,
                     color: AppColor.hurricane800.withValues(alpha: 0.6),
                   ),
                   onPressed: () => Navigator.pop(context),
@@ -136,7 +136,7 @@ void showTutorialBottomSheet(
                           );
                         },
                         child:
-                            const Icon(Symbols.arrow_back, color: Colors.white),
+                            const Icon(Symbols.arrow_back_rounded, color: Colors.white),
                       )
                     else
                       const SizedBox(width: 60), // giữ khoảng cách cân bằng
@@ -160,8 +160,8 @@ void showTutorialBottomSheet(
                       },
                       child: Icon(
                         index < steps.length - 1
-                            ? Symbols.arrow_forward
-                            : Symbols.check,
+                            ? Symbols.arrow_forward_rounded
+                            : Symbols.check_rounded,
                         color: Colors.white,
                       ),
                     ),

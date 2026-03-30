@@ -174,7 +174,7 @@ class _SigninFormState extends State<SigninForm> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),

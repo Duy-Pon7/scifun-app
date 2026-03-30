@@ -641,7 +641,7 @@ class _CommentPageState extends State<CommentPage> {
     return CircleAvatar(
       radius: 18,
       backgroundColor: _forumBlue,
-      child: const Icon(Symbols.person, size: 18, color: Colors.white),
+      child: const Icon(Symbols.person_rounded, size: 18, color: Colors.white),
     );
   }
 

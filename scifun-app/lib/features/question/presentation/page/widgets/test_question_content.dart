@@ -273,8 +273,8 @@ class TestQuestionContent extends StatelessWidget {
                   : (isSelected ? accentDark : const Color(0xFF4B4B4B));
 
               final statusIcon = shouldHighlightCorrect
-                  ? Symbols.check_circle
-                  : (isWrongSelected ? Symbols.cancel : null);
+                  ? Symbols.check_circle_rounded
+                  : (isWrongSelected ? Symbols.cancel_rounded : null);
               final statusIconColor = shouldHighlightCorrect
                   ? const Color(0xFF2E7D32)
                   : const Color(0xFFC62828);

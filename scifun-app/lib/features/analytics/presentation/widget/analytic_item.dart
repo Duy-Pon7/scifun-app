@@ -81,7 +81,7 @@ class AnalyticItem extends StatelessWidget {
                 spacing: 6.h,
                 children: [
                   Icon(
-                    Symbols.chevron_right,
+                    Symbols.chevron_right_rounded,
                     size: 24.sp,
                   ),
                 ],

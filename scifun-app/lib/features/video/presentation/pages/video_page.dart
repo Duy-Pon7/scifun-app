@@ -61,7 +61,7 @@ class _VideoPageState extends State<VideoPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Symbols.error_outline,
+                Symbols.error_outline_rounded,
                 size: 64.sp,
                 color: Colors.red,
               ),
@@ -169,7 +169,7 @@ class VideoTile extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Icon(
-                      Symbols.video_library,
+                      Symbols.video_library_rounded,
                       size: 40.sp,
                       color: Colors.grey[600],
                     ),
@@ -247,7 +247,7 @@ class VideoTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6.r),
                           ),
                           child: Icon(
-                            Symbols.play_arrow,
+                            Symbols.play_arrow_rounded,
                             color: Colors.white,
                             size: 16.sp,
                           ),
@@ -318,7 +318,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Symbols.error_outline,
+                Symbols.error_outline_rounded,
                 size: 64.sp,
                 color: Colors.red,
               ),

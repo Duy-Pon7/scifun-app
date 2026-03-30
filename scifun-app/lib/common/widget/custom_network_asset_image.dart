@@ -30,7 +30,7 @@ class CustomNetworkAssetImage extends StatelessWidget {
       height: height,
       errorWidget: (context, url, error) => Center(
         child: Icon(
-          Symbols.error,
+          Symbols.error_rounded,
           size: 18.sp,
           color: AppColor.skyblue600,
         ),

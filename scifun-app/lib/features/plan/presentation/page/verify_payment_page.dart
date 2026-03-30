@@ -167,7 +167,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  _isSuccess ? Symbols.check_circle_outline : Symbols.payment,
+                  _isSuccess ? Symbols.check_circle_outline_rounded : Symbols.payment_rounded,
                   size: 60.w,
                   color: _isSuccess ? Colors.green : AppColor.skyblue500,
                 ),
@@ -234,8 +234,8 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                     children: [
                       Icon(
                         _isSuccess
-                            ? Symbols.check_circle
-                            : Symbols.error_outline,
+                            ? Symbols.check_circle_rounded
+                            : Symbols.error_outline_rounded,
                         color: _isSuccess ? Colors.green : Colors.red,
                         size: 24.w,
                       ),

@@ -198,7 +198,7 @@ class _HeaderHomeState extends State<HeaderHome> {
           borderRadius: BorderRadius.circular(100.r),
           child: avatarUrl == null || avatarUrl.isEmpty
               ? Icon(
-                  Symbols.person,
+                  Symbols.person_rounded,
                   color: Colors.white,
                   size: 26.sp,
                 )

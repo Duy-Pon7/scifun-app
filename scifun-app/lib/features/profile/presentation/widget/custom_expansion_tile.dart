@@ -21,8 +21,8 @@ class CustomExpansionTile extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
     this.borderColor = Colors.grey,
-    this.iconExpand = Symbols.expand_more,
-    this.iconCollapse = Symbols.expand_less,
+    this.iconExpand = Symbols.expand_more_rounded,
+    this.iconCollapse = Symbols.expand_less_rounded,
     this.iconColor = Colors.black,
     this.titleFontSize = 16.0,
   });

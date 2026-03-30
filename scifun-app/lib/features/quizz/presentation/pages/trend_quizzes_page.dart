@@ -135,7 +135,7 @@ class TrendQuizzesList extends StatelessWidget {
                                                 ),
                                               )
                                             : Icon(
-                                                Symbols.quiz,
+                                                Symbols.quiz_rounded,
                                                 color: AppColor.skyblue600,
                                               ),
                                         SizedBox(width: 8.w),
@@ -193,11 +193,11 @@ class TrendQuizzesList extends StatelessWidget {
                                         if (level != null)
                                           _buildLevelBadge(level),
                                         _buildMetaItem(
-                                          icon: Symbols.timer,
+                                          icon: Symbols.timer_rounded,
                                           text: '${quizz.duration ?? 0} phút',
                                         ),
                                         _buildMetaItem(
-                                          icon: Symbols.help_outline,
+                                          icon: Symbols.help_outline_rounded,
                                           text:
                                               '${quizz.questionCount ?? 0} câu',
                                         ),

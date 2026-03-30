@@ -58,7 +58,7 @@ class BasicDropdownField<T> extends StatelessWidget {
         fillColor: fillColor ?? Colors.white,
         contentPadding: contentPadding ??
             EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-        suffixIcon: suffixIcon ?? const Icon(Symbols.expand_more),
+        suffixIcon: suffixIcon ?? const Icon(Symbols.expand_more_rounded),
         border: OutlineInputBorder(
           borderRadius: borderRadius ?? BorderRadius.circular(8.r),
         ),

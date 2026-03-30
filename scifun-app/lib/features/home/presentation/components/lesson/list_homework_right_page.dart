@@ -220,11 +220,11 @@ class ListHomeworkRightPage extends StatelessWidget {
                         Icon(
                           isMultipleChoice
                               ? (selected
-                                  ? Symbols.check_box
-                                  : Symbols.check_box_outline_blank)
+                                  ? Symbols.check_box_rounded
+                                  : Symbols.check_box_outline_blank_rounded)
                               : (selected
-                                  ? Symbols.radio_button_checked
-                                  : Symbols.radio_button_unchecked),
+                                  ? Symbols.radio_button_checked_rounded
+                                  : Symbols.radio_button_unchecked_rounded),
                           color: selected
                               ? AppColor.hurricane50
                               : AppColor.hurricane800.withValues(alpha: 0.6),
@@ -251,7 +251,7 @@ class ListHomeworkRightPage extends StatelessWidget {
                         // Icon kết quả bên phải: ✅❌
                         if (selected)
                           Icon(
-                            correct ? Symbols.check_circle : Symbols.cancel,
+                            correct ? Symbols.check_circle_rounded : Symbols.cancel_rounded,
                             color: correct ? Colors.white : Colors.white,
                           ),
                       ],

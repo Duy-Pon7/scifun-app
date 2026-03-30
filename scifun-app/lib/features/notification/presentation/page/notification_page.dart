@@ -96,7 +96,7 @@ class _NotificationPageState extends State<NotificationPage> {
           title: 'Thông báo',
           showBack: false,
           rightIcon: IconButton(
-              icon: const Icon(Symbols.notifications_none),
+              icon: const Icon(Symbols.notifications_none_rounded),
               onPressed: () async {
                 try {
                   await _notificationCubit.markAllAsRead();
@@ -114,7 +114,7 @@ class _NotificationPageState extends State<NotificationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Symbols.error_outline,
+                Symbols.error_outline_rounded,
                 size: 64.sp,
                 color: Colors.red,
               ),
@@ -189,8 +189,8 @@ class NotificationTile extends StatelessWidget {
               child: Center(
                 child: Icon(
                   item.type == 'COMMENT_REPLY'
-                      ? Symbols.chat_bubble
-                      : Symbols.notifications,
+                      ? Symbols.chat_bubble_rounded
+                      : Symbols.notifications_rounded,
                   color: isRead ? Colors.black54 : Colors.white,
                   size: 20.sp,
                 ),

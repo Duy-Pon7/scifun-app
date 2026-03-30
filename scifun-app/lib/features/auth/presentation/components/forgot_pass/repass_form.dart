@@ -110,7 +110,7 @@ class _RepassFormState extends State<RepassForm> {
               focusNode: _passFocus,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -143,7 +143,7 @@ class _RepassFormState extends State<RepassForm> {
               focusNode: _confirmPassFocus,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility : Symbols.visibility_off,
+                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
