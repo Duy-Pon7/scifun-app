@@ -80,7 +80,14 @@ class _UserChatPageState extends State<UserChatPage> {
     if (isMe) return 'B\u1ea1n';
 
     final role = (message.senderRole ?? '').toUpperCase();
-    if (role == 'ADMIN') return 'H\u1ed7 tr\u1ee3 vi\u00ean';
+    if (role == 'ADMIN') {
+      final senderName = message.senderName?.trim();
+      if (senderName != null && senderName.isNotEmpty) return senderName;
+
+      final senderId = message.senderId?.trim();
+      if (senderId != null && senderId.isNotEmpty) return senderId;
+      return 'H\u1ed7 tr\u1ee3 vi\u00ean';
+    }
     return 'Ng\u01b0\u1eddi d\u00f9ng';
   }
 
