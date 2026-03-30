@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/models/chat_models.dart';
@@ -34,6 +35,7 @@ class _UserChatPageState extends State<UserChatPage> {
   final _messages = <ChatMessage>[];
 
   String? _token;
+  String? _selfId;
   String? _conversationId;
   bool _loading = true;
 
@@ -43,12 +45,94 @@ class _UserChatPageState extends State<UserChatPage> {
     _init();
   }
 
-  bool _isOwnMessage(ChatMessage message) {
-    final myId = RealtimeService.I.selfId;
-    if (myId != null && myId.isNotEmpty) {
-      return message.senderId == myId;
+  String? _extractUserIdFromToken(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return null;
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final data = jsonDecode(payload);
+      if (data is! Map<String, dynamic>) return null;
+      final id = data['userId'] ??
+          data['user_id'] ??
+          data['uid'] ??
+          data['sub'] ??
+          data['id'];
+      if (id == null) return null;
+      final value = id.toString().trim();
+      return value.isEmpty ? null : value;
+    } catch (_) {
+      return null;
     }
-    return (message.senderRole ?? '').toUpperCase() == 'USER';
+  }
+
+  String? get _myId {
+    final id = _selfId?.trim();
+    if (id != null && id.trim().isNotEmpty) return id.trim();
+    final socketId = RealtimeService.I.selfId;
+    if (socketId != null && socketId.trim().isNotEmpty) {
+      return socketId.trim();
+    }
+    return null;
+  }
+
+  Set<String> get _myIds {
+    final ids = <String>{};
+
+    final tokenId = _selfId?.trim();
+    if (tokenId != null && tokenId.isNotEmpty) {
+      ids.add(tokenId);
+    }
+
+    final socketId = RealtimeService.I.selfId?.trim();
+    if (socketId != null && socketId.isNotEmpty) {
+      ids.add(socketId);
+    }
+
+    return ids;
+  }
+
+  String? _normalizeRole(String? role) {
+    final normalized = role?.trim().toUpperCase();
+    if (normalized == null || normalized.isEmpty) return null;
+
+    if (normalized == 'ADMIN' ||
+        normalized == 'ROLE_ADMIN' ||
+        normalized == 'SUPER_ADMIN' ||
+        normalized.contains('ADMIN')) {
+      return 'ADMIN';
+    }
+
+    if (normalized == 'USER' ||
+        normalized == 'ROLE_USER' ||
+        normalized.contains('USER')) {
+      return 'USER';
+    }
+
+    return null;
+  }
+
+  bool _isOwnMessage(ChatMessage message) {
+    final role = _normalizeRole(message.senderRole);
+    if (role == 'USER') return true;
+    if (role == 'ADMIN') return false;
+
+    final senderId = message.senderId?.trim();
+    if (senderId == null || senderId.isEmpty) return false;
+    return _myIds.contains(senderId);
+  }
+
+  ChatMessage _mergeWithOptimistic(ChatMessage incoming, ChatMessage local) {
+    return ChatMessage(
+      id: incoming.id ?? local.id,
+      conversationId: incoming.conversationId ?? local.conversationId,
+      senderId: incoming.senderId ?? local.senderId,
+      senderRole: incoming.senderRole ?? local.senderRole,
+      senderName: incoming.senderName ?? local.senderName,
+      content: incoming.content,
+      createdAt: incoming.createdAt ?? local.createdAt,
+    );
   }
 
   int _findOptimisticIndex(ChatMessage message) {
@@ -79,7 +163,7 @@ class _UserChatPageState extends State<UserChatPage> {
   String _senderLabel(ChatMessage message, bool isMe) {
     if (isMe) return 'B\u1ea1n';
 
-    final role = (message.senderRole ?? '').toUpperCase();
+    final role = _normalizeRole(message.senderRole);
     if (role == 'ADMIN') {
       final senderName = message.senderName?.trim();
       if (senderName != null && senderName.isNotEmpty) return senderName;
@@ -97,6 +181,7 @@ class _UserChatPageState extends State<UserChatPage> {
       if (_token == null || _token!.isEmpty) {
         throw Exception('Missing token');
       }
+      _selfId = _extractUserIdFromToken(_token!);
 
       final convId = await _api.openConversation(token: _token!);
       if (!mounted) return;
@@ -107,6 +192,7 @@ class _UserChatPageState extends State<UserChatPage> {
         getToken: widget.getToken,
         onError: (e) => debugPrint('WS error: $e'),
       );
+      _selfId = _myId ?? _selfId;
 
       _connSub = RealtimeService.I.connectionStream.listen((v) {
         if (!mounted) return;
@@ -130,7 +216,8 @@ class _UserChatPageState extends State<UserChatPage> {
 
           final optimisticIdx = _findOptimisticIndex(m);
           if (optimisticIdx != -1) {
-            _messages[optimisticIdx] = m;
+            _messages[optimisticIdx] =
+                _mergeWithOptimistic(m, _messages[optimisticIdx]);
             return;
           }
 
@@ -186,7 +273,7 @@ class _UserChatPageState extends State<UserChatPage> {
     final t = _text.text.trim();
     if (cid == null || t.isEmpty) return;
 
-    final myId = RealtimeService.I.selfId;
+    final myId = _myId;
     final optimistic = ChatMessage(
       id: 'local-${DateTime.now().millisecondsSinceEpoch}',
       conversationId: cid,

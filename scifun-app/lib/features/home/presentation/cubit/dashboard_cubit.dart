@@ -29,7 +29,7 @@ class DashboardCubit extends Cubit<int> {
   final List<IconData> icons = [
     Symbols.home_rounded,
     Symbols.bar_chart_rounded,
-    Symbols.assignment_rounded,
+    Symbols.award_star_rounded,
     Symbols.notifications_rounded,
     Symbols.person_rounded,
   ];

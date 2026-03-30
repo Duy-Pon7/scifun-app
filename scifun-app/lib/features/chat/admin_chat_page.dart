@@ -71,7 +71,11 @@ class _AdminChatPageState extends State<AdminChatPage> {
       );
       final data = jsonDecode(payload);
       if (data is! Map<String, dynamic>) return null;
-      final id = data['userId'] ?? data['sub'] ?? data['id'];
+      final id = data['userId'] ??
+          data['user_id'] ??
+          data['uid'] ??
+          data['sub'] ??
+          data['id'];
       if (id == null) return null;
       final value = id.toString().trim();
       return value.isEmpty ? null : value;
@@ -81,17 +85,89 @@ class _AdminChatPageState extends State<AdminChatPage> {
   }
 
   String? get _myId {
-    final id = RealtimeService.I.selfId;
+    final id = _selfId?.trim();
     if (id != null && id.trim().isNotEmpty) return id.trim();
-    return _selfId;
+    final socketId = RealtimeService.I.selfId;
+    if (socketId != null && socketId.trim().isNotEmpty) {
+      return socketId.trim();
+    }
+    return null;
+  }
+
+  Set<String> get _myIds {
+    final ids = <String>{};
+
+    final tokenId = _selfId?.trim();
+    if (tokenId != null && tokenId.isNotEmpty) {
+      ids.add(tokenId);
+    }
+
+    final socketId = RealtimeService.I.selfId?.trim();
+    if (socketId != null && socketId.isNotEmpty) {
+      ids.add(socketId);
+    }
+
+    return ids;
+  }
+
+  String? get _activeConversationUserId {
+    final activeId = _activeConversationId;
+    if (activeId == null || activeId.isEmpty) return null;
+
+    for (final c in _conversations) {
+      if (c.id != activeId) continue;
+      final userId = c.userId?.trim();
+      if (userId != null && userId.isNotEmpty) return userId;
+      break;
+    }
+
+    return null;
+  }
+
+  String? _normalizeRole(String? role) {
+    final normalized = role?.trim().toUpperCase();
+    if (normalized == null || normalized.isEmpty) return null;
+
+    if (normalized == 'ADMIN' ||
+        normalized == 'ROLE_ADMIN' ||
+        normalized == 'SUPER_ADMIN' ||
+        normalized.contains('ADMIN')) {
+      return 'ADMIN';
+    }
+
+    if (normalized == 'USER' ||
+        normalized == 'ROLE_USER' ||
+        normalized.contains('USER')) {
+      return 'USER';
+    }
+
+    return null;
   }
 
   bool _isMine(ChatMessage message) {
-    final myId = _myId;
-    if (myId != null && myId.isNotEmpty) {
-      return message.senderId == myId;
+    final role = _normalizeRole(message.senderRole);
+    if (role == 'ADMIN') return true;
+    if (role == 'USER') return false;
+
+    final senderId = message.senderId?.trim();
+    if (senderId == null || senderId.isEmpty) {
+      return false;
     }
-    return (message.senderRole ?? '').toUpperCase() == 'ADMIN';
+
+    if (_myIds.contains(senderId)) {
+      return true;
+    }
+
+    final conversationUserId = _activeConversationUserId;
+    if (conversationUserId != null && conversationUserId.isNotEmpty) {
+      return senderId != conversationUserId;
+    }
+
+    return false;
+  }
+
+  String _roleLabel(ChatMessage message, bool isMe) {
+    return _normalizeRole(message.senderRole) ?? (isMe ? 'ADMIN' : 'USER');
   }
 
   int _findOptimisticIndex(ChatMessage message) {
@@ -500,8 +576,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
                                     final isMe = _isMine(m);
                                     return _AdminChatBubble(
                                       isMe: isMe,
-                                      role: m.senderRole ??
-                                          (isMe ? 'ADMIN' : 'USER'),
+                                      role: _roleLabel(m, isMe),
                                       content: m.content,
                                       time: m.createdAt,
                                     );

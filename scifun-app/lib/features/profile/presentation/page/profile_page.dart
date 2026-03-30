@@ -43,6 +43,57 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late final UserCubit _userCubit;
 
+  bool _isAdminRoleValue(dynamic value) {
+    if (value == null) return false;
+
+    if (value is Iterable) {
+      for (final item in value) {
+        if (_isAdminRoleValue(item)) return true;
+      }
+      return false;
+    }
+
+    if (value is Map) {
+      const nestedKeys = ['role', 'authority', 'name', 'code', 'value', 'type'];
+      for (final key in nestedKeys) {
+        if (_isAdminRoleValue(value[key])) return true;
+      }
+      return false;
+    }
+
+    final normalized = value
+        .toString()
+        .trim()
+        .toUpperCase()
+        .replaceAll(RegExp(r'[\s\-]+'), '_');
+
+    if (normalized.isEmpty) return false;
+    if (normalized == 'ADMIN') return true;
+    if (normalized == 'ROLE_ADMIN') return true;
+    if (normalized == 'SUPER_ADMIN') return true;
+    return normalized.contains('ADMIN');
+  }
+
+  bool _isAdminFromClaims(Map<String, dynamic> claims) {
+    const keys = [
+      'role',
+      'roles',
+      'authorities',
+      'authority',
+      'permissions',
+      'permission',
+      'scope',
+      'scopes',
+      'groups',
+    ];
+
+    for (final key in keys) {
+      if (_isAdminRoleValue(claims[key])) return true;
+    }
+
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -79,13 +130,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<bool> _isCurrentUserAdmin() async {
     final userState = _userCubit.state;
     if (userState is UserLoaded) {
-      final role = userState.user.data?.role?.trim().toUpperCase();
-      if (role == 'ADMIN') {
-        return true;
-      }
-      if (role != null && role.isNotEmpty) {
-        return false;
-      }
+      final role = userState.user.data?.role;
+      if (_isAdminRoleValue(role)) return true;
     }
 
     final token = await getChatToken();
@@ -99,8 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
       );
       final map = jsonDecode(payload);
       if (map is! Map<String, dynamic>) return false;
-      final role = map['role']?.toString().trim().toUpperCase();
-      return role == 'ADMIN';
+      return _isAdminFromClaims(map);
     } catch (_) {
       return false;
     }
