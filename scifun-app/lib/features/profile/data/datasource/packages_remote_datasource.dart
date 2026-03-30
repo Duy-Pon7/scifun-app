@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/message_constants.dart';
@@ -41,6 +42,10 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
           .map((e) => InstructionsModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
+    logResponseData(
+      responseData,
+      source: 'PackagesRemoteDatasource.getInstructions',
+    );
 
     if (responseData.status != 200 || responseData.data == null) {
       throw ServerException(message: MessageConstant.failedGetInfo);
@@ -71,6 +76,10 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
         res.data,
         (data) => data,
       );
+      logResponseData(
+        responseData,
+        source: 'PackagesRemoteDatasource.buyPackages',
+      );
 
       if (responseData.status != 200) {
         throw ServerException(
@@ -99,6 +108,10 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
         (json) => (json as List)
             .map((e) => PackagesModel.fromJson(e as Map<String, dynamic>))
             .toList(),
+      );
+      logResponseData(
+        responseData,
+        source: 'PackagesRemoteDatasource.getpackages',
       );
 
       if (responseData.status != 200 || responseData.data == null) {

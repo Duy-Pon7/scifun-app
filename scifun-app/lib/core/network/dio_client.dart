@@ -46,18 +46,13 @@ class DioClient {
     Options? options, // ✅ Cho phép custom headers như multipart
   }) async {
     try {
-      print("DioClient POST URL: $url");
-      print("DioClient POST Data: $data");
-      print("DioClient POST Options: $options");
       final res = await _dio.post(
         url,
         data: data,
         options: options,
       );
       return res;
-    } on DioException catch (e) {
-      print(
-          "DioClient POST Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
+    } on DioException {
       rethrow;
     }
   }
@@ -75,9 +70,7 @@ class DioClient {
         options: options,
       );
       return res;
-    } on DioException catch (e) {
-      print(
-          "DioClient PUT Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
+    } on DioException {
       rethrow;
     }
   }
@@ -87,9 +80,7 @@ class DioClient {
     try {
       final res = await _dio.get(url);
       return res;
-    } on DioException catch (e) {
-      print(
-          "DioClient GET Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
+    } on DioException {
       rethrow;
     }
   }
@@ -107,9 +98,7 @@ class DioClient {
         options: options,
       );
       return res;
-    } on DioException catch (e) {
-      print(
-          "DioClient DELETE Error: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}");
+    } on DioException {
       rethrow;
     }
   }

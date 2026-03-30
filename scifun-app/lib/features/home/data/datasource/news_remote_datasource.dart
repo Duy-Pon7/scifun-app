@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/message_constants.dart';
@@ -31,6 +32,10 @@ class NewsRemoteDatasourceImpl implements NewsRemoteDatasource {
         res.data,
         (json) => NewsModel.fromListJson(json as List<dynamic>),
       );
+      logResponseData(
+        responseData,
+        source: 'NewsRemoteDatasource.getAllNews',
+      );
 
       if (responseData.status != 200 || responseData.data == null) {
         throw ServerException(message: MessageConstant.failure);
@@ -58,6 +63,10 @@ class NewsRemoteDatasourceImpl implements NewsRemoteDatasource {
       final responseData = ResponseModel<NewsModel>.fromJson(
         res.data,
         (json) => NewsModel.fromJson(json as Map<String, dynamic>),
+      );
+      logResponseData(
+        responseData,
+        source: 'NewsRemoteDatasource.getNewsDetail',
       );
 
       if (responseData.status != 200 || responseData.data == null) {

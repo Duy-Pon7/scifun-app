@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
@@ -112,6 +113,10 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
 
   String _extractErrorText(DioException error) {
     final responseData = error.response?.data;
+    logResponseData(
+      responseData,
+      source: 'QuizChatSheet._extractErrorText',
+    );
     if (responseData is Map<String, dynamic>) {
       final message = responseData['message'];
       if (message is String && message.trim().isNotEmpty) {

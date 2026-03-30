@@ -69,7 +69,7 @@ dependencies:
   image: ^4.0.17
   lottie: ^3.3.1
   chiclet: ^1.2.0
-  iconsax: ^0.0.8
+  material_symbols_icons: ^4.2906.0
   auto_size_text: ^3.0.0
   confetti: ^0.8.0
   just_audio: ^0.10.5
@@ -123,11 +123,11 @@ flutter:
         - asset: assets/fonts/Baloo2-Regular.ttf
         - asset: assets/fonts/Baloo2-Bold.ttf
           weight: 700
-    - family: Mulish
-      fonts:
-        - asset: assets/fonts/Mulish-Regular.ttf
-        - asset: assets/fonts/Mulish-Bold.ttf
-          weight: 700
+    # - family: Mulish
+    #   fonts:
+    #     - asset: assets/fonts/Mulish-Regular.ttf
+    #     - asset: assets/fonts/Mulish-Bold.ttf
+    #       weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

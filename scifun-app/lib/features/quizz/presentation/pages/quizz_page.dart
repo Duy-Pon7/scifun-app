@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
@@ -327,21 +328,18 @@ class _LevelChevronIcon extends StatelessWidget {
   final Color color;
   final double size;
 
+  IconData _symbolForCount(int count) {
+    if (count >= 3) return Symbols.stat_3_rounded;
+    if (count == 2) return Symbols.stat_2_rounded;
+    return Symbols.stat_1_rounded;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        count,
-        (_) => Transform.translate(
-          offset: Offset(0, -1.h),
-          child: Icon(
-            Icons.keyboard_arrow_up,
-            size: size,
-            color: color,
-          ),
-        ),
-      ),
+    return Icon(
+      _symbolForCount(count),
+      size: size,
+      color: color,
     );
   }
 }

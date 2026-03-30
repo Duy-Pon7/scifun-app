@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/message_constants.dart';
@@ -38,6 +39,10 @@ class LessonCategoryRemoteDatasourceImpl
         res.data,
         (json) =>
             ResponseLessonCategoryModel.fromJson(json as Map<String, dynamic>),
+      );
+      logResponseData(
+        responseData,
+        source: 'LessonCategoryRemoteDatasource.getLessonCate',
       );
 
       if (responseData.status != 200 || responseData.data == null) {

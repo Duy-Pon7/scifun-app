@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/error/server_exception.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
@@ -37,8 +38,6 @@ class QuestionRemoteDatasourceImpl implements QuestionRemoteDatasource {
     int page = 1,
     int limit = 10,
   }) async {
-    print(
-        "Fetching questions for quizId: $quizId, page: $page, limit: $limit"); // Debug print
     try {
       final res = await dioClient.get(
         url:
@@ -46,6 +45,10 @@ class QuestionRemoteDatasourceImpl implements QuestionRemoteDatasource {
       );
       if (res.statusCode == 200) {
         final responseData = res.data['data'] as Map<String, dynamic>;
+        logResponseData(
+          responseData,
+          source: 'QuestionRemoteDatasource.getAllQuestions',
+        );
         final total = responseData['total'] as int;
         // API returns {total, data} but we need to add pagination fields
         final data = {

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/models/response_model.dart';
 import 'package:sci_fun/common/models/user_check_model.dart';
 import 'package:sci_fun/common/models/user_model.dart';
@@ -210,6 +211,10 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       );
 
       final responseData = Map<String, dynamic>.from(res.data as Map);
+      logResponseData(
+        responseData,
+        source: 'AuthRemoteDatasource.guestLogin',
+      );
       final dynamic rawData = responseData['data'];
       if (rawData is! Map) {
         throw ServerException(message: _extractServerMessage(res.data));
