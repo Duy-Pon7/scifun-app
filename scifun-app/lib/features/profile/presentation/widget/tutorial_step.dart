@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/domain/entities/instructions_entity.dart';
@@ -43,7 +44,7 @@ void showTutorialBottomSheet(
                 // Icon đóng bên phải
                 IconButton(
                   icon: Icon(
-                    Icons.cancel,
+                    Symbols.cancel,
                     color: AppColor.hurricane800.withValues(alpha: 0.6),
                   ),
                   onPressed: () => Navigator.pop(context),
@@ -135,7 +136,7 @@ void showTutorialBottomSheet(
                           );
                         },
                         child:
-                            const Icon(Icons.arrow_back, color: Colors.white),
+                            const Icon(Symbols.arrow_back, color: Colors.white),
                       )
                     else
                       const SizedBox(width: 60), // giữ khoảng cách cân bằng
@@ -159,8 +160,8 @@ void showTutorialBottomSheet(
                       },
                       child: Icon(
                         index < steps.length - 1
-                            ? Icons.arrow_forward
-                            : Icons.check,
+                            ? Symbols.arrow_forward
+                            : Symbols.check,
                         color: Colors.white,
                       ),
                     ),

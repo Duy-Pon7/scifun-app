@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/models/chat_models.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
@@ -367,8 +368,8 @@ class _AdminChatPageState extends State<AdminChatPage> {
                         children: [
                           Icon(
                             _isConnected
-                                ? Icons.cloud_done_rounded
-                                : Icons.cloud_off_rounded,
+                                ? Symbols.cloud_done_rounded
+                                : Symbols.cloud_off_rounded,
                             size: 18,
                             color: _isConnected
                                 ? const Color(0xFF1E7A3B)
@@ -386,7 +387,7 @@ class _AdminChatPageState extends State<AdminChatPage> {
                           IconButton(
                             tooltip: 'Reload',
                             onPressed: _refreshAll,
-                            icon: const Icon(Icons.refresh_rounded),
+                            icon: const Icon(Symbols.refresh_rounded),
                           ),
                         ],
                       ),
@@ -679,7 +680,7 @@ class _AdminChatInput extends StatelessWidget {
               radius: 24,
               backgroundColor: enabled ? Colors.blue : const Color(0xFFB8C2D3),
               child: IconButton(
-                icon: const Icon(Icons.send, color: Colors.white),
+                icon: const Icon(Symbols.send, color: Colors.white),
                 onPressed: enabled ? onSend : null,
               ),
             ),

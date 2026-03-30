@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -95,7 +96,7 @@ class _NotificationPageState extends State<NotificationPage> {
           title: 'Thông báo',
           showBack: false,
           rightIcon: IconButton(
-              icon: const Icon(Icons.notifications_none_outlined),
+              icon: const Icon(Symbols.notifications_none),
               onPressed: () async {
                 try {
                   await _notificationCubit.markAllAsRead();
@@ -113,7 +114,7 @@ class _NotificationPageState extends State<NotificationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                Symbols.error_outline,
                 size: 64.sp,
                 color: Colors.red,
               ),
@@ -188,8 +189,8 @@ class NotificationTile extends StatelessWidget {
               child: Center(
                 child: Icon(
                   item.type == 'COMMENT_REPLY'
-                      ? Icons.chat_bubble
-                      : Icons.notifications,
+                      ? Symbols.chat_bubble
+                      : Symbols.notifications,
                   color: isRead ? Colors.black54 : Colors.white,
                   size: 20.sp,
                 ),

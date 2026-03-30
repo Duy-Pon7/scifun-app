@@ -5,6 +5,12 @@ import 'package:sci_fun/core/utils/theme/app_color.dart';
 class AppTheme {
   AppTheme._();
 
+  static const IconThemeData _appIconTheme = IconThemeData(
+    weight: 400,
+    grade: 200,
+    opticalSize: 20,
+  );
+
   static final TextTheme _appTextTheme = TextTheme(
     displayLarge: TextStyle(fontSize: 57.sp, fontWeight: FontWeight.bold),
     displayMedium: TextStyle(fontSize: 45.sp),
@@ -75,6 +81,12 @@ class AppTheme {
         fontFamily: 'Baloo2',
         scaffoldBackgroundColor: Colors.white,
         textTheme: _appTextTheme,
+        iconTheme: _appIconTheme,
+        primaryIconTheme: _appIconTheme,
+        appBarTheme: const AppBarTheme(
+          iconTheme: _appIconTheme,
+          actionsIconTheme: _appIconTheme,
+        ),
         primaryColor: AppColor.skyblue400,
         textSelectionTheme: _textSelectionThemeData,
         inputDecorationTheme: _inputDecorationTheme,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_tex/flutter_tex.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/domain/entity/question_entity.dart';
@@ -196,11 +197,11 @@ class ListHomeworkAllPage extends StatelessWidget {
                         Icon(
                           isMultipleChoice
                               ? (selected
-                                  ? Icons.check_box
-                                  : Icons.check_box_outline_blank)
+                                  ? Symbols.check_box
+                                  : Symbols.check_box_outline_blank)
                               : (selected
-                                  ? Icons.radio_button_checked
-                                  : Icons.radio_button_off),
+                                  ? Symbols.radio_button_checked
+                                  : Symbols.radio_button_unchecked),
                           color: selected
                               ? AppColor.hurricane50
                               : AppColor.hurricane800.withValues(alpha: 0.6),
@@ -238,7 +239,7 @@ class ListHomeworkAllPage extends StatelessWidget {
                         // Icon kết quả bên phải: ✅❌
                         if (selected)
                           Icon(
-                            correct ? Icons.check_circle : Icons.cancel,
+                            correct ? Symbols.check_circle : Symbols.cancel,
                             color: correct ? Colors.white : Colors.white,
                           ),
                       ],

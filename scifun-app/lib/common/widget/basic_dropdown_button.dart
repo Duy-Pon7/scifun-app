@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class BasicDropdownField<T> extends StatelessWidget {
   const BasicDropdownField({
@@ -57,7 +58,7 @@ class BasicDropdownField<T> extends StatelessWidget {
         fillColor: fillColor ?? Colors.white,
         contentPadding: contentPadding ??
             EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-        suffixIcon: suffixIcon ?? const Icon(Icons.expand_more),
+        suffixIcon: suffixIcon ?? const Icon(Symbols.expand_more),
         border: OutlineInputBorder(
           borderRadius: borderRadius ?? BorderRadius.circular(8.r),
         ),

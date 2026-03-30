@@ -2,11 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
+import 'package:sci_fun/common/widget/level_stat_icon.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -126,13 +128,14 @@ class TrendQuizzesList extends StatelessWidget {
                                                     errorBuilder:
                                                         (_, __, ___) =>
                                                             const Icon(
-                                                      Icons.image_not_supported,
+                                                      Symbols
+                                                          .image_not_supported,
                                                     ),
                                                   ),
                                                 ),
                                               )
                                             : Icon(
-                                                Icons.quiz,
+                                                Symbols.quiz,
                                                 color: AppColor.skyblue600,
                                               ),
                                         SizedBox(width: 8.w),
@@ -190,11 +193,11 @@ class TrendQuizzesList extends StatelessWidget {
                                         if (level != null)
                                           _buildLevelBadge(level),
                                         _buildMetaItem(
-                                          icon: Icons.timer,
+                                          icon: Symbols.timer,
                                           text: '${quizz.duration ?? 0} phút',
                                         ),
                                         _buildMetaItem(
-                                          icon: Icons.help_outline,
+                                          icon: Symbols.help_outline,
                                           text:
                                               '${quizz.questionCount ?? 0} câu',
                                         ),
@@ -254,7 +257,7 @@ class TrendQuizzesList extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _TrendLevelChevronIcon(
+          LevelStatIcon(
             count: chevronCount,
             color: color,
             size: 10.sp,
@@ -347,35 +350,5 @@ class TrendQuizzesList extends StatelessWidget {
     if (normalized == LevelHelper.advanced) return Colors.red.shade700;
     if (normalized == LevelHelper.intermediate) return Colors.orange.shade700;
     return Colors.green.shade700;
-  }
-}
-
-class _TrendLevelChevronIcon extends StatelessWidget {
-  const _TrendLevelChevronIcon({
-    required this.count,
-    required this.color,
-    required this.size,
-  });
-
-  final int count;
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        count,
-        (_) => Transform.translate(
-          offset: Offset(0, -1.h),
-          child: Icon(
-            Icons.keyboard_arrow_up,
-            size: size,
-            color: color,
-          ),
-        ),
-      ),
-    );
   }
 }

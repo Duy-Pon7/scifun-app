@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
@@ -175,7 +176,7 @@ class _GuestSyncPulseButtonState extends State<_GuestSyncPulseButton>
             border: Border.all(color: Colors.white, width: 2.w),
           ),
           child: Icon(
-            Icons.sync_rounded,
+            Symbols.sync_rounded,
             color: Colors.white,
             size: 16.w,
           ),

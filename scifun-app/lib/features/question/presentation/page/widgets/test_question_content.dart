@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/question/domain/entity/question_entity.dart';
@@ -85,7 +86,7 @@ class TestQuestionContent extends StatelessWidget {
             ),
             SizedBox(width: 14.w),
             Icon(
-              Icons.favorite_rounded,
+              Symbols.favorite_rounded,
               color: const Color(0xFFF8505D),
               size: 24.sp,
             ),
@@ -190,8 +191,8 @@ class TestQuestionContent extends StatelessWidget {
                     ),
                     Icon(
                       isExplanationExpanded
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_down_rounded,
+                          ? Symbols.keyboard_arrow_up_rounded
+                          : Symbols.keyboard_arrow_down_rounded,
                       color: accentDark,
                       size: 22.sp,
                     ),
@@ -272,8 +273,8 @@ class TestQuestionContent extends StatelessWidget {
                   : (isSelected ? accentDark : const Color(0xFF4B4B4B));
 
               final statusIcon = shouldHighlightCorrect
-                  ? Icons.check_circle
-                  : (isWrongSelected ? Icons.cancel : null);
+                  ? Symbols.check_circle
+                  : (isWrongSelected ? Symbols.cancel : null);
               final statusIconColor = shouldHighlightCorrect
                   ? const Color(0xFF2E7D32)
                   : const Color(0xFFC62828);

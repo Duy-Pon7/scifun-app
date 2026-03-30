@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class PaymentInfoCard extends StatefulWidget {
@@ -105,7 +106,7 @@ class _PaymentInfoCardState extends State<PaymentInfoCard> {
                 'Đã sao chép vào clipboard');
           },
           icon: Icon(
-            Icons.copy_rounded,
+            Symbols.content_copy_rounded,
             color: AppColor.hurricane800.withValues(alpha: 0.6),
           ),
         ),

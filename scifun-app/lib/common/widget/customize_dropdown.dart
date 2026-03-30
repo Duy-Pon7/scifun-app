@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
@@ -150,7 +151,7 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                                 Visibility(
                                   visible: isSelected,
                                   child: Icon(
-                                    Icons.check,
+                                    Symbols.check,
                                     color: Colors.white,
                                     size: 20.sp,
                                   ),
@@ -251,8 +252,8 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                     SizedBox(width: 4.w),
                     Icon(
                       state
-                          ? (widget.suffixIconActive ?? Icons.expand_less)
-                          : (widget.suffixIconInActive ?? Icons.expand_more),
+                          ? (widget.suffixIconActive ?? Symbols.expand_less)
+                          : (widget.suffixIconInActive ?? Symbols.expand_more),
                       size: 22.sp,
                       color: state
                           ? AppColor.skyblue50

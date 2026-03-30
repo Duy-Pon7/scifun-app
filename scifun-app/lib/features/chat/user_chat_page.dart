@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/models/chat_models.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -377,7 +378,7 @@ class _EmptyChatState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Icon(
-              Icons.mark_chat_read_rounded,
+              Symbols.mark_chat_read_rounded,
               size: 52,
               color: Color(0xff9ba6bc),
             ),
@@ -500,7 +501,7 @@ class _ChatInput extends StatelessWidget {
                     ],
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white),
+                    icon: const Icon(Symbols.send_rounded, color: Colors.white),
                     onPressed: canSend ? onSend : null,
                   ),
                 );

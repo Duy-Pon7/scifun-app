@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -166,9 +167,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  _isSuccess
-                      ? Icons.check_circle_outline
-                      : Icons.payment_outlined,
+                  _isSuccess ? Symbols.check_circle_outline : Symbols.payment,
                   size: 60.w,
                   color: _isSuccess ? Colors.green : AppColor.skyblue500,
                 ),
@@ -234,7 +233,9 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   child: Row(
                     children: [
                       Icon(
-                        _isSuccess ? Icons.check_circle : Icons.error_outline,
+                        _isSuccess
+                            ? Symbols.check_circle
+                            : Symbols.error_outline,
                         color: _isSuccess ? Colors.green : Colors.red,
                         size: 24.w,
                       ),

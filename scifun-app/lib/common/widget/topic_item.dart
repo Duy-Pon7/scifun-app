@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class TopicItem extends StatelessWidget {
@@ -29,7 +30,7 @@ class TopicItem extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(12.w),
               child: Icon(
-                Icons.play_lesson_rounded,
+                Symbols.play_lesson_rounded,
                 color: AppColor.skyblue600,
               ),
             ),
@@ -53,7 +54,7 @@ class TopicItem extends StatelessWidget {
                       ),
                     ),
                     Icon(
-                      Icons.arrow_forward_ios_rounded,
+                      Symbols.arrow_forward_ios_rounded,
                       color: Color(0xFF3C3C43).withValues(alpha: 0.3),
                     )
                   ],

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -49,7 +50,8 @@ class _CommentPageState extends State<CommentPage> {
       }
     });
 
-    _notificationSub = RealtimeService.I.notificationStream.listen((notificationPayload) {
+    _notificationSub =
+        RealtimeService.I.notificationStream.listen((notificationPayload) {
       debugPrint('NOTI: $notificationPayload');
     });
   }
@@ -87,7 +89,8 @@ class _CommentPageState extends State<CommentPage> {
         if (!mounted) return;
         messenger.showSnackBar(
           const SnackBar(
-            content: Text('Khong the gui binh luan, vui long thu lai khi ket noi on dinh'),
+            content: Text(
+                'Khong the gui binh luan, vui long thu lai khi ket noi on dinh'),
           ),
         );
       }
@@ -129,7 +132,8 @@ class _CommentPageState extends State<CommentPage> {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
                   child: PaginationListView<CommentEntity>(
                     cubit: _commentPaginationCubit,
                     itemBuilder: (context, c) => _buildCommentTile(c),
@@ -263,7 +267,7 @@ class _CommentPageState extends State<CommentPage> {
   Widget _buildRealtimeChip(bool connected) {
     final Color chipColor = connected ? _forumBlue : const Color(0xFFD64242);
     final IconData chipIcon =
-        connected ? Icons.cloud_done_rounded : Icons.cloud_off_rounded;
+        connected ? Symbols.cloud_done_rounded : Symbols.cloud_off_rounded;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 220),
@@ -372,7 +376,7 @@ class _CommentPageState extends State<CommentPage> {
                           ? _send
                           : null,
                   icon: Icon(
-                    Icons.send_rounded,
+                    Symbols.send_rounded,
                     color: canSend ? Colors.white : Colors.grey.shade500,
                   ),
                 ),
@@ -417,9 +421,8 @@ class _CommentPageState extends State<CommentPage> {
   Widget _buildCommentTile(CommentEntity c) {
     final DateTime? createdAt = c.createdAt;
     final bool hasReplies = c.repliesCount != null && c.repliesCount! > 0;
-    final Color borderColor = hasReplies
-        ? _forumCyan.withValues(alpha: 0.32)
-        : Colors.grey.shade300;
+    final Color borderColor =
+        hasReplies ? _forumCyan.withValues(alpha: 0.32) : Colors.grey.shade300;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
@@ -486,7 +489,8 @@ class _CommentPageState extends State<CommentPage> {
                 if (hasReplies) ...[
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: _forumCyan.withValues(alpha: 0.14),
                       borderRadius: BorderRadius.circular(999),
@@ -637,7 +641,7 @@ class _CommentPageState extends State<CommentPage> {
     return CircleAvatar(
       radius: 18,
       backgroundColor: _forumBlue,
-      child: const Icon(Icons.person, size: 18, color: Colors.white),
+      child: const Icon(Symbols.person, size: 18, color: Colors.white),
     );
   }
 

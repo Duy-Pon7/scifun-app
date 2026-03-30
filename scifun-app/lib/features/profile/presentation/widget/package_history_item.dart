@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/enums/enum_package.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
@@ -167,7 +168,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     ),
                     child: Center(
                       child: Icon(
-                        Icons.arrow_forward,
+                        Symbols.arrow_forward,
                         size: 17.sp,
                         color: AppColor.skyblue600, // Màu icon
                       ),

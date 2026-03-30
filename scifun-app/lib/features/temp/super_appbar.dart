@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class BasicAppBarScreen extends StatelessWidget {
   const BasicAppBarScreen({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class BasicAppBarScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     PopupMenuButton<String>(
-                        icon: Icon(Icons.menu),
+                        icon: Icon(Symbols.menu),
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
                               PopupMenuItem<String>(
@@ -37,7 +38,7 @@ class BasicAppBarScreen extends StatelessWidget {
                             ]),
                     Text("data"),
                     PopupMenuButton<String>(
-                        icon: Icon(Icons.menu),
+                        icon: Icon(Symbols.menu),
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
                               PopupMenuItem<String>(

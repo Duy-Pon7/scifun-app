@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/domain/entities/faqs_entity.dart';
@@ -35,8 +36,8 @@ class FaqsPage extends StatelessWidget {
                   borderColor: AppColor.border,
                   iconColor: Colors.black.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12.r),
-                  iconExpand: Icons.keyboard_arrow_down,
-                  iconCollapse: Icons.keyboard_arrow_up,
+                  iconExpand: Symbols.keyboard_arrow_down,
+                  iconCollapse: Symbols.keyboard_arrow_up,
                   child: Html(
                     data: faq.answer,
                     style: {

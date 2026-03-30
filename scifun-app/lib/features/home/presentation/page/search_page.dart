@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
@@ -98,12 +99,12 @@ class _SearchPageState extends State<SearchPage> {
                                     child: Image.network(
                                       topic.image!,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) =>
-                                          const Icon(Icons.image_not_supported),
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                          Symbols.image_not_supported),
                                     ),
                                   ),
                                 )
-                              : Icon(Icons.play_lesson,
+                              : Icon(Symbols.play_lesson,
                                   color: AppColor.skyblue600),
                           title: Text(topic.name ?? 'No title',
                               style: TextStyle(fontWeight: FontWeight.bold)),
@@ -114,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
                                   overflow: TextOverflow.ellipsis,
                                 )
                               : null,
-                          trailing: Icon(Icons.arrow_forward_ios,
+                          trailing: Icon(Symbols.arrow_forward_ios,
                               size: 18.sp, color: AppColor.skyblue600),
                           onTap: () {
                             showModalBottomSheet(
@@ -187,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
           prefixIcon: Padding(
             padding: EdgeInsets.only(left: 7.w),
             child: Icon(
-              Icons.search_rounded,
+              Symbols.search_rounded,
               color: AppColor.hurricane800.withValues(alpha: 0.6),
             ),
           ),
@@ -203,7 +204,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: Padding(
                     padding: EdgeInsets.only(right: 7.w),
                     child: Icon(
-                      Icons.cancel,
+                      Symbols.cancel,
                       color: AppColor.hurricane800.withValues(alpha: 0.6),
                     ),
                   ),
@@ -267,7 +268,7 @@ class _SearchPageState extends State<SearchPage> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.history, color: AppColor.skyblue600, size: 24.sp),
+            Icon(Symbols.history, color: AppColor.skyblue600, size: 24.sp),
             SizedBox(width: 12.w),
             Text(text,
                 style: TextStyle(

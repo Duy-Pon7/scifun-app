@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/obscure_text_cubit.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -109,7 +110,7 @@ class _RepassFormState extends State<RepassForm> {
               focusNode: _passFocus,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -142,7 +143,7 @@ class _RepassFormState extends State<RepassForm> {
               focusNode: _confirmPassFocus,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -172,4 +173,3 @@ class _RepassFormState extends State<RepassForm> {
         backgroundColor: AppColor.skyblue400,
       );
 }
-

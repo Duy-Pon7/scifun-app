@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -500,8 +501,8 @@ class _SubjectFocusOnboardingPageState
           ),
           Icon(
             isSelected
-                ? Icons.check_circle_rounded
-                : Icons.radio_button_unchecked,
+                ? Symbols.check_circle_rounded
+                : Symbols.radio_button_unchecked,
             color: isSelected
                 ? Colors.white.withValues(alpha: 0.95)
                 : accentColor.withValues(alpha: 0.75),
@@ -666,8 +667,8 @@ class _SubjectFocusOnboardingPageState
           ),
           Icon(
             isSelected
-                ? Icons.check_circle_rounded
-                : Icons.radio_button_unchecked,
+                ? Symbols.check_circle_rounded
+                : Symbols.radio_button_unchecked,
             color: isSelected ? _selectedTextColor : _textSecondaryColor,
             size: 20.sp,
           ),
@@ -680,25 +681,25 @@ class _SubjectFocusOnboardingPageState
     final normalized = label.trim().toLowerCase();
 
     if (normalized.contains('google')) {
-      return Icons.travel_explore;
+      return Symbols.travel_explore;
     }
     if (normalized.contains('facebook')) {
-      return Icons.facebook;
+      return Symbols.thumb_up_rounded;
     }
     if (normalized.contains('tiktok') || normalized.contains('tik tok')) {
-      return Icons.music_note_rounded;
+      return Symbols.music_note_rounded;
     }
     if (normalized.contains('youtube') || normalized.contains('you tube')) {
-      return Icons.play_circle_fill_rounded;
+      return Symbols.play_circle_rounded;
     }
     if (normalized.contains('instagram')) {
-      return Icons.camera_alt_rounded;
+      return Symbols.camera_alt_rounded;
     }
     if (normalized.contains('bạn bè') || normalized.contains('ban be')) {
-      return Icons.groups_rounded;
+      return Symbols.groups_rounded;
     }
     if (normalized.contains('khác') || normalized.contains('khac')) {
-      return Icons.more_horiz_rounded;
+      return Symbols.more_horiz_rounded;
     }
 
     return null;

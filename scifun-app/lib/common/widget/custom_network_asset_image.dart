@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class CustomNetworkAssetImage extends StatelessWidget {
@@ -29,7 +30,7 @@ class CustomNetworkAssetImage extends StatelessWidget {
       height: height,
       errorWidget: (context, url, error) => Center(
         child: Icon(
-          Icons.error,
+          Symbols.error,
           size: 18.sp,
           color: AppColor.skyblue600,
         ),

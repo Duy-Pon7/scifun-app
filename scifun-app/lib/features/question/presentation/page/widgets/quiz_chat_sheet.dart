@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -177,7 +178,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
               child: Row(
                 children: [
                   Icon(
-                    Icons.pets_rounded,
+                    Symbols.pets_rounded,
                     color: AppColor.skyblue600,
                     size: 24.sp,
                   ),
@@ -195,7 +196,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(
-                      Icons.close_rounded,
+                      Symbols.close_rounded,
                       size: 22.sp,
                       color: const Color(0xFF8A95A7),
                     ),
@@ -291,7 +292,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                       child: Icon(
-                        Icons.send_rounded,
+                        Symbols.send_rounded,
                         color: Colors.white,
                         size: 22.sp,
                       ),

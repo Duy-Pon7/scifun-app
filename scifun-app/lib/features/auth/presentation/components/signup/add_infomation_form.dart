@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
@@ -290,7 +291,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
   //       },
   //       hintText: "Email",
   //       textInputAction: TextInputAction.next,
-  //       suffixIcon: const Icon(Icons.edit),
+  //       suffixIcon: const Icon(Symbols.edit),
   //     );
   Widget _fullnameField() => BasicInputField(
         controller: _fullnameCon,
@@ -302,7 +303,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
         },
         hintText: "Họ và tên",
         textInputAction: TextInputAction.next,
-        suffixIcon: const Icon(Icons.edit),
+        suffixIcon: const Icon(Symbols.edit),
       );
 
   Widget _birthdayField() => BasicInputField(
@@ -347,7 +348,7 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
           }
           return null;
         },
-        suffixIcon: const Icon(Icons.calendar_month),
+        suffixIcon: const Icon(Symbols.calendar_month),
       );
 
   Widget _changeButton() => BasicButton(
@@ -359,4 +360,3 @@ class _AddInfomationFormState extends State<AddInfomationForm> {
         backgroundColor: AppColor.skyblue400,
       );
 }
-

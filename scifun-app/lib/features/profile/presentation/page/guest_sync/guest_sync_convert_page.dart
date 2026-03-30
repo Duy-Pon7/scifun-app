@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -201,7 +202,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     controller: _fullnameCon,
                     hintText: 'Họ và tên',
                     textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Icons.person_outline_rounded),
+                    prefixIcon: const Icon(Symbols.person_outline_rounded),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Vui lòng nhập họ và tên';
@@ -215,7 +216,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     hintText: 'Email',
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    prefixIcon: const Icon(Icons.email_outlined),
+                    prefixIcon: const Icon(Symbols.email),
                     validator: (value) {
                       final email = (value ?? '').trim();
                       if (email.isEmpty) {
@@ -235,12 +236,12 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     keyboardType: TextInputType.visiblePassword,
                     textInputAction: TextInputAction.done,
                     obscureText: _obscurePassword,
-                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    prefixIcon: const Icon(Symbols.lock_outline_rounded),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                            ? Symbols.visibility
+                            : Symbols.visibility_off,
                       ),
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);

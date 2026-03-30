@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
@@ -197,7 +198,7 @@ class _HeaderHomeState extends State<HeaderHome> {
           borderRadius: BorderRadius.circular(100.r),
           child: avatarUrl == null || avatarUrl.isEmpty
               ? Icon(
-                  Icons.person,
+                  Symbols.person,
                   color: Colors.white,
                   size: 26.sp,
                 )
@@ -229,7 +230,7 @@ class _HeaderHomeState extends State<HeaderHome> {
             prefixIcon: Padding(
               padding: EdgeInsets.only(left: 7.w),
               child: Icon(
-                Icons.search_rounded,
+                Symbols.search_rounded,
                 color: AppColor.hurricane800.withValues(alpha: 0.6),
               ),
             ),

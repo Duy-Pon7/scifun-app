@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/obscure_text_cubit.dart';
 import 'package:sci_fun/common/helper/show_alert_dialog_custom.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
@@ -173,7 +174,7 @@ class _SigninFormState extends State<SigninForm> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -222,7 +223,7 @@ class _SigninFormState extends State<SigninForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.person_outline_rounded,
+              Symbols.person_outline_rounded,
               size: 20.sp,
               color: AppColor.hurricane800,
             ),

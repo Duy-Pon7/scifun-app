@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class CustomExpansionTile extends StatefulWidget {
@@ -20,8 +21,8 @@ class CustomExpansionTile extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
     this.borderColor = Colors.grey,
-    this.iconExpand = Icons.expand_more,
-    this.iconCollapse = Icons.expand_less,
+    this.iconExpand = Symbols.expand_more,
+    this.iconCollapse = Symbols.expand_less,
     this.iconColor = Colors.black,
     this.titleFontSize = 16.0,
   });

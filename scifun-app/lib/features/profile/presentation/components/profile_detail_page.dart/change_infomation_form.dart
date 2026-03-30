@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/select_cubit.dart';
 import 'package:sci_fun/common/cubit/select_image_cubit.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
@@ -203,9 +204,9 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                                           width: 1.2,
                                         ),
                                         suffixIconInActive:
-                                            Icons.keyboard_arrow_down_rounded,
+                                            Symbols.keyboard_arrow_down_rounded,
                                         suffixIconActive:
-                                            Icons.keyboard_arrow_up_rounded,
+                                            Symbols.keyboard_arrow_up_rounded,
                                       );
                                     },
                                   ),
@@ -307,7 +308,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                     ],
                   ),
                   child: Icon(
-                    Icons.edit_rounded,
+                    Symbols.edit_rounded,
                     color: Colors.white,
                     size: 17.w,
                   ),
@@ -348,7 +349,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         suffixIcon: Padding(
           padding: EdgeInsets.only(right: 8.w),
           child: Icon(
-            Icons.edit_rounded,
+            Symbols.edit_rounded,
             color: AppColor.skyblue500,
             size: 20.sp,
           ),
@@ -415,7 +416,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         suffixIcon: Padding(
           padding: EdgeInsets.only(right: 8.w),
           child: Icon(
-            Icons.calendar_month_rounded,
+            Symbols.calendar_month_rounded,
             color: AppColor.skyblue500,
             size: 20.sp,
           ),
@@ -446,8 +447,8 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
                 color: AppColor.skyblue100.withValues(alpha: 0.95),
                 width: 1.2,
               ),
-              suffixIconInActive: Icons.keyboard_arrow_down_rounded,
-              suffixIconActive: Icons.keyboard_arrow_up_rounded,
+              suffixIconInActive: Symbols.keyboard_arrow_down_rounded,
+              suffixIconActive: Symbols.keyboard_arrow_up_rounded,
             );
           },
         ),

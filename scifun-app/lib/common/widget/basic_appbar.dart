@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -83,7 +84,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
     return IconButton(
       padding: EdgeInsets.zero,
       icon: Icon(
-        Icons.arrow_back_ios_new_rounded,
+        Symbols.arrow_back_ios_new_rounded,
         color: AppColor.skyblue600,
         size: 20,
       ),

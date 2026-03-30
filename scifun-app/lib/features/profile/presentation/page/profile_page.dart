@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
@@ -199,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.music_note_rounded,
+                          Symbols.music_note_rounded,
                           color: AppColor.skyblue600,
                           size: 22.sp,
                         ),
@@ -378,7 +379,7 @@ class _ProfilePageState extends State<ProfilePage> {
       spacing: 12.h,
       children: [
         _sectionTitle('Tài khoản'),
-        _itemNavigator(Icons.person, 'Thông tin cá nhân', () {
+        _itemNavigator(Symbols.person, 'Thông tin cá nhân', () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -386,32 +387,32 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }),
-        _itemNavigator(Icons.lock, 'Đổi mật khẩu đăng nhập', () {
+        _itemNavigator(Symbols.lock, 'Đổi mật khẩu đăng nhập', () {
           Navigator.push(
             context,
             slidePage(const ChangePass()),
           );
         }),
-        _itemNavigator(Icons.chat_bubble_outline_rounded, 'Chat hỗ trợ', () {
+        _itemNavigator(Symbols.chat_bubble_outline_rounded, 'Chat hỗ trợ', () {
           _openChatSupport();
         }),
-        _itemNavigator(Icons.volume_up_rounded, 'Âm thanh', () {
+        _itemNavigator(Symbols.volume_up_rounded, 'Âm thanh', () {
           _openSoundSettings();
         }),
-        _itemNavigator(Icons.shopping_cart, 'Mua gói', () {
+        _itemNavigator(Symbols.shopping_cart, 'Mua gói', () {
           Navigator.push(
             context,
             slidePage(const PlanListPage()),
           );
         }),
-        _itemNavigator(Icons.receipt_long_rounded, 'Lịch sử mua gói', () {
+        _itemNavigator(Symbols.receipt_long_rounded, 'Lịch sử mua gói', () {
           Navigator.push(
             context,
             slidePage(const OrderHistoryPage()),
           );
         }),
         _sectionTitle('Liên hệ'),
-        _itemNavigator(Icons.policy_rounded, 'Chính sách', () {
+        _itemNavigator(Symbols.policy_rounded, 'Chính sách', () {
           Navigator.push(
             context,
             slidePage(const PolicyPage(
@@ -419,7 +420,7 @@ class _ProfilePageState extends State<ProfilePage> {
             )),
           );
         }),
-        _itemNavigator(Icons.business_rounded, 'Về chúng tôi', () {
+        _itemNavigator(Symbols.business_rounded, 'Về chúng tôi', () {
           Navigator.push(
             context,
             slidePage(const AboutUsPage(
@@ -427,7 +428,7 @@ class _ProfilePageState extends State<ProfilePage> {
             )),
           );
         }),
-        _itemNavigator(Icons.call_rounded, 'Liên hệ hỗ trợ', () {
+        _itemNavigator(Symbols.call_rounded, 'Liên hệ hỗ trợ', () {
           Navigator.push(
             context,
             slidePage(ContactPage(settings: mockContactSettings)),
@@ -454,7 +455,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.logout_rounded),
+            const Icon(Symbols.logout_rounded),
             SizedBox(width: 4.w),
             Text(
               'Đăng xuất',
@@ -532,7 +533,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 18.w),
+            Icon(Symbols.arrow_forward_ios_rounded, size: 18.w),
           ],
         ),
       ),
@@ -677,7 +678,7 @@ Widget subscriptionCard(UserDataEntity user) {
         SizedBox(height: 8.h),
         Row(
           children: [
-            const Icon(Icons.calendar_month, color: Colors.white, size: 18),
+            const Icon(Symbols.calendar_month, color: Colors.white, size: 18),
             SizedBox(width: 6.w),
             Expanded(
               child: Text(

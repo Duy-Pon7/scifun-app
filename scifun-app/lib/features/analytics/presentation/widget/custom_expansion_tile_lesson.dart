@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class CustomExpansionTileLesson extends StatefulWidget {
@@ -21,8 +22,8 @@ class CustomExpansionTileLesson extends StatefulWidget {
     this.backgroundColor = Colors.white,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
     this.borderColor = Colors.grey,
-    this.iconExpand = Icons.expand_more,
-    this.iconCollapse = Icons.expand_less,
+    this.iconExpand = Symbols.expand_more,
+    this.iconCollapse = Symbols.expand_less,
     this.iconColor = Colors.black,
     this.titleFontSize = 16.0,
     required this.completedCount,
@@ -69,7 +70,7 @@ class _CustomExpansionTileLessonState extends State<CustomExpansionTileLesson> {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.folder_open, // hoặc Icons.topic_outlined
+                          Symbols.folder_open, // hoặc Symbols.topic_outlined
                           color: AppColor.skyblue600, // giống ảnh bạn gửi
                           size: 20.sp,
                         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -29,7 +30,7 @@ class _SubjectsLeaderboardPageState extends State<SubjectsLeaderboardPage> {
         rightIcon: GestureDetector(
           onTap: () => context.read<SubjectCubit>().refresh(),
           child: Icon(
-            Icons.refresh,
+            Symbols.refresh,
             color: AppColor.skyblue600,
             size: 24,
           ),
@@ -174,7 +175,7 @@ class _SubjectLeaderboardCard extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             const Icon(
-              Icons.arrow_forward_ios,
+              Symbols.arrow_forward_ios,
               color: Colors.white,
               size: 18,
             ),
@@ -204,7 +205,7 @@ class _FallbackSubjectImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
-        Icons.book,
+        Symbols.book,
         color: pressedAccentColor,
       ),
     );

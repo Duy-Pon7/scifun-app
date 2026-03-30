@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -70,7 +71,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.refresh_rounded,
+              Symbols.refresh_rounded,
               color: accentColor,
               size: 20,
             ),
@@ -104,7 +105,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               child: PaginationListView<LeaderboardsEntity>(
                 cubit: _cubit,
                 emptyWidget: const Center(
-                  child: AppEmptyState(message: 'Chưa có dữ liệu bảng xếp hạng'),
+                  child:
+                      AppEmptyState(message: 'Chưa có dữ liệu bảng xếp hạng'),
                 ),
                 itemBuilder: (context, item) {
                   return _LeaderboardItem(
@@ -160,7 +162,7 @@ class _LeaderboardHeader extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.emoji_events_rounded,
+              Symbols.emoji_events_rounded,
               color: accentColor,
               size: 22,
             ),
@@ -236,7 +238,8 @@ class _LeaderboardItem extends StatelessWidget {
     final String scoreLabel = _formatScore(item.totalScore ?? 0);
     final int completedTopics = item.completedTopics ?? 0;
     final int completedQuizzes = item.completedQuizzes ?? 0;
-    final int? rankTrend = _rankTrend(currentRank: rank, previousRank: item.previousRank);
+    final int? rankTrend =
+        _rankTrend(currentRank: rank, previousRank: item.previousRank);
     final int delaySeed = rank <= 0 ? 1 : rank.clamp(1, 18).toInt();
 
     return Padding(
@@ -278,7 +281,8 @@ class _LeaderboardItem extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: dominantColor.withValues(alpha: isTopThree ? 0.18 : 0.08),
+                color:
+                    dominantColor.withValues(alpha: isTopThree ? 0.18 : 0.08),
                 blurRadius: isTopThree ? 18 : 12,
                 offset: const Offset(0, 8),
               ),
@@ -322,16 +326,18 @@ class _LeaderboardItem extends StatelessWidget {
                         runSpacing: 8,
                         children: [
                           _MetricChip(
-                            icon: Icons.stars_rounded,
+                            icon: Symbols.stars_rounded,
                             label: 'Điểm $scoreLabel',
                             textColor: const Color(0xFF1F2937),
-                            backgroundColor: Colors.black.withValues(alpha: 0.06),
+                            backgroundColor:
+                                Colors.black.withValues(alpha: 0.06),
                           ),
                           _MetricChip(
-                            icon: Icons.bolt_rounded,
+                            icon: Symbols.bolt_rounded,
                             label: 'Tiến độ $progress%',
                             textColor: accentColor,
-                            backgroundColor: accentColor.withValues(alpha: 0.14),
+                            backgroundColor:
+                                accentColor.withValues(alpha: 0.14),
                           ),
                           if (rankTrend != null && rankTrend != 0)
                             _RankTrendChip(rankTrend: rankTrend),
@@ -344,8 +350,10 @@ class _LeaderboardItem extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: progress / 100,
                             minHeight: 7,
-                            backgroundColor: accentColor.withValues(alpha: 0.12),
-                            valueColor: AlwaysStoppedAnimation<Color>(dominantColor),
+                            backgroundColor:
+                                accentColor.withValues(alpha: 0.12),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(dominantColor),
                           ),
                         ),
                       ],
@@ -448,7 +456,8 @@ class _RankTrendChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isUp = rankTrend > 0;
     final int step = rankTrend.abs();
-    final Color chipColor = isUp ? const Color(0xFF1A9C5B) : const Color(0xFFCF3A3A);
+    final Color chipColor =
+        isUp ? const Color(0xFF1A9C5B) : const Color(0xFFCF3A3A);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -460,7 +469,7 @@ class _RankTrendChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isUp ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+            isUp ? Symbols.trending_up_rounded : Symbols.trending_down_rounded,
             size: 14,
             color: chipColor,
           ),
@@ -550,7 +559,7 @@ class _RankBadge extends StatelessWidget {
       ),
       child: isTopThree
           ? const Icon(
-              Icons.emoji_events_rounded,
+              Symbols.emoji_events_rounded,
               color: Colors.white,
               size: 28,
             )

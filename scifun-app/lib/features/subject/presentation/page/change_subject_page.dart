@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -161,8 +162,8 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
                     SizedBox(width: 8.w),
                     Icon(
                       isCurrentSubject
-                          ? Icons.check_circle_rounded
-                          : Icons.arrow_forward_ios_rounded,
+                          ? Symbols.check_circle_rounded
+                          : Symbols.arrow_forward_ios_rounded,
                       size: isCurrentSubject ? 20.sp : 17.sp,
                       color: Colors.white.withValues(alpha: 0.96),
                     ),
@@ -222,7 +223,7 @@ class _SubjectLeadingImage extends StatelessWidget {
       color: softAccentColor,
       alignment: Alignment.center,
       child: Icon(
-        Icons.book_rounded,
+        Symbols.book_rounded,
         color: accentColor,
         size: 24.sp,
       ),

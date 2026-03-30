@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
@@ -75,7 +76,7 @@ class _TestPageState extends State<TestPage> {
       child: Padding(
         padding: EdgeInsets.all(4.w),
         child: Icon(
-          Icons.close_rounded,
+          Symbols.close_rounded,
           size: 28.sp,
           color: const Color(0xFFB8B8B8),
         ),
@@ -441,7 +442,7 @@ class _TestPageState extends State<TestPage> {
                         backgroundColor: AppColor.skyblue500,
                         onPressed: _onChatButtonPressed,
                         child: Icon(
-                          Icons.pets_rounded,
+                          Symbols.pets_rounded,
                           size: 24.sp,
                           color: Colors.white,
                         ),

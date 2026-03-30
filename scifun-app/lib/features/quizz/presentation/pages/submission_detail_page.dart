@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/core/di/injection.dart';
@@ -389,7 +390,7 @@ class _AnswerItemCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isCorrect ? Icons.check_rounded : Icons.close_rounded,
+                  isCorrect ? Symbols.check_rounded : Symbols.close_rounded,
                   size: 18.sp,
                   color: statusColor,
                 ),
@@ -601,7 +602,7 @@ class _LockedContent extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.lock_rounded,
+                        Symbols.lock_rounded,
                         size: 15.sp,
                         color: const Color(0xFF6B7280),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
 class TextWithCopyIcon extends StatelessWidget {
@@ -48,7 +49,7 @@ class TextWithCopyIcon extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.copy,
+                  Symbols.content_copy,
                   size: 20,
                   color: AppColor.hurricane50, // màu icon
                 ),

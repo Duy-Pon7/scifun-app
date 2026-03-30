@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/cubit/obscure_text_cubit.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
@@ -150,7 +151,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passOldCon,
               hintText: "Mật khẩu cũ",
               prefixIcon: Icon(
-                Icons.password,
+                Symbols.password,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -167,7 +168,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -184,7 +185,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passNewCon,
               hintText: "Mật khẩu mới",
               prefixIcon: Icon(
-                Icons.password,
+                Symbols.password,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -201,7 +202,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -218,7 +219,7 @@ class _ChangePassState extends State<ChangePass> {
               controller: _passNewAgainCon,
               hintText: "Nhập lại mật khẩu",
               prefixIcon: Icon(
-                Icons.password,
+                Symbols.password,
                 color: AppColor.skyblue600,
               ),
               validator: (value) {
@@ -239,7 +240,7 @@ class _ChangePassState extends State<ChangePass> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Icons.visibility : Icons.visibility_off,
+                  state ? Symbols.visibility : Symbols.visibility_off,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),
@@ -249,4 +250,3 @@ class _ChangePassState extends State<ChangePass> {
         ),
       );
 }
-

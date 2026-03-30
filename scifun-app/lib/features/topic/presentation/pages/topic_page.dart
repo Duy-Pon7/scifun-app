@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
+import 'package:sci_fun/common/widget/level_stat_icon.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
@@ -121,6 +123,7 @@ class _TopicPageState extends State<TopicPage> {
     final normalized = LevelHelper.normalize(level);
     final rank = LevelHelper.rank(normalized) ?? 0;
     final activeColor = _levelColor(normalized);
+    final iconColor = rank > 0 ? activeColor : Colors.grey.shade400;
     final label =
         normalized != null ? LevelHelper.toVietnamese(normalized) : 'Chưa rõ';
 
@@ -134,17 +137,11 @@ class _TopicPageState extends State<TopicPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ...List.generate(3, (index) {
-            final isActive = index < rank;
-            return Padding(
-              padding: EdgeInsets.only(right: index == 2 ? 0 : 2.w),
-              child: Icon(
-                Icons.keyboard_arrow_up_rounded,
-                size: 14.sp,
-                color: isActive ? activeColor : Colors.grey.shade400,
-              ),
-            );
-          }),
+          LevelStatIcon(
+            count: rank,
+            color: iconColor,
+            size: 14.sp,
+          ),
           SizedBox(width: 6.w),
           Text(
             label,
@@ -191,11 +188,11 @@ class _TopicPageState extends State<TopicPage> {
                               topic.image!,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.image_not_supported),
+                                  const Icon(Symbols.image_not_supported),
                             ),
                           ),
                         )
-                      : Icon(Icons.play_lesson, color: AppColor.skyblue600),
+                      : Icon(Symbols.play_lesson, color: AppColor.skyblue600),
                   title: Text(
                     topic.name ?? 'No title',
                     style: const TextStyle(fontWeight: FontWeight.bold),
@@ -215,7 +212,7 @@ class _TopicPageState extends State<TopicPage> {
                     ],
                   ),
                   trailing: Icon(
-                    Icons.arrow_forward_ios,
+                    Symbols.arrow_forward_ios,
                     size: 18.sp,
                     color: AppColor.skyblue600,
                   ),

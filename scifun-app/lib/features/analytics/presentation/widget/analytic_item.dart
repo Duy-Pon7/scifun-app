@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class AnalyticItem extends StatelessWidget {
   const AnalyticItem({
@@ -80,7 +81,7 @@ class AnalyticItem extends StatelessWidget {
                 spacing: 6.h,
                 children: [
                   Icon(
-                    Icons.chevron_right,
+                    Symbols.chevron_right,
                     size: 24.sp,
                   ),
                 ],

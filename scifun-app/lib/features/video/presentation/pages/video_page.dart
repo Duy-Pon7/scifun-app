@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
@@ -60,7 +61,7 @@ class _VideoPageState extends State<VideoPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                Symbols.error_outline,
                 size: 64.sp,
                 color: Colors.red,
               ),
@@ -168,7 +169,7 @@ class VideoTile extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     Icon(
-                      Icons.video_library,
+                      Symbols.video_library,
                       size: 40.sp,
                       color: Colors.grey[600],
                     ),
@@ -246,7 +247,7 @@ class VideoTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6.r),
                           ),
                           child: Icon(
-                            Icons.play_arrow,
+                            Symbols.play_arrow,
                             color: Colors.white,
                             size: 16.sp,
                           ),
@@ -317,7 +318,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                Symbols.error_outline,
                 size: 64.sp,
                 color: Colors.red,
               ),

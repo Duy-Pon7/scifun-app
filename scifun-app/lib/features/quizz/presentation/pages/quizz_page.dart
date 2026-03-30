@@ -6,6 +6,7 @@ import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
+import 'package:sci_fun/common/widget/level_stat_icon.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
@@ -126,7 +127,7 @@ class _QuizzPageState extends State<QuizzPage> {
                         top: 8.h,
                         right: 8.w,
                         child: Icon(
-                          Icons.star,
+                          Symbols.star,
                           color: AppColor.skyblue600,
                           size: 18.sp,
                         ),
@@ -142,7 +143,7 @@ class _QuizzPageState extends State<QuizzPage> {
                             ),
                             child: const Center(
                               child: Icon(
-                                Icons.lock,
+                                Symbols.lock,
                                 size: 36,
                                 color: Colors.grey,
                               ),
@@ -171,12 +172,13 @@ class _QuizzPageState extends State<QuizzPage> {
           child: Image.network(
             quizz.topic!.subject!.image!,
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+            errorBuilder: (_, __, ___) =>
+                const Icon(Symbols.image_not_supported),
           ),
         ),
       );
     }
-    return Icon(Icons.quiz, color: AppColor.skyblue600);
+    return Icon(Symbols.quiz, color: AppColor.skyblue600);
   }
 
   Widget _buildTitle(QuizzEntity quizz, bool isQuizPro) {
@@ -234,16 +236,16 @@ class _QuizzPageState extends State<QuizzPage> {
           children: [
             if (level != null) _buildLevelBadge(level),
             _buildMetaItem(
-              icon: Icons.timer,
+              icon: Symbols.timer,
               text: '${quizz.duration ?? 0} phút',
             ),
             _buildMetaItem(
-              icon: Icons.help_outline,
+              icon: Symbols.help_outline,
               text: '${quizz.questionCount ?? 0} câu',
             ),
             if (quizz.uniqueUserCount != null && quizz.uniqueUserCount! > 0)
               _buildMetaItem(
-                icon: Icons.people,
+                icon: Symbols.people,
                 text: '${quizz.uniqueUserCount}',
               ),
           ],
@@ -286,7 +288,7 @@ class _QuizzPageState extends State<QuizzPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _LevelChevronIcon(
+          LevelStatIcon(
             count: chevronCount,
             color: color,
             size: 11.sp,
@@ -314,32 +316,5 @@ class _QuizzPageState extends State<QuizzPage> {
     if (normalized == LevelHelper.advanced) return Colors.red.shade700;
     if (normalized == LevelHelper.intermediate) return Colors.orange.shade700;
     return Colors.green.shade700;
-  }
-}
-
-class _LevelChevronIcon extends StatelessWidget {
-  const _LevelChevronIcon({
-    required this.count,
-    required this.color,
-    required this.size,
-  });
-
-  final int count;
-  final Color color;
-  final double size;
-
-  IconData _symbolForCount(int count) {
-    if (count >= 3) return Symbols.stat_3_rounded;
-    if (count == 2) return Symbols.stat_2_rounded;
-    return Symbols.stat_1_rounded;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
-      _symbolForCount(count),
-      size: size,
-      color: color,
-    );
   }
 }
