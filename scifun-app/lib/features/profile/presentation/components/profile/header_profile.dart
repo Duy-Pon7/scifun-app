@@ -65,23 +65,7 @@ class HeaderProfile extends StatelessWidget {
                 Positioned(
                   right: -4.w,
                   bottom: 0,
-                  child: GestureDetector(
-                    onTap: onGuestSyncTap,
-                    child: Container(
-                      width: 30.w,
-                      height: 30.w,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEF7B6C),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2.w),
-                      ),
-                      child: Icon(
-                        Icons.sync_rounded,
-                        color: Colors.white,
-                        size: 16.w,
-                      ),
-                    ),
-                  ),
+                  child: _GuestSyncPulseButton(onTap: onGuestSyncTap!),
                 ),
             ],
           ),
@@ -133,6 +117,70 @@ class HeaderProfile extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _GuestSyncPulseButton extends StatefulWidget {
+  const _GuestSyncPulseButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_GuestSyncPulseButton> createState() => _GuestSyncPulseButtonState();
+}
+
+class _GuestSyncPulseButtonState extends State<_GuestSyncPulseButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(
+      begin: 0.92,
+      end: 1.08,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _scaleAnimation,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          width: 30.w,
+          height: 30.w,
+          decoration: BoxDecoration(
+            color: const Color(0xFFEF7B6C),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2.w),
+          ),
+          child: Icon(
+            Icons.sync_rounded,
+            color: Colors.white,
+            size: 16.w,
+          ),
+        ),
+      ),
     );
   }
 }
