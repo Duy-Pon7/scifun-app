@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +8,7 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/question/domain/entity/question_entity.dart';
@@ -132,6 +135,12 @@ class _TestPageState extends State<TestPage> {
     final isCorrect = selected.length == correctIds.length &&
         selected.containsAll(correctIds);
 
+    unawaited(
+      isCorrect
+          ? SoundService.instance.playSuccess()
+          : SoundService.instance.playWrong(),
+    );
+
     setState(() {
       isCheckingAnswer = false;
       isAnswerChecked = true;
@@ -166,6 +175,8 @@ class _TestPageState extends State<TestPage> {
     setState(() {
       selectedAnswers[questionId] = selectedIds;
     });
+
+    unawaited(SoundService.instance.playLuyenTap1ChamClick());
   }
 
   Future<void> _checkCurrentQuestion(QuestionEntity question) async {

@@ -31,6 +31,7 @@ enum SoundEffectTrack {
   error,
   hover,
   success,
+  wrong,
   saiNhe,
   ting,
   khoiDong1DragToBlank,
@@ -42,7 +43,7 @@ extension SoundEffectTrackAsset on SoundEffectTrack {
   String get fileName {
     switch (this) {
       case SoundEffectTrack.luyenTap1ChamClick:
-        return 'luyentap1/cham_click.mp3';
+        return 'cham_click.mp3';
       case SoundEffectTrack.luyenTap1Dragged:
         return 'luyentap1/dragged.mp3';
       case SoundEffectTrack.luyenTap1CoiTauLua:
@@ -71,6 +72,8 @@ extension SoundEffectTrackAsset on SoundEffectTrack {
         return 'hover.mp3';
       case SoundEffectTrack.success:
         return 'success.mp3';
+      case SoundEffectTrack.wrong:
+        return 'wrong.mp3';
       case SoundEffectTrack.saiNhe:
         return 'sai_nhe.mp3';
       case SoundEffectTrack.ting:
@@ -103,6 +106,7 @@ class SoundService {
     SoundEffectTrack.danhGiaTot,
     SoundEffectTrack.cacsotu101110ChamKeo,
     SoundEffectTrack.success,
+    SoundEffectTrack.wrong,
     SoundEffectTrack.saiNhe,
   };
 
@@ -331,7 +335,7 @@ class SoundService {
   Future<void> playCacSoTu101110ChamKeo() =>
       playEffect(SoundEffectTrack.cacsotu101110ChamKeo);
   Future<void> playError() => playEffect(SoundEffectTrack.error);
-  Future<void> playWrong() => playEffect(SoundEffectTrack.error);
+  Future<void> playWrong() => playEffect(SoundEffectTrack.wrong);
   Future<void> playSaiNhe() => playEffect(SoundEffectTrack.saiNhe);
   Future<void> playHover() => playEffect(SoundEffectTrack.hover);
   Future<void> playDrag() => playEffect(SoundEffectTrack.drag);
