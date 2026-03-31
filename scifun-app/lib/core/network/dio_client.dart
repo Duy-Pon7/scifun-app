@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:sci_fun/core/network/check_token_interceptor.dart';
+import 'package:sci_fun/core/network/remote_config.dart';
 
 class DioClient {
-  static const String _remoteBaseUrl =
-      'https://java-app-9trd.onrender.com/api/v1';
   final CheckTokenInterceptor checkTokenInterceptor;
   late final Dio _dio;
 
@@ -23,7 +22,7 @@ class DioClient {
           );
 
   static String _resolveBaseUrl() {
-    return _remoteBaseUrl;
+    return RemoteConfig.apiBaseUrl;
   }
 
   static Map<String, dynamic> _resolveDefaultHeaders() {

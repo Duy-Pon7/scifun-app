@@ -25,13 +25,24 @@ class LessonCategoryRemoteDatasourceImpl
     required int page,
     required int subjectId,
   }) async {
+    const source = 'LessonCategoryRemoteDatasource.getLessonCate';
     try {
       final res = await dioClient.get(
         url:
-            "${HomeApiUrls.getLessonCategory}?page=$page&limit=${dotenv.get('PAGE_SIZE')}&subject_id=$subjectId",
+            '${HomeApiUrls.getLessonCategory}?page=$page&limit=${dotenv.get('PAGE_SIZE')}&subject_id=$subjectId',
       );
 
       if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'page': page,
+            'subjectId': subjectId,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
         throw ServerException();
       }
 
@@ -40,19 +51,38 @@ class LessonCategoryRemoteDatasourceImpl
         (json) =>
             ResponseLessonCategoryModel.fromJson(json as Map<String, dynamic>),
       );
-      logResponseData(
-        responseData,
-        source: 'LessonCategoryRemoteDatasource.getLessonCate',
-      );
+      logResponseData(responseData, source: source);
 
       if (responseData.status != 200 || responseData.data == null) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'page': page,
+            'subjectId': subjectId,
+            'response': res.data,
+          },
+        );
         throw ServerException(message: MessageConstant.failure);
       }
 
+      logApiSuccess(
+        source: source,
+        data: {'page': page, 'subjectId': subjectId, 'response': res.data},
+      );
       return responseData.data!;
     } on ServerException {
       rethrow;
     } catch (e) {
+      logApiFailure(
+        source: source,
+        data: {
+          'message': MessageConstant.failure,
+          'page': page,
+          'subjectId': subjectId,
+          'error': e.toString(),
+        },
+      );
       throw ServerException();
     }
   }

@@ -19,12 +19,22 @@ class NewsRemoteDatasourceImpl implements NewsRemoteDatasource {
 
   @override
   Future<List<NewsModel>> getAllNews({required int page}) async {
+    const source = 'NewsRemoteDatasource.getAllNews';
     try {
       final res = await dioClient.get(
         url:
-            "${HomeApiUrls.getNews}?page=$page&limit=${dotenv.get('PAGE_SIZE')}",
+            '${HomeApiUrls.getNews}?page=$page&limit=${dotenv.get('PAGE_SIZE')}',
       );
       if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'page': page,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
         throw ServerException();
       }
 
@@ -32,31 +42,60 @@ class NewsRemoteDatasourceImpl implements NewsRemoteDatasource {
         res.data,
         (json) => NewsModel.fromListJson(json as List<dynamic>),
       );
-      logResponseData(
-        responseData,
-        source: 'NewsRemoteDatasource.getAllNews',
-      );
+      logResponseData(responseData, source: source);
 
       if (responseData.status != 200 || responseData.data == null) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'page': page,
+            'response': res.data,
+          },
+        );
         throw ServerException(message: MessageConstant.failure);
       }
 
+      logApiSuccess(
+        source: source,
+        data: {
+          'page': page,
+          'count': responseData.data!.length,
+          'response': res.data
+        },
+      );
       return responseData.data!;
     } on ServerException {
       rethrow;
     } catch (e) {
+      logApiFailure(
+        source: source,
+        data: {
+          'message': MessageConstant.failure,
+          'page': page,
+          'error': e.toString()
+        },
+      );
       throw ServerException();
     }
   }
 
   @override
   Future<NewsModel> getNewsDetail({required int newsId}) async {
+    const source = 'NewsRemoteDatasource.getNewsDetail';
     try {
-      final res = await dioClient.get(
-        url: "${HomeApiUrls.getNews}/$newsId",
-      );
+      final res = await dioClient.get(url: '${HomeApiUrls.getNews}/$newsId');
 
       if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'newsId': newsId,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
         throw ServerException();
       }
 
@@ -64,19 +103,36 @@ class NewsRemoteDatasourceImpl implements NewsRemoteDatasource {
         res.data,
         (json) => NewsModel.fromJson(json as Map<String, dynamic>),
       );
-      logResponseData(
-        responseData,
-        source: 'NewsRemoteDatasource.getNewsDetail',
-      );
+      logResponseData(responseData, source: source);
 
       if (responseData.status != 200 || responseData.data == null) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failure,
+            'newsId': newsId,
+            'response': res.data,
+          },
+        );
         throw ServerException(message: MessageConstant.failure);
       }
 
+      logApiSuccess(
+        source: source,
+        data: {'newsId': newsId, 'response': res.data},
+      );
       return responseData.data!;
     } on ServerException {
       rethrow;
     } catch (e) {
+      logApiFailure(
+        source: source,
+        data: {
+          'message': MessageConstant.failure,
+          'newsId': newsId,
+          'error': e.toString()
+        },
+      );
       throw ServerException();
     }
   }

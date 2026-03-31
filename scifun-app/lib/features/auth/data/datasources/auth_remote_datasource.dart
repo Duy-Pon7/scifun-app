@@ -187,10 +187,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       await sharePrefsService.saveAuthToken(userModel.token);
       await sharePrefsService.saveUserData(userModel.data?.id);
 
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.login',
+        data: res.data,
+      );
       return userModel;
     } on DioException catch (e) {
       log(
         'Login DioException: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}',
+      );
+      logApiFailure(
+        source: 'AuthRemoteDatasource.login',
+        data: {
+          'message': _extractDioMessage(e),
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
       );
       throw ServerException(
         message: _extractDioMessage(e),
@@ -238,7 +250,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
           'id': userId,
           'email': guestData['email'] ?? '$userId@guest.local',
           'password': guestData['password'],
-          'fullname': guestData['fullname'] ?? 'Khách',
+          'fullname': guestData['fullname'] ?? 'KhÃ¡ch',
           'isFirstLogin': isFirstLogin,
           'isVerified': guestData['isVerified'] ?? false,
           'avatar': guestData['avatar'],
@@ -254,10 +266,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       await sharePrefsService.saveAuthToken(token);
       await sharePrefsService.saveUserData(userId);
 
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.guestLogin',
+        data: normalizedResponse,
+      );
       return userModel;
     } on DioException catch (e) {
       log(
         'Guest login DioException: status=${e.response?.statusCode}, data=${e.response?.data}, message=${e.message}',
+      );
+      logApiFailure(
+        source: 'AuthRemoteDatasource.guestLogin',
+        data: {
+          'message': _extractDioMessage(e),
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
       );
       throw ServerException(
         message: _extractDioMessage(e),
@@ -296,7 +320,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         // If backend returns an explicit status field, treat 200 as success
         final status = data['status'];
         if (status == null || status == 200) {
-          return UserModel.fromJson(data);
+          final user = UserModel.fromJson(data);
+          logApiSuccess(
+            source: 'AuthRemoteDatasource.signup',
+            data: data,
+          );
+          return user;
         }
 
         // Non-success status -> throw with server message
@@ -304,14 +333,31 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       }
 
       // Fallback: try to parse whatever we got
-      return UserModel.fromJson(res.data);
+      final user = UserModel.fromJson(res.data);
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.signup',
+        data: res.data,
+      );
+      return user;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.signup',
+        data: {
+          'message': _extractDioMessage(e),
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
     } catch (e) {
       // Parsing or unexpected errors -> wrap and surface friendly message
       log('Signup parsing error: $e');
+      logApiFailure(
+        source: 'AuthRemoteDatasource.signup',
+        data: {'message': AppErrors.commonError, 'error': e.toString()},
+      );
       throw ServerException(message: AppErrors.commonError);
     }
   }
@@ -326,8 +372,21 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
           "value": email,
         },
       );
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.sendEmail',
+        data: {'email': email},
+      );
       return AppSuccesses.successfullSendEmail;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.sendEmail',
+        data: {
+          'message': _extractDioMessage(e),
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -344,8 +403,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return res.data['message'];
+      final message = res.data['message'];
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.forgotPassword',
+        data: {'email': email, 'response': res.data},
+      );
+      return message;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.forgotPassword',
+        data: {
+          'message': _extractDioMessage(e),
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -365,8 +438,20 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       );
 
       log(returnedData.data.toString());
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.getAuth',
+        data: res.data,
+      );
       return returnedData.data;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.getAuth',
+        data: {
+          'message': _extractDioMessage(e),
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -394,8 +479,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return res.data['message'] ?? "Đổi mật khẩu thành công";
+      final message = res.data['message'] ?? 'Doi mat khau thanh cong';
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.changePassword',
+        data: {'userId': userId, 'response': res.data},
+      );
+      return message;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.changePassword',
+        data: {
+          'message': _extractDioMessage(e),
+          'userId': userId,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -416,8 +515,23 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return UserCheckModel.fromJson(res.data['data']);
+      final model = UserCheckModel.fromJson(res.data['data']);
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.checkEmailPhone',
+        data: {'phone': phone, 'email': email, 'response': res.data},
+      );
+      return model;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.checkEmailPhone',
+        data: {
+          'message': _extractDioMessage(e),
+          'phone': phone,
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -435,8 +549,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return res.data['data'] as bool;
+      final result = res.data['data'] as bool;
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.resendOtp',
+        data: {'email': email, 'response': res.data},
+      );
+      return result;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.resendOtp',
+        data: {
+          'message': _extractDioMessage(e),
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -457,8 +585,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return res.data['message'];
+      final message = res.data['message'];
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.verificationOtp',
+        data: {'email': email, 'response': res.data},
+      );
+      return message;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.verificationOtp',
+        data: {
+          'message': _extractDioMessage(e),
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );
@@ -479,8 +621,22 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
         },
       );
 
-      return res.data['message'] ?? AppSuccesses.resetPasswordSuccess;
+      final message = res.data['message'] ?? AppSuccesses.resetPasswordSuccess;
+      logApiSuccess(
+        source: 'AuthRemoteDatasource.resetPassword',
+        data: {'email': email, 'response': res.data},
+      );
+      return message;
     } on DioException catch (e) {
+      logApiFailure(
+        source: 'AuthRemoteDatasource.resetPassword',
+        data: {
+          'message': _extractDioMessage(e),
+          'email': email,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
       throw ServerException(
         message: _extractDioMessage(e),
       );

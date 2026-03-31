@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -6,6 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/models/user_get_model.dart';
 import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/constants/app_errors.dart';
@@ -34,34 +34,45 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
 
   @override
   Future<UserGetModel?> getUser({required String token}) async {
+    const source = 'UserRemoteDatasource.getUser';
     try {
-      print("token in getUser: $token");
-
-      final res = await dioClient.get(
-        url: "${UserApiUrls.getInfo}$token",
-      );
-
-      print("Get User Response: ${res.data}");
-
+      final res = await dioClient.get(url: '${UserApiUrls.getInfo}$token');
       if (res.statusCode == 200) {
-        return UserGetModel.fromJson(res.data);
+        final user = UserGetModel.fromJson(res.data);
+        logApiSuccess(
+          source: source,
+          data: {'token': token, 'response': res.data},
+        );
+        return user;
       }
 
-      // Log unexpected status
-      log('getUser unexpected status: ${res.statusCode} ${res.data}');
+      logApiFailure(
+        source: source,
+        data: {
+          'message': AppErrors.getAuthFailure,
+          'token': token,
+          'statusCode': res.statusCode,
+          'response': res.data,
+        },
+      );
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
-      String mess = AppErrors.getAuthFailure;
+      String message = AppErrors.getAuthFailure;
       final errors = e.response?.data;
-
-      // Log the DioException details for diagnosis
-      log('getUser DioException: status=${e.response?.statusCode} data=${e.response?.data} message=${e.message}');
-
       if (errors is Map<String, dynamic>) {
-        mess = errors['message'] ?? mess;
+        message = errors['message']?.toString() ?? message;
       }
 
-      throw ServerException(message: mess);
+      logApiFailure(
+        source: source,
+        data: {
+          'message': message,
+          'token': token,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
+      throw ServerException(message: message);
     }
   }
 
@@ -74,10 +85,8 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
     required String level,
     File? avatar,
   }) async {
+    const source = 'UserRemoteDatasource.updateInfoUser';
     try {
-      log("PUT ${UserApiUrls.updateInfo}$userId");
-      log("BODY => fullname: $fullname, dob: $dob, sex: $sex, level: $level");
-
       MultipartFile? avatarMultipart;
       if (avatar != null) {
         final fileName = p.basename(avatar.path);
@@ -92,54 +101,63 @@ class UserRemoteDatasourceImpl implements UserRemoteDatasource {
         );
       }
 
-      FormData formData = FormData.fromMap({
-        "fullname": fullname,
-        "sex": sex,
-        "dob": DateFormat("yyyy-MM-dd").format(dob),
-        "level": level,
-        if (avatarMultipart != null) "avatar": avatarMultipart,
+      final formData = FormData.fromMap({
+        'fullname': fullname,
+        'sex': sex,
+        'dob': DateFormat('yyyy-MM-dd').format(dob),
+        'level': level,
+        if (avatarMultipart != null) 'avatar': avatarMultipart,
       });
 
-      // Log a short summary of the outgoing form (do NOT log binary content)
-      log('Sending updateInfoUser request: userId=$userId, fullname=$fullname, dob=${DateFormat("yyyy-MM-dd").format(dob)}, sex=$sex, level=$level, hasAvatar=${avatar != null}');
-
       final res = await dioClient.put(
-        url: "${UserApiUrls.updateInfo}$userId",
+        url: '${UserApiUrls.updateInfo}$userId',
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
 
-      print("Update User Response: ${res.data}");
-
       if (res.statusCode == 200) {
-        // Parse API response directly using UserModel.fromJson
-        log('Update status 200, response: ${res.data}');
-
-        // API returns data directly, convert to UserModel
         final userData = res.data is Map<String, dynamic>
             ? UserModel.fromJson(res.data)
             : null;
-
-        if (userData == null) {
-          log('Update returned no data');
-          return null;
-        }
-        log('Update returned user: $userData');
+        logApiSuccess(
+          source: source,
+          data: {
+            'userId': userId,
+            'hasAvatar': avatar != null,
+            'response': res.data,
+          },
+        );
         return userData;
       }
 
+      logApiFailure(
+        source: source,
+        data: {
+          'message': AppErrors.getAuthFailure,
+          'userId': userId,
+          'statusCode': res.statusCode,
+          'response': res.data,
+        },
+      );
       throw ServerException(message: AppErrors.getAuthFailure);
     } on DioException catch (e) {
       final errors = e.response?.data;
-      String mess = AppErrors.getAuthFailure;
-
-      // Extra logs for diagnosis
-      log('updateInfoUser DioException: status=${e.response?.statusCode} data=${e.response?.data} message=${e.message}');
+      String message = AppErrors.getAuthFailure;
 
       if (errors is Map<String, dynamic>) {
-        mess = errors['message'] ?? mess;
+        message = errors['message']?.toString() ?? message;
       }
-      throw ServerException(message: mess);
+
+      logApiFailure(
+        source: source,
+        data: {
+          'message': message,
+          'userId': userId,
+          'error': e.toString(),
+          'response': e.response?.data,
+        },
+      );
+      throw ServerException(message: message);
     }
   }
 }

@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +12,7 @@ import 'package:sci_fun/common/entities/user_get_entity.dart';
 import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/network/remote_config.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _openChatSupport() async {
-    final apiBase = dotenv.get('BASE_URL').replaceAll(RegExp(r'/+$'), '');
+    final apiBase = RemoteConfig.apiBaseUrl;
     final isAdmin = await _isCurrentUserAdmin();
 
     if (!mounted) {
@@ -723,7 +723,8 @@ Widget subscriptionCard(UserDataEntity user) {
         SizedBox(height: 8.h),
         Row(
           children: [
-            const Icon(Symbols.calendar_month_rounded, color: Colors.white, size: 18),
+            const Icon(Symbols.calendar_month_rounded,
+                color: Colors.white, size: 18),
             SizedBox(width: 6.w),
             Expanded(
               child: Text(

@@ -37,6 +37,8 @@ class SubjectApiUrl {
 class PlansApiUrl {
   PlansApiUrl._();
   static const String getPlansList = '/plans/list';
+  static const String checkout = '/checkout';
+  static const String verifyPayment = '/zalopay/verifyPayment';
 }
 
 class OrdersApiUrl {

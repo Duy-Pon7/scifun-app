@@ -56,26 +56,21 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<UserGetEntity?> getUser({required String token}) async {
-    print('UserCubit.getUser: token=$token');
     _tryEmit(UserLoading());
     try {
       final res = await getInfoUser.call(token: token);
       return await res.fold(
         (failure) {
-          print('UserCubit.getUser failure: ${failure.message}');
           _tryEmit(UserError(failure.message));
           return null;
         },
         (data) {
           final user = data!;
-          print(
-              'UserCubit.getUser success: id=${user.data?.id} fullname=${user.data?.fullname}');
           _tryEmit(UserLoaded(user));
           return user;
         },
       );
     } catch (e) {
-      print('UserCubit.getUser exception: $e');
       _tryEmit(UserError(e.toString()));
       return null;
     }

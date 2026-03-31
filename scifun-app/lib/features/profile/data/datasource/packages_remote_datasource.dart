@@ -29,38 +29,70 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
   final DioClient dioClient;
 
   PackagesRemoteDatasourceImpl({required this.dioClient});
+
   @override
   Future<List<InstructionsModel>> getInstructions() async {
-    final res = await dioClient.get(url: PackagesApiUrl.instructionsPackages);
-    if (res.statusCode != 200) {
-      throw ServerException();
-    }
+    const source = 'PackagesRemoteDatasource.getInstructions';
+    try {
+      final res = await dioClient.get(url: PackagesApiUrl.instructionsPackages);
+      if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failedGetInfo,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
+        throw ServerException();
+      }
 
-    final responseData = ResponseModel<List<InstructionsModel>>.fromJson(
-      res.data,
-      (json) => (json as List)
-          .map((e) => InstructionsModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
-    logResponseData(
-      responseData,
-      source: 'PackagesRemoteDatasource.getInstructions',
-    );
+      final responseData = ResponseModel<List<InstructionsModel>>.fromJson(
+        res.data,
+        (json) => (json as List)
+            .map((e) => InstructionsModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+      logResponseData(responseData, source: source);
 
-    if (responseData.status != 200 || responseData.data == null) {
+      if (responseData.status != 200 || responseData.data == null) {
+        final message = responseData.message ?? MessageConstant.failedGetInfo;
+        logApiFailure(
+          source: source,
+          data: {
+            'message': message,
+            'response': res.data,
+          },
+        );
+        throw ServerException(message: MessageConstant.failedGetInfo);
+      }
+
+      logApiSuccess(
+        source: source,
+        data: {'count': responseData.data!.length, 'response': res.data},
+      );
+      return responseData.data!;
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      logApiFailure(
+        source: source,
+        data: {'message': MessageConstant.failedGetInfo, 'error': e.toString()},
+      );
       throw ServerException(message: MessageConstant.failedGetInfo);
     }
-
-    return responseData.data!;
   }
 
   @override
   Future<void> buyPackages({required int id, required File image}) async {
+    const source = 'PackagesRemoteDatasource.buyPackages';
     try {
       final formData = FormData.fromMap({
         'id': id,
-        'payment_confirmation_image': await MultipartFile.fromFile(image.path,
-            filename: image.path.split('/').last),
+        'payment_confirmation_image': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
       });
 
       final res = await dioClient.post(
@@ -69,6 +101,15 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
       );
 
       if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failedGetInfo,
+            'id': id,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
         throw ServerException();
       }
 
@@ -76,30 +117,50 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
         res.data,
         (data) => data,
       );
-      logResponseData(
-        responseData,
-        source: 'PackagesRemoteDatasource.buyPackages',
-      );
+      logResponseData(responseData, source: source);
 
       if (responseData.status != 200) {
-        throw ServerException(
-            message: responseData.message ?? MessageConstant.failedGetInfo);
+        final message = responseData.message ?? MessageConstant.failedGetInfo;
+        logApiFailure(
+          source: source,
+          data: {'message': message, 'id': id, 'response': res.data},
+        );
+        throw ServerException(message: message);
       }
 
-      print("Mua gói thành công");
+      logApiSuccess(
+        source: source,
+        data: {'id': id, 'response': res.data},
+      );
     } on ServerException {
       rethrow;
     } catch (e) {
-      print("Lỗi không xác định khi mua gói: $e");
+      logApiFailure(
+        source: source,
+        data: {
+          'message': 'Loi khong xac dinh khi mua goi',
+          'id': id,
+          'error': e.toString()
+        },
+      );
       throw ServerException();
     }
   }
 
   @override
   Future<List<PackagesModel>> getpackages() async {
+    const source = 'PackagesRemoteDatasource.getpackages';
     try {
       final res = await dioClient.get(url: PackagesApiUrl.getPackages);
       if (res.statusCode != 200) {
+        logApiFailure(
+          source: source,
+          data: {
+            'message': MessageConstant.failedGetInfo,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
         throw ServerException();
       }
 
@@ -109,26 +170,36 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
             .map((e) => PackagesModel.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
-      logResponseData(
-        responseData,
-        source: 'PackagesRemoteDatasource.getpackages',
-      );
+      logResponseData(responseData, source: source);
 
       if (responseData.status != 200 || responseData.data == null) {
+        final message = responseData.message ?? MessageConstant.failedGetInfo;
+        logApiFailure(
+          source: source,
+          data: {'message': message, 'response': res.data},
+        );
         throw ServerException(message: MessageConstant.failedGetInfo);
       }
 
+      logApiSuccess(
+        source: source,
+        data: {'count': responseData.data!.length, 'response': res.data},
+      );
       return responseData.data!;
     } on ServerException {
       rethrow;
     } catch (e) {
-      print("Lỗi không xác định: $e");
+      logApiFailure(
+        source: source,
+        data: {'message': 'Loi khong xac dinh', 'error': e.toString()},
+      );
       throw ServerException();
     }
   }
 
   @override
   Future<List<NotificationModel>> getHistoryPackage({required int page}) async {
+    const source = 'PackagesRemoteDatasource.getHistoryPackage';
     try {
       final res = await dioClient.get(
         url: '${PackagesApiUrl.historyPackages}?page=$page',
@@ -136,7 +207,6 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
 
       if (res.statusCode == 200) {
         final json = res.data;
-
         final data = json['data'] as Map<String, dynamic>? ?? {};
         final notificationsJson = data['notifications'] as List<dynamic>? ?? [];
 
@@ -144,12 +214,35 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
             .map((e) => NotificationModel.fromJson(e))
             .toList();
 
+        logApiSuccess(
+          source: source,
+          data: {
+            'page': page,
+            'count': notifications.length,
+            'response': res.data
+          },
+        );
         return notifications;
-      } else {
-        throw ServerException(message: res.statusMessage ?? 'Unknown error');
       }
+
+      final message = res.statusMessage ?? 'Unknown error';
+      logApiFailure(
+        source: source,
+        data: {
+          'message': message,
+          'page': page,
+          'statusCode': res.statusCode,
+          'response': res.data,
+        },
+      );
+      throw ServerException(message: message);
     } catch (e) {
-      throw ServerException(message: e.toString());
+      final message = e.toString();
+      logApiFailure(
+        source: source,
+        data: {'message': message, 'page': page, 'error': e.toString()},
+      );
+      throw ServerException(message: message);
     }
   }
 
@@ -158,37 +251,93 @@ class PackagesRemoteDatasourceImpl implements PackagesRemoteDatasource {
     required int page,
     required int limit,
   }) async {
+    const source = 'PackagesRemoteDatasource.getOrderHistory';
     try {
       final res = await dioClient.get(
         url: '${OrdersApiUrl.getUserOrders}?page=$page&limit=$limit',
       );
 
       if (res.statusCode != 200) {
-        throw ServerException(message: res.statusMessage ?? 'Unknown error');
+        final message = res.statusMessage ?? 'Unknown error';
+        logApiFailure(
+          source: source,
+          data: {
+            'message': message,
+            'page': page,
+            'limit': limit,
+            'statusCode': res.statusCode,
+            'response': res.data,
+          },
+        );
+        throw ServerException(message: message);
       }
 
       final json = res.data;
       if (json is! Map<String, dynamic>) {
-        throw ServerException(message: 'Invalid response format');
+        const message = 'Invalid response format';
+        logApiFailure(
+          source: source,
+          data: {
+            'message': message,
+            'page': page,
+            'limit': limit,
+            'response': res.data
+          },
+        );
+        throw ServerException(message: message);
       }
 
       final status = json['status'];
       if (status != 200) {
-        throw ServerException(
-          message: json['message']?.toString() ?? MessageConstant.failedGetInfo,
+        final message =
+            json['message']?.toString() ?? MessageConstant.failedGetInfo;
+        logApiFailure(
+          source: source,
+          data: {
+            'message': message,
+            'page': page,
+            'limit': limit,
+            'response': res.data
+          },
         );
+        throw ServerException(message: message);
       }
 
       final data = json['data'];
       if (data is! Map<String, dynamic>) {
-        throw ServerException(message: 'Missing order history data');
+        const message = 'Missing order history data';
+        logApiFailure(
+          source: source,
+          data: {
+            'message': message,
+            'page': page,
+            'limit': limit,
+            'response': res.data
+          },
+        );
+        throw ServerException(message: message);
       }
 
-      return UserOrderHistoryModel.fromJson(data);
+      final history = UserOrderHistoryModel.fromJson(data);
+      logApiSuccess(
+        source: source,
+        data: {'page': page, 'limit': limit, 'response': res.data},
+      );
+      return history;
     } on ServerException {
       rethrow;
     } catch (e) {
-      throw ServerException(message: e.toString());
+      final message = e.toString();
+      logApiFailure(
+        source: source,
+        data: {
+          'message': message,
+          'page': page,
+          'limit': limit,
+          'error': e.toString()
+        },
+      );
+      throw ServerException(message: message);
     }
   }
 }
