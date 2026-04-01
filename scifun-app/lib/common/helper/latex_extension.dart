@@ -31,7 +31,7 @@ class LatexExtension extends HtmlExtension {
   }
 }
 
-/// Tiền xử lý: bọc các biểu thức \(...\) hoặc $$...$$ thành <latex>…</latex>
+/// Tiền xử lý: bọc các biểu thức \(...\) hoặc $$...$$ thành
 String preprocessLatex(String html) {
   var result = html;
 

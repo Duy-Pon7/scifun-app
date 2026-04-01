@@ -120,7 +120,7 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                           return CupertinoButton(
                             color:
                                 isSelected ? AppColor.skyblue600 : Colors.white,
-                            minSize: 0,
+                          
                             borderRadius: BorderRadius.zero,
                             padding: widget.paddingDropdownItems ??
                                 EdgeInsets.symmetric(
@@ -257,7 +257,6 @@ class _CustomizeDropdownState<T> extends State<CustomizeDropdown<T>> {
                       size: 22.sp,
                       color: state
                           ? AppColor.skyblue50
-                          //TODO: Đổi màu icon drop
                           : AppColor.skyblue600,
                     ),
                   ],

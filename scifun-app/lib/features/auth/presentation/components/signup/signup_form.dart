@@ -67,7 +67,6 @@ class _SignupFormState extends State<SignupForm> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        print("Auth State: $state");
         if (state is AuthUserSuccess) {
           // After successful signup, navigate to OTP page
           EasyLoading.dismiss();
