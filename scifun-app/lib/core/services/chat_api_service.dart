@@ -164,23 +164,36 @@ class ChatApiService {
     throw Exception(message);
   }
 
-  Future<String> openConversation({required String token}) async {
+  Future<String> openConversation({
+    required String token,
+    String type = 'HUMAN',
+  }) async {
     const source = 'ChatApiService.openConversation';
     try {
       final base = _base();
       final origin = Uri.parse(apiBaseUrl).origin;
       final baseNoVersion = base.replaceAll(RegExp(r'/api/v\d+$'), '');
+      final normalizedType = type.trim().toUpperCase();
+
+      List<Uri> buildCandidates(String root) {
+        final list = <Uri>[];
+        if (normalizedType.isNotEmpty) {
+          list.add(Uri.parse('$root/chat/conversation?type=$normalizedType'));
+          list.add(
+              Uri.parse('$root/api/chat/conversation?type=$normalizedType'));
+        }
+        list.add(Uri.parse('$root/chat/conversation'));
+        list.add(Uri.parse('$root/api/chat/conversation'));
+        return list;
+      }
 
       final candidates = <Uri>[
-        Uri.parse('$base/chat/conversation'),
-        Uri.parse('$base/api/chat/conversation'),
-        Uri.parse('$origin/chat/conversation'),
-        Uri.parse('$origin/api/chat/conversation'),
+        ...buildCandidates(base),
+        ...buildCandidates(origin),
       ];
 
       if (baseNoVersion != base) {
-        candidates.add(Uri.parse('$baseNoVersion/api/chat/conversation'));
-        candidates.add(Uri.parse('$baseNoVersion/chat/conversation'));
+        candidates.addAll(buildCandidates(baseNoVersion));
       }
 
       final res = await _postWithFallbacks(candidates, {

@@ -34,6 +34,85 @@ class RealtimeService {
   /// ID assigned by server for this connection (from CONNECTED headers, e.g. user-name)
   String? get selfId => _selfId;
 
+  ChatMessage? _parseChatFrame(
+    StompFrame frame, {
+    String? fallbackConversationId,
+  }) {
+    final body = frame.body;
+    if (body == null || body.isEmpty) return null;
+
+    try {
+      final json = jsonDecode(body);
+      if (json is! Map) return null;
+
+      var message = ChatMessage.fromJson(json.cast<String, dynamic>());
+      final messageConversationId = message.conversationId?.trim();
+      if ((messageConversationId == null || messageConversationId.isEmpty) &&
+          fallbackConversationId != null &&
+          fallbackConversationId.trim().isNotEmpty) {
+        message = ChatMessage(
+          id: message.id,
+          conversationId: fallbackConversationId.trim(),
+          senderId: message.senderId,
+          senderRole: message.senderRole,
+          senderName: message.senderName,
+          content: message.content,
+          createdAt: message.createdAt,
+        );
+      }
+      return message;
+    } catch (e) {
+      print('Failed to parse chat message: $e');
+      return null;
+    }
+  }
+
+  dynamic _subscribeConversationTopic(
+    String conversationId, {
+    required void Function(ChatMessage message) onMessage,
+  }) {
+    final c = _client;
+    if (c == null || !c.connected) return null;
+
+    final id = conversationId.trim();
+    if (id.isEmpty) return null;
+
+    try {
+      return c.subscribe(
+        destination: '/topic/chat/$id',
+        callback: (f) {
+          final message = _parseChatFrame(
+            f,
+            fallbackConversationId: id,
+          );
+          if (message != null) onMessage(message);
+        },
+      );
+    } catch (e) {
+      print('Failed to subscribe to chat topic $id: $e');
+      return null;
+    }
+  }
+
+  void unsubscribe(dynamic subscription) {
+    if (subscription == null) return;
+    try {
+      (subscription as dynamic).unsubscribe();
+    } catch (_) {}
+  }
+
+  /// Subscribe to `/topic/chat/{conversationId}` with a custom callback.
+  /// Used by admin screen to listen to multiple rooms simultaneously.
+  dynamic subscribeConversationTopic({
+    required String conversationId,
+    required void Function(ChatMessage message) onMessage,
+  }) {
+    return _subscribeConversationTopic(
+      conversationId,
+      onMessage: onMessage,
+    );
+  }
+
   /// wsUrl: wss://api.your.com/ws  (backend registerStompEndpoints: /ws)
   Future<void> connect({
     required String wsUrl,
@@ -137,30 +216,16 @@ class RealtimeService {
             }
           } catch (_) {}
 
-          // If an active conversation was set before connect, subscribe to it now
-          if (_activeConversationId != null) {
+          // If an active conversation was set before connect, subscribe to it now.
+          final activeConversationId = _activeConversationId?.trim();
+          if (activeConversationId != null && activeConversationId.isNotEmpty) {
+            _chatSubscription = _subscribeConversationTopic(
+              activeConversationId,
+              onMessage: (message) => _chatController.add(message),
+            );
             try {
-              _chatSubscription = _client!.subscribe(
-                destination: '/topic/chat/${_activeConversationId}',
-                callback: (f) {
-                  final body = f.body;
-                  if (body == null || body.isEmpty) return;
-                  final json = jsonDecode(body);
-                  if (json is Map<String, dynamic>) {
-                    try {
-                      _chatController.add(ChatMessage.fromJson(json));
-                    } catch (e) {
-                      print('Failed to parse chat message: $e');
-                    }
-                  }
-                },
-              );
-              try {
-                print('Subscribed to /topic/chat/${_activeConversationId}');
-              } catch (_) {}
-            } catch (e) {
-              print('Failed to subscribe to chat topic: $e');
-            }
+              print('Subscribed to /topic/chat/$activeConversationId');
+            } catch (_) {}
           }
 
           // We're connected now
@@ -200,6 +265,8 @@ class RealtimeService {
   }
 
   void disconnect() {
+    unsubscribe(_chatSubscription);
+    _chatSubscription = null;
     final c = _client;
     _client = null;
     c?.deactivate();
@@ -264,37 +331,16 @@ class RealtimeService {
     if (_activeConversationId == conversationId) return;
 
     // try to unsubscribe previous subscription if we have it
-    try {
-      if (_chatSubscription != null) {
-        try {
-          (_chatSubscription as dynamic).unsubscribe();
-        } catch (_) {}
-        _chatSubscription = null;
-      }
-    } catch (_) {}
+    unsubscribe(_chatSubscription);
+    _chatSubscription = null;
 
     _activeConversationId = conversationId;
 
-    if (_client != null) {
-      try {
-        _chatSubscription = _client!.subscribe(
-          destination: '/topic/chat/$conversationId',
-          callback: (f) {
-            final body = f.body;
-            if (body == null || body.isEmpty) return;
-            final json = jsonDecode(body);
-            if (json is Map<String, dynamic>) {
-              try {
-                _chatController.add(ChatMessage.fromJson(json));
-              } catch (e) {
-                print('Failed to parse chat message: $e');
-              }
-            }
-          },
-        );
-      } catch (e) {
-        print('Failed to subscribe to chat topic: $e');
-      }
+    if (_client != null && _client!.connected) {
+      _chatSubscription = _subscribeConversationTopic(
+        conversationId,
+        onMessage: (message) => _chatController.add(message),
+      );
     }
   }
 

@@ -32,8 +32,9 @@ class _AdminChatPageState extends State<AdminChatPage> {
   final _scrollCtrl = ScrollController();
   final _messages = <ChatMessage>[];
   final _conversations = <ConversationSummary>[];
+  final _unreadByConversationId = <String, int>{};
+  final _roomSubscriptions = <String, dynamic>{};
 
-  StreamSubscription<ChatMessage>? _wsSub;
   StreamSubscription<bool>? _connSub;
 
   String? _token;
@@ -55,8 +56,8 @@ class _AdminChatPageState extends State<AdminChatPage> {
 
   @override
   void dispose() {
-    _wsSub?.cancel();
     _connSub?.cancel();
+    _clearRoomSubscriptions();
     _text.dispose();
     _scrollCtrl.dispose();
     super.dispose();
@@ -110,20 +111,6 @@ class _AdminChatPageState extends State<AdminChatPage> {
     return ids;
   }
 
-  String? get _activeConversationUserId {
-    final activeId = _activeConversationId;
-    if (activeId == null || activeId.isEmpty) return null;
-
-    for (final c in _conversations) {
-      if (c.id != activeId) continue;
-      final userId = c.userId?.trim();
-      if (userId != null && userId.isNotEmpty) return userId;
-      break;
-    }
-
-    return null;
-  }
-
   String? _normalizeRole(String? role) {
     final normalized = role?.trim().toUpperCase();
     if (normalized == null || normalized.isEmpty) return null;
@@ -145,22 +132,14 @@ class _AdminChatPageState extends State<AdminChatPage> {
   }
 
   bool _isMine(ChatMessage message) {
-    final role = _normalizeRole(message.senderRole);
-    if (role == 'ADMIN') return true;
-    if (role == 'USER') return false;
-
     final senderId = message.senderId?.trim();
-    if (senderId == null || senderId.isEmpty) {
-      return false;
+    if (senderId != null && senderId.isNotEmpty) {
+      return _myIds.contains(senderId);
     }
 
-    if (_myIds.contains(senderId)) {
+    if (message.id?.startsWith('local-') == true &&
+        _normalizeRole(message.senderRole) == 'ADMIN') {
       return true;
-    }
-
-    final conversationUserId = _activeConversationUserId;
-    if (conversationUserId != null && conversationUserId.isNotEmpty) {
-      return senderId != conversationUserId;
     }
 
     return false;
@@ -168,6 +147,48 @@ class _AdminChatPageState extends State<AdminChatPage> {
 
   String _roleLabel(ChatMessage message, bool isMe) {
     return _normalizeRole(message.senderRole) ?? (isMe ? 'ADMIN' : 'USER');
+  }
+
+  bool _isHumanConversation(ConversationSummary conversation) {
+    final normalizedType = conversation.type?.trim().toUpperCase();
+    return normalizedType == null ||
+        normalizedType.isEmpty ||
+        normalizedType == 'HUMAN';
+  }
+
+  int _conversationSort(ConversationSummary a, ConversationSummary b) {
+    final timeA = a.updatedAt;
+    final timeB = b.updatedAt;
+    if (timeA == null && timeB == null) return 0;
+    if (timeA == null) return 1;
+    if (timeB == null) return -1;
+    return timeB.compareTo(timeA);
+  }
+
+  ChatMessage _ensureConversationId(
+      ChatMessage message, String conversationId) {
+    if (message.conversationId == conversationId) return message;
+    return ChatMessage(
+      id: message.id,
+      conversationId: conversationId,
+      senderId: message.senderId,
+      senderRole: message.senderRole,
+      senderName: message.senderName,
+      content: message.content,
+      createdAt: message.createdAt,
+    );
+  }
+
+  ChatMessage _mergeWithOptimistic(ChatMessage incoming, ChatMessage local) {
+    return ChatMessage(
+      id: incoming.id ?? local.id,
+      conversationId: incoming.conversationId ?? local.conversationId,
+      senderId: incoming.senderId ?? local.senderId,
+      senderRole: incoming.senderRole ?? local.senderRole,
+      senderName: incoming.senderName ?? local.senderName,
+      content: incoming.content,
+      createdAt: incoming.createdAt ?? local.createdAt,
+    );
   }
 
   int _findOptimisticIndex(ChatMessage message) {
@@ -184,7 +205,113 @@ class _AdminChatPageState extends State<AdminChatPage> {
     });
   }
 
+  int _unreadCount(String conversationId) {
+    return _unreadByConversationId[conversationId] ?? 0;
+  }
+
+  void _clearUnread(String conversationId) {
+    _unreadByConversationId.remove(conversationId);
+  }
+
+  void _markUnread(String conversationId) {
+    if (conversationId == _activeConversationId) return;
+    _unreadByConversationId.update(
+      conversationId,
+      (value) => value + 1,
+      ifAbsent: () => 1,
+    );
+  }
+
+  void _appendIncomingForActiveConversation(ChatMessage message) {
+    final existedById = message.id == null
+        ? -1
+        : _messages.indexWhere((item) => item.id == message.id);
+    if (existedById >= 0) {
+      _messages[existedById] = message;
+      return;
+    }
+
+    final optimisticIdx = _findOptimisticIndex(message);
+    if (optimisticIdx >= 0) {
+      _messages[optimisticIdx] =
+          _mergeWithOptimistic(message, _messages[optimisticIdx]);
+      return;
+    }
+
+    if (_isMine(message)) return;
+    _messages.add(message);
+  }
+
+  void _handleRoomMessage(String roomId, ChatMessage rawMessage) {
+    if (!mounted) return;
+
+    final incoming = _ensureConversationId(rawMessage, roomId);
+    if (roomId == _activeConversationId) {
+      setState(() {
+        _appendIncomingForActiveConversation(incoming);
+      });
+      _scrollToBottom();
+      return;
+    }
+
+    if (_isMine(incoming)) return;
+    setState(() {
+      _markUnread(roomId);
+    });
+  }
+
+  void _subscribeRoom(String conversationId) {
+    if (_roomSubscriptions.containsKey(conversationId)) return;
+    if (!_isConnected) return;
+
+    final sub = RealtimeService.I.subscribeConversationTopic(
+      conversationId: conversationId,
+      onMessage: (message) => _handleRoomMessage(conversationId, message),
+    );
+    if (sub != null) {
+      _roomSubscriptions[conversationId] = sub;
+    }
+  }
+
+  void _clearRoomSubscriptions() {
+    for (final sub in _roomSubscriptions.values) {
+      RealtimeService.I.unsubscribe(sub);
+    }
+    _roomSubscriptions.clear();
+  }
+
+  void _syncRoomSubscriptions() {
+    final validIds = _conversations
+        .map((c) => c.id.trim())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+
+    final staleIds = _roomSubscriptions.keys
+        .where((conversationId) => !validIds.contains(conversationId))
+        .toList();
+    for (final id in staleIds) {
+      final sub = _roomSubscriptions.remove(id);
+      RealtimeService.I.unsubscribe(sub);
+      _unreadByConversationId.remove(id);
+    }
+
+    if (!_isConnected) return;
+    for (final id in validIds) {
+      _subscribeRoom(id);
+    }
+  }
+
+  void _resubscribeAllRooms() {
+    _clearRoomSubscriptions();
+    _syncRoomSubscriptions();
+  }
+
   Future<void> _init() async {
+    await _connSub?.cancel();
+    _connSub = null;
+    _clearRoomSubscriptions();
+    _unreadByConversationId.clear();
+
     try {
       _token = await widget.getToken();
       if (_token == null || _token!.isEmpty) {
@@ -206,34 +333,10 @@ class _AdminChatPageState extends State<AdminChatPage> {
         setState(() {
           _isConnected = connected;
         });
-      });
-
-      _wsSub = RealtimeService.I.chatStream.listen((message) {
-        if (!mounted) return;
-        if (message.conversationId != _activeConversationId) return;
-        final isMine = _isMine(message);
-
-        setState(() {
-          final existedById = message.id == null
-              ? -1
-              : _messages.indexWhere((item) => item.id == message.id);
-          if (existedById >= 0) {
-            _messages[existedById] = message;
-            return;
-          }
-
-          final optimisticIdx = _findOptimisticIndex(message);
-          if (optimisticIdx >= 0) {
-            _messages[optimisticIdx] = message;
-            return;
-          }
-
-          // Skip self echoes when optimistic message is already shown.
-          if (isMine) return;
-
-          _messages.add(message);
-        });
-        _scrollToBottom();
+        if (connected) {
+          _selfId = _myId ?? _selfId;
+          _resubscribeAllRooms();
+        }
       });
 
       await _loadConversations(selectFirst: true);
@@ -261,18 +364,22 @@ class _AdminChatPageState extends State<AdminChatPage> {
     try {
       final items = await _api.listConversations(token: token);
       if (!mounted) return;
+      final humanRooms = items.where(_isHumanConversation).toList()
+        ..sort(_conversationSort);
 
       setState(() {
         _conversations
           ..clear()
-          ..addAll(items);
+          ..addAll(humanRooms);
       });
+      _syncRoomSubscriptions();
 
       final active = _activeConversationId;
       if (active != null && _conversations.every((e) => e.id != active)) {
         setState(() {
           _activeConversationId = null;
           _messages.clear();
+          _clearUnread(active);
         });
       }
 
@@ -299,8 +406,8 @@ class _AdminChatPageState extends State<AdminChatPage> {
       _activeConversationId = id;
       _loadingMessages = true;
       _messages.clear();
+      _clearUnread(id);
     });
-    RealtimeService.I.setActiveConversation(id);
     await _loadMessages(id);
   }
 
@@ -314,6 +421,14 @@ class _AdminChatPageState extends State<AdminChatPage> {
         conversationId: conversationId,
         limit: 100,
       );
+      history.sort((a, b) {
+        final at = a.createdAt;
+        final bt = b.createdAt;
+        if (at == null && bt == null) return 0;
+        if (at == null) return -1;
+        if (bt == null) return 1;
+        return at.compareTo(bt);
+      });
 
       if (!mounted || conversationId != _activeConversationId) return;
       setState(() {
@@ -453,13 +568,25 @@ class _AdminChatPageState extends State<AdminChatPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _isConnected ? 'CONNECTED' : 'CONNECTING',
+                            _isConnected ? 'CONNECTED' : 'DISCONNECTED',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _myId == null ? '' : 'AdminId: ${_myId!}',
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF6B7483),
+                              ),
+                            ),
+                          ),
                           IconButton(
                             tooltip: 'Reload',
                             onPressed: _refreshAll,
@@ -506,6 +633,9 @@ class _AdminChatPageState extends State<AdminChatPage> {
                                     final c = _conversations[i];
                                     final selected =
                                         c.id == _activeConversationId;
+                                    final unread = _unreadCount(c.id);
+                                    final status =
+                                        c.status?.trim().toUpperCase() ?? '';
                                     return InkWell(
                                       onTap: () => _selectConversation(c.id),
                                       borderRadius: BorderRadius.circular(12),
@@ -549,6 +679,56 @@ class _AdminChatPageState extends State<AdminChatPage> {
                                                 color: Color(0xFF6B7483),
                                               ),
                                             ),
+                                            if (status.isNotEmpty ||
+                                                unread > 0) ...[
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  if (status.isNotEmpty)
+                                                    Expanded(
+                                                      child: Text(
+                                                        status,
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                          fontSize: 10,
+                                                          color:
+                                                              Color(0xFF7F8898),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  else
+                                                    const Spacer(),
+                                                  if (unread > 0)
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xFFD7263D),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(999),
+                                                      ),
+                                                      child: Text(
+                                                        unread > 99
+                                                            ? '99+'
+                                                            : '$unread',
+                                                        style: const TextStyle(
+                                                          fontSize: 10,
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
+                                            ],
                                           ],
                                         ),
                                       ),

@@ -27,8 +27,8 @@ class UserChatPage extends StatefulWidget {
 class _UserChatPageState extends State<UserChatPage> {
   late final ChatApiService _api = ChatApiService(widget.apiBaseUrl);
 
-  StreamSubscription? _wsSub;
-  StreamSubscription? _connSub;
+  StreamSubscription<ChatMessage>? _wsSub;
+  StreamSubscription<bool>? _connSub;
 
   final _text = TextEditingController();
   final _scrollCtrl = ScrollController();
@@ -37,6 +37,7 @@ class _UserChatPageState extends State<UserChatPage> {
   String? _token;
   String? _selfId;
   String? _conversationId;
+  bool _isConnected = false;
   bool _loading = true;
 
   @override
@@ -65,6 +66,56 @@ class _UserChatPageState extends State<UserChatPage> {
     } catch (_) {
       return null;
     }
+  }
+
+  String? _extractRoleFromToken(String token) {
+    String? pickRole(dynamic value) {
+      if (value == null) return null;
+      if (value is Iterable) {
+        for (final item in value) {
+          final role = pickRole(item);
+          if (role != null) return role;
+        }
+        return null;
+      }
+      if (value is Map) {
+        const keys = ['role', 'authority', 'name', 'code', 'value', 'type'];
+        for (final key in keys) {
+          final role = pickRole(value[key]);
+          if (role != null) return role;
+        }
+        return null;
+      }
+      return _normalizeRole(value.toString());
+    }
+
+    try {
+      final parts = token.split('.');
+      if (parts.length < 2) return null;
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final data = jsonDecode(payload);
+      if (data is! Map<String, dynamic>) return null;
+
+      const keys = [
+        'role',
+        'roles',
+        'authorities',
+        'authority',
+        'permissions',
+        'permission',
+        'scope',
+        'scopes',
+        'groups',
+      ];
+      for (final key in keys) {
+        final role = pickRole(data[key]);
+        if (role != null) return role;
+      }
+    } catch (_) {}
+
+    return null;
   }
 
   String? get _myId {
@@ -114,13 +165,31 @@ class _UserChatPageState extends State<UserChatPage> {
   }
 
   bool _isOwnMessage(ChatMessage message) {
-    final role = _normalizeRole(message.senderRole);
-    if (role == 'USER') return true;
-    if (role == 'ADMIN') return false;
-
     final senderId = message.senderId?.trim();
-    if (senderId == null || senderId.isEmpty) return false;
-    return _myIds.contains(senderId);
+    if (senderId != null && senderId.isNotEmpty) {
+      return _myIds.contains(senderId);
+    }
+
+    if (message.id?.startsWith('local-') == true &&
+        _normalizeRole(message.senderRole) == 'USER') {
+      return true;
+    }
+
+    return false;
+  }
+
+  ChatMessage _ensureConversationId(
+      ChatMessage message, String conversationId) {
+    if (message.conversationId == conversationId) return message;
+    return ChatMessage(
+      id: message.id,
+      conversationId: conversationId,
+      senderId: message.senderId,
+      senderRole: message.senderRole,
+      senderName: message.senderName,
+      content: message.content,
+      createdAt: message.createdAt,
+    );
   }
 
   ChatMessage _mergeWithOptimistic(ChatMessage incoming, ChatMessage local) {
@@ -147,6 +216,79 @@ class _UserChatPageState extends State<UserChatPage> {
       return item.createdAt!.difference(message.createdAt!).inSeconds.abs() <=
           10;
     });
+  }
+
+  void _appendIncomingMessage(ChatMessage message) {
+    final existedById = message.id == null
+        ? -1
+        : _messages.indexWhere((x) => x.id == message.id);
+    if (existedById != -1) {
+      _messages[existedById] = message;
+      return;
+    }
+
+    final optimisticIdx = _findOptimisticIndex(message);
+    if (optimisticIdx != -1) {
+      _messages[optimisticIdx] =
+          _mergeWithOptimistic(message, _messages[optimisticIdx]);
+      return;
+    }
+
+    // Skip self echoes when we already rendered optimistic message.
+    if (_isOwnMessage(message)) return;
+
+    _messages.add(message);
+  }
+
+  void _bindLiveMessageStream() {
+    _wsSub?.cancel();
+    _wsSub = RealtimeService.I.chatStream.listen((incoming) {
+      if (!mounted) return;
+      final activeConversationId = _conversationId;
+      if (activeConversationId == null || activeConversationId.isEmpty) return;
+
+      final incomingConversationId = incoming.conversationId?.trim();
+      if (incomingConversationId != null &&
+          incomingConversationId.isNotEmpty &&
+          incomingConversationId != activeConversationId) {
+        return;
+      }
+
+      final message = _ensureConversationId(incoming, activeConversationId);
+      setState(() {
+        _appendIncomingMessage(message);
+      });
+      _scrollToBottom();
+    });
+  }
+
+  Future<void> _loadConversationHistory(String conversationId) async {
+    final token = _token;
+    if (token == null || token.isEmpty) return;
+
+    final history = await _api.getMessages(
+      token: token,
+      conversationId: conversationId,
+      limit: 50,
+    );
+
+    history.sort((a, b) {
+      final at = a.createdAt;
+      final bt = b.createdAt;
+      if (at == null && bt == null) return 0;
+      if (at == null) return -1;
+      if (bt == null) return 1;
+      return at.compareTo(bt);
+    });
+
+    if (!mounted || conversationId != _conversationId) return;
+    setState(() {
+      _messages
+        ..clear()
+        ..addAll(history);
+      _loading = false;
+    });
+    _scrollToBottom();
   }
 
   bool _isSameMessageCluster(ChatMessage previous, ChatMessage current) {
@@ -176,77 +318,59 @@ class _UserChatPageState extends State<UserChatPage> {
   }
 
   Future<void> _init() async {
+    await _connSub?.cancel();
+    _connSub = null;
+    await _wsSub?.cancel();
+    _wsSub = null;
+
     try {
       _token = await widget.getToken();
       if (_token == null || _token!.isEmpty) {
         throw Exception('Missing token');
       }
+      final role = _extractRoleFromToken(_token!);
+      if (role == 'ADMIN') {
+        throw Exception('Admin account cannot use user chat page');
+      }
       _selfId = _extractUserIdFromToken(_token!);
-
-      final convId = await _api.openConversation(token: _token!);
-      if (!mounted) return;
-      _conversationId = convId;
 
       await RealtimeService.I.connect(
         wsUrl: widget.wsUrl,
         getToken: widget.getToken,
         onError: (e) => debugPrint('WS error: $e'),
       );
+      _isConnected = RealtimeService.I.isConnected;
       _selfId = _myId ?? _selfId;
 
-      _connSub = RealtimeService.I.connectionStream.listen((v) {
+      _connSub = RealtimeService.I.connectionStream.listen((connected) {
         if (!mounted) return;
-        // Connection state is now handled internally by RealtimeService
-      });
-
-      RealtimeService.I.setActiveConversation(convId);
-
-      _wsSub = RealtimeService.I.chatStream.listen((m) {
-        if (!mounted) return;
-        if (m.conversationId != _conversationId) return;
-        final isMine = _isOwnMessage(m);
-
         setState(() {
-          final existedById =
-              m.id == null ? -1 : _messages.indexWhere((x) => x.id == m.id);
-          if (existedById != -1) {
-            _messages[existedById] = m;
-            return;
-          }
-
-          final optimisticIdx = _findOptimisticIndex(m);
-          if (optimisticIdx != -1) {
-            _messages[optimisticIdx] =
-                _mergeWithOptimistic(m, _messages[optimisticIdx]);
-            return;
-          }
-
-          // Skip self echoes when we already rendered optimistic message.
-          if (isMine) return;
-
-          _messages.add(m);
+          _isConnected = connected;
         });
+        if (!connected) return;
 
-        _scrollToBottom();
+        _selfId = _myId ?? _selfId;
+        final cid = _conversationId;
+        if (cid != null && cid.isNotEmpty) {
+          RealtimeService.I.setActiveConversation(cid);
+        }
       });
 
-      final history = await _api.getMessages(
+      _bindLiveMessageStream();
+
+      final convId = await _api.openConversation(
         token: _token!,
-        conversationId: convId,
-        limit: 50,
+        type: 'HUMAN',
       );
 
       if (!mounted) return;
       setState(() {
-        _messages
-          ..clear()
-          ..addAll(history);
-        _loading = false;
+        _conversationId = convId;
       });
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToBottom();
-      });
+      // Subscribe first, then load history to avoid missing realtime messages.
+      RealtimeService.I.setActiveConversation(convId);
+      await _loadConversationHistory(convId);
     } catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
@@ -269,6 +393,15 @@ class _UserChatPageState extends State<UserChatPage> {
   }
 
   Future<void> _send() async {
+    if (!_isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Ket noi chat dang bi gian doan.')),
+        );
+      }
+      return;
+    }
+
     final cid = _conversationId;
     final t = _text.text.trim();
     if (cid == null || t.isEmpty) return;
@@ -291,11 +424,17 @@ class _UserChatPageState extends State<UserChatPage> {
 
     _scrollToBottom();
 
-    // Fire-and-forget send; server echo will replace the optimistic message.
-    await RealtimeService.I.sendChatMessage(
+    final sent = await RealtimeService.I.sendChatMessage(
       conversationId: cid,
       content: t,
     );
+    if (!sent && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Tin nhan duoc xep hang va se gui khi ket noi lai.'),
+        ),
+      );
+    }
   }
 
   @override

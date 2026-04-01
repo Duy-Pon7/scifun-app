@@ -84,5 +84,15 @@ void main() {
       expect(summary.id, 'conv-123');
       expect(summary.userId, 'user-123');
     });
+
+    test('parses room type from supported keys', () {
+      final summary = ConversationSummary.fromJson({
+        'id': 'conv-200',
+        'roomType': 'HUMAN',
+      });
+
+      expect(summary.id, 'conv-200');
+      expect(summary.type, 'HUMAN');
+    });
   });
 }

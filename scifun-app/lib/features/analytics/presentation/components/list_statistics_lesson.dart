@@ -89,19 +89,18 @@ class ListStatisticsLesson extends StatelessWidget {
                             height: 24.h,
                             child: Stack(
                               children: [
-                                // % hiện tại — chỉ hiển thị khi không phải 0% hoặc 100%
-                                if (progressValue > 0 && progressValue < 100)
-                                  Positioned(
-                                    left: safeOffset,
-                                    child: Text(
-                                      "${progressValue.round()}%",
-                                      style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColor.skyblue600,
-                                      ),
+                                // Always show current percentage, including 0% and 100%.
+                                Positioned(
+                                  left: safeOffset,
+                                  child: Text(
+                                    "${progressValue.round()}%",
+                                    style: TextStyle(
+                                      fontSize: 17.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColor.skyblue600,
                                     ),
                                   ),
+                                ),
                               ],
                             ),
                           );

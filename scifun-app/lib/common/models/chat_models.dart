@@ -303,12 +303,14 @@ class ConversationSummary {
   final String id;
   final String? userId;
   final String? status;
+  final String? type;
   final DateTime? updatedAt;
 
   ConversationSummary({
     required this.id,
     this.userId,
     this.status,
+    this.type,
     this.updatedAt,
   });
 
@@ -333,6 +335,11 @@ class ConversationSummary {
           ChatMessage._asNonEmptyString(j['uid']) ??
           ChatMessage._pickUserIdFromMap(j['user']),
       status: j['status']?.toString(),
+      type: ChatMessage._asNonEmptyString(j['type']) ??
+          ChatMessage._asNonEmptyString(j['chatType']) ??
+          ChatMessage._asNonEmptyString(j['chat_type']) ??
+          ChatMessage._asNonEmptyString(j['roomType']) ??
+          ChatMessage._asNonEmptyString(j['room_type']),
       updatedAt: dt,
     );
   }
