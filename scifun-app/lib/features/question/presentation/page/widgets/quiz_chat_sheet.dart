@@ -94,7 +94,20 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
   }
 
   String _extractReplyText(dynamic data) {
+    if (data is String && data.trim().isNotEmpty) {
+      return _cleanReplyText(data);
+    }
+
     if (data is Map<String, dynamic>) {
+      final status = data['status'];
+      final rootMessage = data['message'];
+      if (status is num &&
+          status >= 400 &&
+          rootMessage is String &&
+          rootMessage.trim().isNotEmpty) {
+        return 'Mèo báo: ${rootMessage.trim()}';
+      }
+
       final nestedData = data['data'];
       if (nestedData is Map<String, dynamic>) {
         final reply = nestedData['reply'];
@@ -106,6 +119,10 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
       final rootReply = data['reply'];
       if (rootReply is String && rootReply.trim().isNotEmpty) {
         return _cleanReplyText(rootReply);
+      }
+
+      if (rootMessage is String && rootMessage.trim().isNotEmpty) {
+        return _cleanReplyText(rootMessage);
       }
     }
 
