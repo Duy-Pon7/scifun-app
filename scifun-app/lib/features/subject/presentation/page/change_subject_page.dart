@@ -164,7 +164,7 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
                       isCurrentSubject
                           ? Symbols.check_circle_rounded
                           : Symbols.arrow_forward_ios_rounded,
-                      size: isCurrentSubject ? 20.sp : 17.sp,
+                      size: isCurrentSubject ? 20.sp : 19.sp,
                       color: Colors.white.withValues(alpha: 0.96),
                     ),
                   ],

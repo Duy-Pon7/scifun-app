@@ -26,10 +26,12 @@ class AppLoadingIndicator extends StatelessWidget {
         SizedBox(
           width: size,
           height: size,
-          child: Lottie.asset(
-            lottieAssetPath,
-            repeat: true,
+          child: FittedBox(
             fit: BoxFit.contain,
+            child: Lottie.asset(
+              lottieAssetPath,
+              repeat: true,
+            ),
           ),
         ),
         if (text.isNotEmpty) ...[

@@ -62,7 +62,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     child: Text(
                       widget.title,
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontSize: 17.sp,
+                            fontSize: 19.sp,
                             fontWeight: FontWeight.w600,
                           ),
                       textAlign: TextAlign.center,
@@ -79,7 +79,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                           formattedPrice,
                           style:
                               Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontSize: 17.sp,
+                                    fontSize: 19.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
                           textAlign: TextAlign.center,
@@ -103,7 +103,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     child: Text(
                       'Thời gian mua: ',
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontSize: 17.sp,
+                            fontSize: 19.sp,
                             fontWeight: FontWeight.w400,
                           ),
                       textAlign: TextAlign.center,
@@ -116,7 +116,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(widget.date),
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontSize: 17.sp,
+                            fontSize: 19.sp,
                             fontWeight: FontWeight.w400,
                           ),
                       textAlign: TextAlign.center,
@@ -138,7 +138,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                         text: 'Trạng thái: ',
                         style:
                             Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontSize: 17.sp,
+                                  fontSize: 19.sp,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
                                 ),
@@ -149,7 +149,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                                 .textTheme
                                 .titleMedium!
                                 .copyWith(
-                                  fontSize: 17.sp,
+                                  fontSize: 19.sp,
                                   fontWeight: FontWeight.w600,
                                   color: widget.status.color,
                                 ),
@@ -169,7 +169,7 @@ class _PackageHistoryItemState extends State<PackageHistoryItem> {
                     child: Center(
                       child: Icon(
                         Symbols.arrow_forward_rounded,
-                        size: 17.sp,
+                        size: 19.sp,
                         color: AppColor.skyblue600, // Màu icon
                       ),
                     ),

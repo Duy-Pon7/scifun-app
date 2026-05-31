@@ -263,7 +263,7 @@ class _GuestSyncConvertPageState extends State<GuestSyncConvertPage> {
                     text: _isSubmitting ? 'Đang đồng bộ...' : 'Đồng bộ dữ liệu',
                     onPressed: _submitSync,
                     width: double.infinity,
-                    fontSize: 17.sp,
+                    fontSize: 19.sp,
                     backgroundColor: AppColor.skyblue400,
                   ),
                 ],

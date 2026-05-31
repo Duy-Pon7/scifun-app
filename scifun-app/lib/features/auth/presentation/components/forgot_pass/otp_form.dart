@@ -170,7 +170,7 @@ class _OtpFormState extends State<OtpForm> {
                   'Mã đã được gửi đến email ${maskedEmail()}',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.w400,
-                        fontSize: 17.sp,
+                        fontSize: 19.sp,
                       ),
                 ),
               ],
@@ -186,7 +186,7 @@ class _OtpFormState extends State<OtpForm> {
                         return BasicTextButton(
                           text: 'Gửi lại mã mới',
                           textColor: AppColor.skyblue600,
-                          fontSize: 17.sp,
+                          fontSize: 19.sp,
                           fontWeight: FontWeight.w400,
                           onPressed: () async {
                             await otpCubit.resendOtp();
@@ -206,7 +206,7 @@ class _OtpFormState extends State<OtpForm> {
                             .titleMedium!
                             .copyWith(
                               fontWeight: FontWeight.w400,
-                              fontSize: 17.sp,
+                              fontSize: 19.sp,
                               color:
                                   AppColor.hurricane800.withValues(alpha: 0.3),
                             ),

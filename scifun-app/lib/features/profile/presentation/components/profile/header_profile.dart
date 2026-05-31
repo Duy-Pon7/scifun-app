@@ -36,16 +36,18 @@ class HeaderProfile extends StatelessWidget {
             children: [
               Positioned(
                 bottom: 120.h,
-                left: 15.w,
+                left: 0,
                 right: 0,
                 child: IgnorePointer(
                   child: SizedBox(
                     width: 150.w,
                     height: 150.w,
-                    child: Lottie.asset(
-                      _avatarMascotLottiePath,
+                    child: FittedBox(
                       fit: BoxFit.contain,
-                      repeat: true,
+                      child: Lottie.asset(
+                        _avatarMascotLottiePath,
+                        repeat: true,
+                      ),
                     ),
                   ),
                 ),

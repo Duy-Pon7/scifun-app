@@ -302,9 +302,12 @@ class _SubjectFocusOnboardingPageState
           width: 140.w,
           height: 140.w,
           child: Center(
-            child: Lottie.asset(
-              'assets/lottie_json/cat.json',
-              repeat: true,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Lottie.asset(
+                'assets/lottie_json/cat.json',
+                repeat: true,
+              ),
             ),
           ),
         ),
@@ -417,7 +420,7 @@ class _SubjectFocusOnboardingPageState
             message,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 14.sp,
+              fontSize: 16.sp,
               color: _textSecondaryColor,
               fontWeight: FontWeight.w600,
             ),
@@ -434,7 +437,7 @@ class _SubjectFocusOnboardingPageState
               backgroundColor: _surfaceColor,
               textColor: _selectedTextColor,
               fontWeight: FontWeight.w700,
-              fontSize: 14.sp,
+              fontSize: 16.sp,
               borderRadius: BorderRadius.circular(12.r),
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               buttonHeight: 3,
@@ -559,7 +562,7 @@ class _SubjectFocusOnboardingPageState
         Text(
           'Môn học bạn muốn học nhiều hơn',
           style: TextStyle(
-            fontSize: 14.sp,
+            fontSize: 16.sp,
             color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
@@ -600,7 +603,7 @@ class _SubjectFocusOnboardingPageState
         Text(
           helperText,
           style: TextStyle(
-            fontSize: 14.sp,
+            fontSize: 16.sp,
             color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),

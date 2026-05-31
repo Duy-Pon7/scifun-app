@@ -193,7 +193,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 14.sp,
+            fontSize: 16.sp,
             color: Colors.grey.shade600,
           ),
         ),
@@ -209,17 +209,16 @@ class _QuizResultPageState extends State<QuizResultPage> {
         borderRadius: BorderRadius.circular(24.0),
       ),
       padding: EdgeInsets.symmetric(vertical: 20.h),
-      child: shouldCelebrate
-          ? Lottie.asset(
-              _congratsLottieAsset,
-              height: 170.h,
-              fit: BoxFit.contain,
-            )
-          : Lottie.asset(
-              _lowScoreLottieAsset,
-              height: 170.h,
-              fit: BoxFit.contain,
-            ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 170.h,
+        child: FittedBox(
+          fit: BoxFit.contain,
+          child: Lottie.asset(
+            shouldCelebrate ? _congratsLottieAsset : _lowScoreLottieAsset,
+          ),
+        ),
+      ),
     );
   }
 }

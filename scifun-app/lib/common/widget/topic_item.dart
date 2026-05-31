@@ -45,7 +45,7 @@ class TopicItem extends StatelessWidget {
                         title,
                         style:
                             Theme.of(context).textTheme.titleMedium!.copyWith(
-                                  fontSize: 17.sp,
+                                  fontSize: 19.sp,
                                   color: Colors.black,
                                   fontWeight: FontWeight.w400,
                                 ),

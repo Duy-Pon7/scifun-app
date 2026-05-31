@@ -59,7 +59,7 @@
 //               Text(
 //                 widget.title,
 //                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                       fontSize: 17.sp,
+//                       fontSize: 19.sp,
 //                       fontWeight: FontWeight.w600,
 //                     ),
 //                 textAlign: TextAlign.center,
@@ -114,7 +114,7 @@
 //                     child: Text(
 //                       'Số tiền: ',
 //                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                             fontSize: 17.sp,
+//                             fontSize: 19.sp,
 //                             fontWeight: FontWeight.w400,
 //                           ),
 //                       textAlign: TextAlign.center,
@@ -270,7 +270,7 @@
 //                   Text(
 //                     'Trạng thái: ',
 //                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                           fontSize: 17.sp,
+//                           fontSize: 19.sp,
 //                           fontWeight: FontWeight.w600,
 //                         ),
 //                     textAlign: TextAlign.center,
@@ -284,7 +284,7 @@
 //                         widget.status.description,
 //                         style:
 //                             Theme.of(context).textTheme.titleMedium!.copyWith(
-//                                   fontSize: 17.sp,
+//                                   fontSize: 19.sp,
 //                                   fontWeight: FontWeight.w600,
 //                                   color: widget.status.color,
 //                                 ),

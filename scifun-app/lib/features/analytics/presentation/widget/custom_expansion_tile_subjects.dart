@@ -85,7 +85,7 @@ class _CustomExpansionTileSubjectsState
                               child: Text(
                                 widget.title,
                                 style: TextStyle(
-                                  fontSize: 17.sp,
+                                  fontSize: 19.sp,
                                   fontWeight: FontWeight.w400,
                                   color: Colors.black,
                                 ),
@@ -95,7 +95,7 @@ class _CustomExpansionTileSubjectsState
                             Text(
                               "$t điểm",
                               style: TextStyle(
-                                fontSize: 17.sp,
+                                fontSize: 19.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

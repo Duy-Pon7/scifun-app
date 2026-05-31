@@ -95,7 +95,7 @@ class ListStatisticsLesson extends StatelessWidget {
                                   child: Text(
                                     "${progressValue.round()}%",
                                     style: TextStyle(
-                                      fontSize: 17.sp,
+                                      fontSize: 19.sp,
                                       fontWeight: FontWeight.w600,
                                       color: AppColor.skyblue600,
                                     ),

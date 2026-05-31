@@ -44,76 +44,78 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppbar(
-        title: "Lý thuyết - ${widget.topicName}",
-      ),
-      body: PaginationListView<Datum>(
-        cubit: _videoPaginationCubit,
-        itemBuilder: (context, video) {
-          return VideoTile(video: video);
-        },
-        emptyWidget: const Center(
-          child: AppEmptyState(message: 'Chưa có video nào'),
+    return SafeArea(
+      child: Scaffold(
+        appBar: BasicAppbar(
+          title: "Lý thuyết - ${widget.topicName}",
         ),
-        errorWidget: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.error_outline_rounded,
-                size: 64.sp,
-                color: Colors.red,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Lỗi khi tải video',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.red[600],
+        body: PaginationListView<Datum>(
+          cubit: _videoPaginationCubit,
+          itemBuilder: (context, video) {
+            return VideoTile(video: video);
+          },
+          emptyWidget: const Center(
+            child: AppEmptyState(message: 'Chưa có video nào'),
+          ),
+          errorWidget: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Symbols.error_outline_rounded,
+                  size: 64.sp,
+                  color: Colors.red,
                 ),
-              ),
-              SizedBox(height: 16.h),
-              ElevatedButton(
-                onPressed: () {
-                  _videoPaginationCubit.refresh();
-                },
-                child: const Text('Thử lại'),
-              ),
-            ],
+                SizedBox(height: 16.h),
+                Text(
+                  'Lỗi khi tải video',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.red[600],
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                ElevatedButton(
+                  onPressed: () {
+                    _videoPaginationCubit.refresh();
+                  },
+                  child: const Text('Thử lại'),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: BasicButton(
-          text: 'Bài tập tự luyện',
-          width: double.infinity,
-          height: 48.h,
-          borderRadius: BorderRadius.circular(8.r),
-          fontSize: 16.sp,
-          fontWeight: FontWeight.bold,
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              builder: (context) => SizedBox(
-                height: MediaQuery.of(context).size.height * 0.85,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: QuizzPage(
-                    topicId: widget.topicId,
-                    topicName: widget.topicName,
+        bottomNavigationBar: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: BasicButton(
+            text: 'Bài tập tự luyện',
+            width: double.infinity,
+            height: 48.h,
+            borderRadius: BorderRadius.circular(8.r),
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                builder: (context) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.85,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: QuizzPage(
+                      topicId: widget.topicId,
+                      topicName: widget.topicName,
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -209,7 +211,7 @@ class VideoTile extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),

@@ -50,7 +50,7 @@ class _HeaderHomeState extends State<HeaderHome> {
               return Text(
                 'Lỗi tải thông tin người dùng',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontSize: 17.sp,
+                      fontSize: 19.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w400,
                     ),
@@ -91,7 +91,7 @@ class _HeaderHomeState extends State<HeaderHome> {
             Text(
               subjectDisplayName,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontSize: 17.sp,
+                    fontSize: 19.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.w400,
                   ),
@@ -153,36 +153,41 @@ class _HeaderHomeState extends State<HeaderHome> {
     );
   }
 
-  Widget _avatarWithMascot({required String? avatarUrl}) => SizedBox(
-        width: 58.w,
-        height: 58.w,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              bottom: 60.h,
-              left: 10.w,
-              right: 0,
-              child: IgnorePointer(
-                child: SizedBox(
-                  width: 74.w,
-                  height: 74.w,
+  Widget _avatarWithMascot({required String? avatarUrl}) {
+    final avatarBoxSize = 58.w;
+    final avatarSize = 50.w;
+    final mascotSize = 74.w;
+    final mascotGap = -2.h;
+    final mascotLift = avatarSize + mascotGap;
+
+    return SizedBox(
+      width: avatarBoxSize,
+      height: avatarBoxSize,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomRight,
+        children: [
+          Transform.translate(
+            offset: Offset(0, -mascotLift),
+            child: IgnorePointer(
+              child: SizedBox(
+                width: mascotSize,
+                height: mascotSize,
+                child: FittedBox(
+                  fit: BoxFit.contain,
                   child: Lottie.asset(
                     _avatarMascotLottiePath,
-                    fit: BoxFit.contain,
                     repeat: true,
                   ),
                 ),
               ),
             ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: _avatar(avatarUrl: avatarUrl),
-            ),
-          ],
-        ),
-      );
+          ),
+          _avatar(avatarUrl: avatarUrl),
+        ],
+      ),
+    );
+  }
 
   Widget _avatar({required String? avatarUrl}) => Container(
         width: 50.w,
@@ -236,7 +241,7 @@ class _HeaderHomeState extends State<HeaderHome> {
             ),
             hintText: 'Tìm kiếm chủ đề',
             hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 17.sp,
+                  fontSize: 19.sp,
                   color: AppColor.hurricane800.withValues(alpha: 0.6),
                   fontWeight: FontWeight.w400,
                 ),

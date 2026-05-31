@@ -45,7 +45,7 @@ class SubjectItem extends StatelessWidget {
             margin: EdgeInsets.only(top: 34.h),
             width: cardWidth ?? 125.w,
             height: 160.h,
-            padding: EdgeInsets.fromLTRB(10.w, 46.h, 10.w, 12.h),
+            padding: EdgeInsets.fromLTRB(10.w, 70.h, 10.w, 12.h),
             decoration: BoxDecoration(
               color: cardColor,
               borderRadius: BorderRadius.circular(10.r),

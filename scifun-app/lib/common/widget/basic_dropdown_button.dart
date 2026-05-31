@@ -48,7 +48,7 @@ class BasicDropdownField<T> extends StatelessWidget {
       icon: const SizedBox.shrink(), // ẩn mũi tên mặc định
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Colors.black,
-            fontSize: 14.sp,
+            fontSize: 16.sp,
           ),
       dropdownColor: Colors.white,
       decoration: InputDecoration(

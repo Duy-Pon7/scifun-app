@@ -178,18 +178,6 @@ class _CommentPageState extends State<CommentPage> {
       child: Stack(
         children: [
           Positioned(
-            right: -36,
-            top: -30,
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _forumDeep.withValues(alpha: 0.32),
-              ),
-            ),
-          ),
-          Positioned(
             right: 52,
             top: -38,
             child: Container(

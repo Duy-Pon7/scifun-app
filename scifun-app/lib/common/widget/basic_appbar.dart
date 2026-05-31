@@ -31,7 +31,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.black,
-              fontSize: 17.sp,
+              fontSize: 19.sp,
               fontFamily: 'Baloo2',
               fontWeight: FontWeight.w600,
             ),

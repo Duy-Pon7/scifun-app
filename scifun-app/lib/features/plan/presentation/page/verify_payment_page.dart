@@ -200,7 +200,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                 Text(
                   'Mã giao dịch: $_paymentRef',
                   style: TextStyle(
-                    fontSize: 14.sp,
+                    fontSize: 16.sp,
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w500,
                   ),
@@ -244,7 +244,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                         child: Text(
                           _statusMessage!,
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 16.sp,
                             color: _isSuccess
                                 ? Colors.green[700]
                                 : Colors.red[700],

@@ -332,7 +332,6 @@ class _TestPageState extends State<TestPage> {
                                 child: Center(
                                   child: AppEmptyState(
                                     message: 'Không có câu hỏi',
-                                    animationSize: 140,
                                   ),
                                 ),
                               ),

@@ -104,7 +104,13 @@ class TrendQuizzesList extends StatelessWidget {
                             child: LayoutBuilder(
                               builder: (context, constraints) {
                                 final isCompact = constraints.maxHeight < 110;
+                                final isTight = constraints.maxHeight < 140;
                                 final imageSize = isCompact ? 40.w : 56.w;
+                                final descriptionMaxLines = isTight ? 1 : 2;
+                                final metaSpacing = isTight ? 8.w : 10.w;
+                                final metaRunSpacing = isTight ? 4.h : 8.h;
+                                final contentGap =
+                                    isCompact ? 4.h : (isTight ? 4.h : 8.h);
 
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +159,7 @@ class TrendQuizzesList extends StatelessWidget {
                                                       ? FontWeight.bold
                                                       : FontWeight.w600,
                                                   fontSize:
-                                                      isCompact ? 13.sp : 14.sp,
+                                                      isCompact ? 13.sp : 16.sp,
                                                 ),
                                               ),
                                               if (quizz.score != null)
@@ -179,16 +185,17 @@ class TrendQuizzesList extends StatelessWidget {
                                     if (!isCompact && quizz.description != null)
                                       Text(
                                         quizz.description!,
-                                        maxLines: 2,
+                                        maxLines: descriptionMaxLines,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontSize: 12.sp,
                                           color: Colors.grey[700],
                                         ),
                                       ),
-                                    SizedBox(height: isCompact ? 4.h : 8.h),
-                                    Row(
-                                      spacing: 10.w,
+                                    SizedBox(height: contentGap),
+                                    Wrap(
+                                      spacing: metaSpacing,
+                                      runSpacing: metaRunSpacing,
                                       children: [
                                         if (level != null)
                                           _buildLevelBadge(level),

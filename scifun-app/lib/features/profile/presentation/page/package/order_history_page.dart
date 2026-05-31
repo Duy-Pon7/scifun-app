@@ -92,7 +92,7 @@ class _ErrorView extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14.sp,
+                fontSize: 16.sp,
                 color: Colors.red.shade700,
                 fontWeight: FontWeight.w600,
               ),

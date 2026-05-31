@@ -52,7 +52,7 @@ class SubmissionDetailPage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.red.shade700,
-                      fontSize: 14.sp,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -161,7 +161,7 @@ class _SubmissionHeaderCard extends StatelessWidget {
                       ? data.quiz!.title!.trim()
                       : 'Bài kiểm tra',
                   style: TextStyle(
-                    fontSize: 19.sp,
+                    fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),

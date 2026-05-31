@@ -31,7 +31,7 @@ class FaqsPage extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 12.h),
                 child: CustomExpansionTile(
                   title: faq.question ?? "",
-                  titleFontSize: 17.sp,
+                  titleFontSize: 19.sp,
                   backgroundColor: Colors.white,
                   borderColor: AppColor.border,
                   iconColor: Colors.black.withValues(alpha: 0.5),

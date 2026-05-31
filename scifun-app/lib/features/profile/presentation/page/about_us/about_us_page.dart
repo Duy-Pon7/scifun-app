@@ -26,11 +26,15 @@ class AboutUsPage extends StatelessWidget {
               Center(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16.r),
-                  child: Lottie.asset(
-                    'assets/lottie_json/cat.json',
+                  child: SizedBox(
                     width: double.infinity,
                     height: 260.h,
-                    fit: BoxFit.cover,
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: Lottie.asset(
+                        'assets/lottie_json/cat.json',
+                      ),
+                    ),
                   ),
                 ),
               ),

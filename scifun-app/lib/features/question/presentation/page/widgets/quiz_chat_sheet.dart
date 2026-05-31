@@ -197,14 +197,14 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                   Icon(
                     Symbols.pets_rounded,
                     color: AppColor.skyblue600,
-                    size: 24.sp,
+                    size: 30.sp,
                   ),
                   SizedBox(width: 8.w),
                   Expanded(
                     child: Text(
                       'Trợ lý Mèo',
                       style: TextStyle(
-                        fontSize: 19.sp,
+                        fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF2A3342),
                       ),
@@ -214,7 +214,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(
                       Symbols.close_rounded,
-                      size: 22.sp,
+                      size: 30.sp,
                       color: const Color(0xFF8A95A7),
                     ),
                   ),
@@ -232,7 +232,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF667085),
-                            fontSize: 14.sp,
+                            fontSize: 16.sp,
                             height: 1.4,
                           ),
                         ),
@@ -280,7 +280,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                         hintText: 'Hỏi Mèo điều bạn đang thắc mắc...',
                         hintStyle: TextStyle(
                           color: const Color(0xFF9AA4B2),
-                          fontSize: 14.sp,
+                          fontSize: 16.sp,
                         ),
                         filled: true,
                         fillColor: const Color(0xFFF2F5FA),
@@ -374,7 +374,7 @@ class _QuizChatBubble extends StatelessWidget {
         child: SelectableText(
           text,
           style: TextStyle(
-            fontSize: 14.sp,
+            fontSize: 16.sp,
             color: isUser ? Colors.white : const Color(0xFF2A3342),
             height: 1.35,
             fontWeight: FontWeight.w500,

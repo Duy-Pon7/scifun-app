@@ -224,7 +224,7 @@ class NotificationTile extends StatelessWidget {
                   SizedBox(height: 6.h),
                   Text(
                     item.message ?? '',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey[800]),
+                    style: TextStyle(fontSize: 16.sp, color: Colors.grey[800]),
                   ),
                 ],
               ),

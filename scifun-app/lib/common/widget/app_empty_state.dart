@@ -29,10 +29,16 @@ class AppEmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            child: Lottie.asset(
-              appEmptyLottieAssetPath,
+            child: FittedBox(
               fit: BoxFit.contain,
-              repeat: true,
+              child: SizedBox(
+                width: animationSize,
+                height: animationSize,
+                child: Lottie.asset(
+                  appEmptyLottieAssetPath,
+                  repeat: true,
+                ),
+              ),
             ),
           ),
           if (text.isNotEmpty) ...[
@@ -40,7 +46,7 @@ class AppEmptyState extends StatelessWidget {
             Text(
               text,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: textColor ?? Colors.black54,
                   ),

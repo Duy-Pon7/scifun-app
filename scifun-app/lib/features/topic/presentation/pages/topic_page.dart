@@ -140,7 +140,7 @@ class _TopicPageState extends State<TopicPage> {
           LevelStatIcon(
             count: rank,
             color: iconColor,
-            size: 14.sp,
+            size: 16.sp,
           ),
           SizedBox(width: 6.w),
           Text(

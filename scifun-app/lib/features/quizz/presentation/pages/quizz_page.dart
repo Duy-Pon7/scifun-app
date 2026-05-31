@@ -277,7 +277,7 @@ class _QuizzPageState extends State<QuizzPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14.sp, color: AppColor.skyblue600),
+          Icon(icon, size: 16.sp, color: AppColor.skyblue600),
           SizedBox(width: 6.w),
           Text(text, style: TextStyle(fontSize: 12.sp)),
         ],

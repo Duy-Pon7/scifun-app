@@ -248,7 +248,7 @@ class _PlanListPageState extends State<PlanListPage> {
                 return Center(
                   child: Text(
                     state.message,
-                    style: TextStyle(fontSize: 14.sp, color: Colors.red),
+                    style: TextStyle(fontSize: 16.sp, color: Colors.red),
                   ),
                 );
               }

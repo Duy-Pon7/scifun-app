@@ -212,7 +212,7 @@ class _SearchPageState extends State<SearchPage> {
               : null,
           hintText: "Tìm bài học",
           hintStyle: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 17.sp,
+                fontSize: 19.sp,
                 color: AppColor.hurricane800.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w400,
               ),
@@ -273,7 +273,7 @@ class _SearchPageState extends State<SearchPage> {
             Text(text,
                 style: TextStyle(
                     color: AppColor.skyblue600,
-                    fontSize: 17.sp,
+                    fontSize: 19.sp,
                     fontWeight: FontWeight.w400)),
           ],
         ),

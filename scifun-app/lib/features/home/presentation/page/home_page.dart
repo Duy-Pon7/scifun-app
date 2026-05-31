@@ -159,6 +159,10 @@ class _HomePageState extends State<HomePage>
     final activeSubjectName = persistedSubjectName.isNotEmpty
         ? persistedSubjectName
         : _selectedSubjectName;
+    final buttonWidth = 150.w;
+    final buttonHeight = 52.h;
+    final catSize = 72.w;
+    final catOverlap = 8.h;
 
     return MultiBlocProvider(
       providers: [
@@ -267,75 +271,84 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
-        floatingActionButton: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomRight,
-          children: [
-            Positioned(
-              right: 12.w,
-              bottom: 26.h,
-              child: IgnorePointer(
-                child: SizedBox(
-                  width: 72.w,
-                  height: 72.w,
-                  child: Lottie.asset(
-                    'assets/lottie_json/cat_is_sleeping_and_rolling.json',
-                    fit: BoxFit.contain,
-                    repeat: true,
-                    delegates: LottieDelegates(
-                      values: [
-                        ValueDelegate.transformOpacity(
-                          ['White Solid 1', '**'],
-                          value: 0,
+        floatingActionButton: SizedBox(
+          width: buttonWidth,
+          height: buttonHeight + catSize - catOverlap,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.bottomCenter,
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: IgnorePointer(
+                  child: SizedBox(
+                    width: catSize,
+                    height: catSize,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Lottie.asset(
+                        'assets/lottie_json/cat_is_sleeping_and_rolling.json',
+                        repeat: true,
+                        delegates: LottieDelegates(
+                          values: [
+                            ValueDelegate.transformOpacity(
+                              ['White Solid 1', '**'],
+                              value: 0,
+                            ),
+                            ValueDelegate.opacity(
+                              ['White Solid 1', '**'],
+                              value: 0,
+                            ),
+                          ],
                         ),
-                        ValueDelegate.opacity(
-                          ['White Solid 1', '**'],
-                          value: 0,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Tooltip(
+                  message: 'Đổi môn học',
+                  child: BasicButton(
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BlocProvider.value(
+                            value: context.read<SubjectCubit>(),
+                            child: const ChangeSubjectPage(),
+                          ),
+                        ),
+                      ).then((_) => _loadSelectedSubjectFromPrefs());
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Symbols.swap_horiz_rounded,
+                          size: 18.sp,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Đổi môn',
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16.sp,
+                                  ),
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
-            ),
-            Tooltip(
-              message: 'Đổi môn học',
-              child: BasicButton(
-                width: 150.w,
-                height: 52.h,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<SubjectCubit>(),
-                        child: const ChangeSubjectPage(),
-                      ),
-                    ),
-                  ).then((_) => _loadSelectedSubjectFromPrefs());
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Symbols.swap_horiz_rounded,
-                      size: 18.sp,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'Đổi môn',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

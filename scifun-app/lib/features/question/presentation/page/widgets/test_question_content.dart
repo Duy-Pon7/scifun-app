@@ -119,10 +119,12 @@ class TestQuestionContent extends StatelessWidget {
             SizedBox(
               width: 110.w,
               height: 110.w,
-              child: Lottie.asset(
-                'assets/lottie_json/cat.json',
+              child: FittedBox(
                 fit: BoxFit.contain,
-                repeat: true,
+                child: Lottie.asset(
+                  'assets/lottie_json/cat.json',
+                  repeat: true,
+                ),
               ),
             ),
             SizedBox(width: 12.w),

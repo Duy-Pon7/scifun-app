@@ -71,7 +71,7 @@ class NewsItem extends StatelessWidget {
                   Text(
                     title,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontSize: 17.sp,
+                          fontSize: 19.sp,
                           fontWeight: FontWeight.w600,
                         ),
                     maxLines: 2,

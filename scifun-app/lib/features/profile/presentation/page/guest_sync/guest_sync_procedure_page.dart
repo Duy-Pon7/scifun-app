@@ -75,7 +75,7 @@ class GuestSyncProcedurePage extends StatelessWidget {
                   );
                 },
                 width: double.infinity,
-                fontSize: 17.sp,
+                fontSize: 19.sp,
                 backgroundColor: AppColor.skyblue400,
               ),
             ],

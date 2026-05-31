@@ -66,7 +66,7 @@
 //                   title,
 //                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
 //                         fontWeight: FontWeight.w600,
-//                         fontSize: 17.sp,
+//                         fontSize: 19.sp,
 //                       ),
 //                 ),
 //                 RichText(

@@ -44,7 +44,7 @@ class ListSubjects extends StatelessWidget {
               Text(
                 'M\u00f4n h\u1ecdc',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontSize: 17.sp,
+                      fontSize: 19.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),

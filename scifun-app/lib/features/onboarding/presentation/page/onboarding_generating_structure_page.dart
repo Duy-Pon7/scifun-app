@@ -228,7 +228,7 @@ class _OnboardingGeneratingStructurePageState
                         _errorMessage ?? 'Lưu thông tin onboarding thất bại.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 14.sp,
+                          fontSize: 16.sp,
                           color: Colors.red.shade600,
                           height: 1.4,
                         ),

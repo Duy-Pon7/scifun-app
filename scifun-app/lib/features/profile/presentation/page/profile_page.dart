@@ -279,7 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Text(
                     'Âm lượng nhạc nền ${(backgroundMusicVolume * 100).round()}%',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 14.sp,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF4F4F4F),
                         ),
@@ -541,7 +541,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 17.sp,
+                fontSize: 19.sp,
                 fontWeight: FontWeight.w600,
               ),
         ),
@@ -572,7 +572,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 17.sp,
+                        fontSize: 19.sp,
                         fontWeight: FontWeight.w400,
                       ),
                 ),
@@ -733,7 +733,7 @@ Widget subscriptionCard(UserDataEntity user) {
                     : 'Hết hạn: ${formatDate(sub!.currentPeriodEnd!)}',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                 ),
               ),
             ),

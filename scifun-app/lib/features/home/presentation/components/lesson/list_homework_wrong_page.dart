@@ -92,7 +92,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
             Text(
               "Tổng số câu sai: ${wrongQuestions.length}",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontSize: 17.sp,
+                    fontSize: 19.sp,
                     color: AppColor.skyblue500,
                     fontWeight: FontWeight.w600,
                   ),
@@ -139,7 +139,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
                     Text(
                       "Câu ${questionIndex + 1}: ",
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            fontSize: 17.sp,
+                            fontSize: 19.sp,
                             fontWeight: FontWeight.w600,
                           ),
                     ),
@@ -160,7 +160,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
                                   data: question.question,
                                   style: {
                                     "p": Style(
-                                      fontSize: FontSize(17.sp),
+                                      fontSize: FontSize(19.sp),
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     )
@@ -172,7 +172,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
                                       .textTheme
                                       .titleMedium!
                                       .copyWith(
-                                        fontSize: 17.sp,
+                                        fontSize: 19.sp,
                                         fontWeight: FontWeight.w600,
                                       ),
                                 ),

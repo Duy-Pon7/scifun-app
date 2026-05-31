@@ -111,10 +111,12 @@ class ChangeConfirmDialog extends StatelessWidget {
             SizedBox(
               width: 120.w,
               height: 120.w,
-              child: Lottie.asset(
-                lottieAssetPath,
-                repeat: true,
+              child: FittedBox(
                 fit: BoxFit.contain,
+                child: Lottie.asset(
+                  lottieAssetPath,
+                  repeat: true,
+                ),
               ),
             ),
             SizedBox(height: 6.h),

@@ -476,7 +476,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
       style: Theme.of(context).textTheme.titleMedium!.copyWith(
             color: AppColor.hurricane950,
             fontWeight: FontWeight.w700,
-            fontSize: 17.sp,
+            fontSize: 19.sp,
           ),
     );
   }

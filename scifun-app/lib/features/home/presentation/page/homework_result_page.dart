@@ -28,7 +28,7 @@
 //             title: Text(
 //               "Chi tiết bài làm",
 //               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                     fontSize: 17.sp,
+//                     fontSize: 19.sp,
 //                     fontWeight: FontWeight.w600,
 //                   ),
 //             ),

@@ -28,7 +28,7 @@
 //           title: Text(
 //             "Chi tiết bài viết",
 //             style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                   fontSize: 17.sp,
+//                   fontSize: 19.sp,
 //                   fontWeight: FontWeight.w600,
 //                 ),
 //           ),
@@ -49,7 +49,7 @@
 //               Text(
 //                 title,
 //                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-//                       fontSize: 17.sp,
+//                       fontSize: 19.sp,
 //                       fontWeight: FontWeight.w600,
 //                     ),
 //               ),
