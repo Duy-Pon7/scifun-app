@@ -33,6 +33,9 @@ class PlanListPage extends StatefulWidget {
 class _PlanListPageState extends State<PlanListPage> {
   static const _pendingPaymentRefKey = 'pending_payment_ref';
   static const _pendingDurationDaysKey = 'pending_durationDays';
+  static const _lastHandledCallbackKey = 'last_payment_callback_signature';
+  static String? _lastHandledCallbackInMemory;
+  static final Set<String> _processingCallbacks = <String>{};
 
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _uriSub;
@@ -85,6 +88,51 @@ class _PlanListPageState extends State<PlanListPage> {
     return 'unknown';
   }
 
+  String _callbackSignature(Uri uri) {
+    final requestId =
+        uri.queryParameters['requestId'] ?? uri.queryParameters['requestid'];
+    if (requestId != null && requestId.isNotEmpty) {
+      return 'requestId:$requestId';
+    }
+
+    final orderId =
+        uri.queryParameters['orderId'] ?? uri.queryParameters['orderid'];
+    if (orderId != null && orderId.isNotEmpty) {
+      return 'orderId:$orderId';
+    }
+
+    final transId =
+        uri.queryParameters['transId'] ?? uri.queryParameters['transid'];
+    if (transId != null && transId.isNotEmpty) {
+      return 'transId:$transId';
+    }
+
+    return 'uri:${uri.toString()}';
+  }
+
+  Future<bool> _isDuplicateCallback(String signature) async {
+    if (signature.isEmpty) return false;
+    if (_processingCallbacks.contains(signature)) return true;
+    if (_lastHandledCallbackInMemory == signature) return true;
+
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString(_lastHandledCallbackKey);
+    if (stored == signature) {
+      _lastHandledCallbackInMemory = signature;
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> _markCallbackHandled(String signature) async {
+    if (signature.isEmpty) return;
+    _lastHandledCallbackInMemory = signature;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastHandledCallbackKey, signature);
+  }
+
   Future<void> _showPaymentResultDialog({
     required String title,
     required String message,
@@ -129,59 +177,76 @@ class _PlanListPageState extends State<PlanListPage> {
   }) async {
     if (!_isPaymentCallbackUri(uri)) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    final paymentRef = prefs.getString(_pendingPaymentRefKey) ??
-        prefs.getString('pending_appTransId');
-
-    final callbackSource = isInitialLink ? 'Initial link' : 'Callback';
-    debugPrint('$callbackSource from MoMo: $uri');
-
-    if (!_isPaymentSuccess(uri)) {
-      await _showPaymentResultDialog(
-        title: 'Thanh toán chưa thành công',
-        message: 'Thanh toán chưa thành công (${_callbackStatus(uri)}).',
-      );
+    final signature = _callbackSignature(uri);
+    if (await _isDuplicateCallback(signature)) {
+      debugPrint('Skip duplicate MoMo callback: $signature');
       return;
     }
 
-    if (mounted) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(
-          child: AppLoadingIndicator(
-            message: 'Đang cập nhật trạng thái thanh toán...',
-          ),
-        ),
-      );
-    }
+    _processingCallbacks.add(signature);
 
-    bool isPro = false;
     try {
-      isPro = await _refreshPremiumState();
-      await _clearPendingPayment();
-    } finally {
-      if (mounted) {
-        Navigator.of(context).pop();
+      final prefs = await SharedPreferences.getInstance();
+      final paymentRef = prefs.getString(_pendingPaymentRefKey) ??
+          prefs.getString('pending_appTransId');
+
+      final callbackSource = isInitialLink ? 'Initial link' : 'Callback';
+      debugPrint('$callbackSource from MoMo: $uri');
+
+      if (!_isPaymentSuccess(uri)) {
+        await _showPaymentResultDialog(
+          title: 'Thanh toán chưa thành công',
+          message: 'Thanh toán chưa thành công (${_callbackStatus(uri)}).',
+        );
+        return;
       }
-    }
 
-    final paymentSuffix =
-        paymentRef != null && paymentRef.isNotEmpty ? ' ($paymentRef)' : '';
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => const Center(
+            child: AppLoadingIndicator(
+              message: 'Đang cập nhật trạng thái thanh toán...',
+            ),
+          ),
+        );
+      }
 
-    if (isPro) {
+      bool isPro = false;
+      try {
+        isPro = await _refreshPremiumState();
+        await _clearPendingPayment();
+      } finally {
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+
+      final paymentSuffix =
+          paymentRef != null && paymentRef.isNotEmpty ? ' ($paymentRef)' : '';
+
+      if (isPro) {
+        await _showPaymentResultDialog(
+          title: 'Thanh toán thành công',
+          message: 'Thanh toán MoMo thành công$paymentSuffix.',
+        );
+        return;
+      }
+
       await _showPaymentResultDialog(
-        title: 'Thanh toán thành công',
-        message: 'Thanh toán MoMo thành công$paymentSuffix.',
+        title: 'Đã nhận callback MoMo',
+        message:
+            'Đã nhận callback MoMo$paymentSuffix. Nếu gói chưa cập nhật, chờ 10-30 giây rồi kiểm tra lại.',
       );
-      return;
+    } finally {
+      await _finalizePaymentCallback(signature);
     }
+  }
 
-    await _showPaymentResultDialog(
-      title: 'Đã nhận callback MoMo',
-      message:
-          'Đã nhận callback MoMo$paymentSuffix. Nếu gói chưa cập nhật, chờ 10-30 giây rồi kiểm tra lại.',
-    );
+  Future<void> _finalizePaymentCallback(String signature) async {
+    _processingCallbacks.remove(signature);
+    await _markCallbackHandled(signature);
   }
 
   Future<void> _initDeepLinks() async {
