@@ -17,13 +17,22 @@ class QuizChatSheet extends StatefulWidget {
 
 class _QuizChatSheetState extends State<QuizChatSheet> {
   final TextEditingController _inputController = TextEditingController();
+  final FocusNode _inputFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   final List<_QuizChatMessage> _messages = <_QuizChatMessage>[];
   bool _isSending = false;
 
   @override
+  void initState() {
+    super.initState();
+    _inputFocusNode.addListener(_handleInputFocusChange);
+  }
+
+  @override
   void dispose() {
     _inputController.dispose();
+    _inputFocusNode.removeListener(_handleInputFocusChange);
+    _inputFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -165,9 +174,20 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
     });
   }
 
+  void _handleInputFocusChange() {
+    if (_inputFocusNode.hasFocus) {
+      _scrollToBottom();
+    }
+  }
+
+  void _handleInputTap() {
+    _scrollToBottom();
+  }
+
   @override
   Widget build(BuildContext context) {
     final sheetHeight = MediaQuery.of(context).size.height * 0.78;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return SafeArea(
       top: false,
@@ -179,146 +199,153 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
             top: Radius.circular(22.r),
           ),
         ),
-        child: Column(
-          children: [
-            SizedBox(height: 8.h),
-            Container(
-              width: 54.w,
-              height: 5.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFD3D8E1),
-                borderRadius: BorderRadius.circular(999.r),
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: bottomInset),
+          child: Column(
+            children: [
+              SizedBox(height: 8.h),
+              Container(
+                width: 54.w,
+                height: 5.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFD3D8E1),
+                  borderRadius: BorderRadius.circular(999.r),
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(14.w, 10.h, 8.w, 8.h),
-              child: Row(
-                children: [
-                  Icon(
-                    Symbols.pets_rounded,
-                    color: AppColor.skyblue600,
-                    size: 30.sp,
-                  ),
-                  SizedBox(width: 8.w),
-                  Expanded(
-                    child: Text(
-                      'Trợ lý Mèo',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF2A3342),
+              Padding(
+                padding: EdgeInsets.fromLTRB(14.w, 10.h, 8.w, 8.h),
+                child: Row(
+                  children: [
+                    Icon(
+                      Symbols.pets_rounded,
+                      color: AppColor.skyblue600,
+                      size: 30.sp,
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        'Trợ lý Mèo',
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF2A3342),
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(
-                      Symbols.close_rounded,
-                      size: 30.sp,
-                      color: const Color(0xFF8A95A7),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Symbols.close_rounded,
+                        size: 30.sp,
+                        color: const Color(0xFF8A95A7),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: _messages.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 30.w),
-                        child: Text(
-                          'Meo meo, Mèo chỉ nhớ cuộc trò chuyện trong phiên này.\nGửi câu hỏi để Mèo hỗ trợ bạn ngay!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: const Color(0xFF667085),
+              const Divider(height: 1),
+              Expanded(
+                child: _messages.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30.w),
+                          child: Text(
+                            'Meo meo, Mèo chỉ nhớ cuộc trò chuyện trong phiên này.\nGửi câu hỏi để Mèo hỗ trợ bạn ngay!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: const Color(0xFF667085),
+                              fontSize: 18.sp,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        controller: _scrollController,
+                        padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
+                        itemCount: _messages.length + (_isSending ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index >= _messages.length) {
+                            return _ChatTypingBubble(fontSize: 15.sp);
+                          }
+
+                          final item = _messages[index];
+                          return _QuizChatBubble(
+                            text: item.text,
+                            isUser: item.isUser,
+                          );
+                        },
+                      ),
+              ),
+              Container(
+                padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 12.h),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x12000000),
+                      blurRadius: 8,
+                      offset: Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        focusNode: _inputFocusNode,
+                        controller: _inputController,
+                        minLines: 1,
+                        maxLines: 3,
+                        textInputAction: TextInputAction.send,
+                        onTap: _handleInputTap,
+                        onSubmitted: (_) => _sendMessage(),
+                        decoration: InputDecoration(
+                          hintText: 'Hỏi Mèo điều bạn đang thắc mắc...',
+                          hintStyle: TextStyle(
+                            color: const Color(0xFF9AA4B2),
                             fontSize: 18.sp,
-                            height: 1.4,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF2F5FA),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 14.w,
+                            vertical: 12.h,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16.r),
+                            borderSide: BorderSide.none,
                           ),
                         ),
                       ),
-                    )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
-                      itemCount: _messages.length + (_isSending ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= _messages.length) {
-                          return _ChatTypingBubble(fontSize: 15.sp);
-                        }
-
-                        final item = _messages[index];
-                        return _QuizChatBubble(
-                          text: item.text,
-                          isUser: item.isUser,
-                        );
-                      },
                     ),
-            ),
-            Container(
-              padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, 12.h),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x12000000),
-                    blurRadius: 8,
-                    offset: Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _inputController,
-                      minLines: 1,
-                      maxLines: 3,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _sendMessage(),
-                      decoration: InputDecoration(
-                        hintText: 'Hỏi Mèo điều bạn đang thắc mắc...',
-                        hintStyle: TextStyle(
-                          color: const Color(0xFF9AA4B2),
-                          fontSize: 18.sp,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF2F5FA),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 14.w,
-                          vertical: 12.h,
-                        ),
-                        border: OutlineInputBorder(
+                    SizedBox(width: 8.w),
+                    InkWell(
+                      onTap: _isSending ? null : _sendMessage,
+                      borderRadius: BorderRadius.circular(16.r),
+                      child: Container(
+                        width: 48.w,
+                        height: 48.w,
+                        decoration: BoxDecoration(
+                          color: _isSending
+                              ? const Color(0xFFB7D8EC)
+                              : AppColor.skyblue500,
                           borderRadius: BorderRadius.circular(16.r),
-                          borderSide: BorderSide.none,
+                        ),
+                        child: Icon(
+                          Symbols.send_rounded,
+                          color: Colors.white,
+                          size: 22.sp,
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 8.w),
-                  InkWell(
-                    onTap: _isSending ? null : _sendMessage,
-                    borderRadius: BorderRadius.circular(16.r),
-                    child: Container(
-                      width: 48.w,
-                      height: 48.w,
-                      decoration: BoxDecoration(
-                        color: _isSending
-                            ? const Color(0xFFB7D8EC)
-                            : AppColor.skyblue500,
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      child: Icon(
-                        Symbols.send_rounded,
-                        color: Colors.white,
-                        size: 22.sp,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

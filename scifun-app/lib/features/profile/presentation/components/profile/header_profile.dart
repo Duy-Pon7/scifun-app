@@ -51,16 +51,28 @@ class HeaderProfile extends StatelessWidget {
                   ),
                 ),
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100.r),
-                child: CustomNetworkAssetImage(
-                  imagePath: imgUrl,
-                  width: 100.w,
-                  height: 100.w,
+              SizedBox(
+                width: 100.w,
+                height: 100.w,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100.r),
+                      child: CustomNetworkAssetImage(
+                        imagePath: imgUrl,
+                        width: 100.w,
+                        height: 100.w,
+                      ),
+                    ),
+                    if (isGuest && onGuestSyncTap != null)
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: _GuestSyncPulseButton(onTap: onGuestSyncTap!),
+                      ),
+                  ],
                 ),
               ),
-              if (isGuest && onGuestSyncTap != null)
-                _GuestSyncPulseButton(onTap: onGuestSyncTap!),
             ],
           ),
         ),

@@ -200,8 +200,7 @@ class _CommentPageState extends State<CommentPage> {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 30,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.2,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(width: 10),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,6 +8,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/onboarding/presentation/page/onboarding_generating_structure_page.dart';
@@ -110,6 +113,10 @@ class _SubjectFocusOnboardingPageState
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _playClickSound() {
+    unawaited(SoundService.instance.playLuyenTap1ChamClick());
   }
 
   void _selectFirstSubjectIfNeeded(List<SubjectEntity> subjects) {
@@ -429,7 +436,10 @@ class _SubjectFocusOnboardingPageState
             SizedBox(height: 10.h),
             BasicButton(
               text: actionLabel,
-              onPressed: onAction,
+              onPressed: () {
+                _playClickSound();
+                onAction();
+              },
               width: 120.w,
               border: true,
               borderColor: _selectedBorderColor,
@@ -469,6 +479,7 @@ class _SubjectFocusOnboardingPageState
 
     return BasicButton(
       onPressed: () {
+        _playClickSound();
         setState(() {
           _selectedSubject = subject;
         });
@@ -637,7 +648,10 @@ class _SubjectFocusOnboardingPageState
     final leadingColor = isSelected ? _selectedTextColor : _textSecondaryColor;
 
     return BasicButton(
-      onPressed: onTap,
+      onPressed: () {
+        _playClickSound();
+        onTap();
+      },
       width: double.infinity,
       border: true,
       borderColor: isSelected ? _selectedBorderColor : _borderColor,
@@ -786,6 +800,7 @@ class _SubjectFocusOnboardingPageState
                   if (_isSubmitting) {
                     return;
                   }
+                  _playClickSound();
                   _goBackStep();
                 },
                 border: true,
@@ -808,7 +823,12 @@ class _SubjectFocusOnboardingPageState
               text: isLastStep
                   ? (_isSubmitting ? 'ĐANG GỬI...' : 'HOÀN TẤT')
                   : 'TIẾP TỤC',
-              onPressed: enabled ? _goNextStep : () {},
+              onPressed: enabled
+                  ? () {
+                      _playClickSound();
+                      _goNextStep();
+                    }
+                  : () {},
               backgroundColor: nextButtonColor,
               textColor: nextTextColor,
               fontWeight: FontWeight.w700,

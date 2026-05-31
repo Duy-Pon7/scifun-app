@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,7 @@ import 'package:sci_fun/core/constants/api_urls.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
+import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -55,6 +58,10 @@ class _OnboardingGeneratingStructurePageState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _submitOnboarding();
     });
+  }
+
+  void _playClickSound() {
+    unawaited(SoundService.instance.playLuyenTap1ChamClick());
   }
 
   String _mapSubjectForOnboarding(String subjectName) {
@@ -235,11 +242,17 @@ class _OnboardingGeneratingStructurePageState
                       ),
                       SizedBox(height: 16.h),
                       FilledButton(
-                        onPressed: _submitOnboarding,
+                        onPressed: () {
+                          _playClickSound();
+                          _submitOnboarding();
+                        },
                         child: const Text('Thử lại'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.of(context).maybePop(),
+                        onPressed: () {
+                          _playClickSound();
+                          Navigator.of(context).maybePop();
+                        },
                         child: const Text('Quay lại'),
                       ),
                     ],
