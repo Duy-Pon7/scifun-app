@@ -34,7 +34,7 @@ class OrderHistoryItem extends StatelessWidget {
                 child: Text(
                   _buildPlanTitle(),
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -49,7 +49,7 @@ class OrderHistoryItem extends StatelessWidget {
                   _statusLabel(status),
                   style: TextStyle(
                     color: _statusColor(status),
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -92,7 +92,7 @@ class OrderHistoryItem extends StatelessWidget {
           child: Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 13.sp,
+                  fontSize: 15.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.grey[700],
                 ),
@@ -102,7 +102,7 @@ class OrderHistoryItem extends StatelessWidget {
           child: Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontSize: 13.sp,
+                  fontSize: 15.sp,
                   fontWeight: FontWeight.w600,
                 ),
           ),

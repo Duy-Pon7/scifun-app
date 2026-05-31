@@ -262,7 +262,7 @@ class _SubjectFocusOnboardingPageState
         Text(
           'Bước ${_currentStep + 1}/$_totalSteps',
           style: TextStyle(
-            fontSize: 13.sp,
+            fontSize: 15.sp,
             color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
@@ -420,7 +420,7 @@ class _SubjectFocusOnboardingPageState
             message,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16.sp,
+              fontSize: 18.sp,
               color: _textSecondaryColor,
               fontWeight: FontWeight.w600,
             ),
@@ -437,7 +437,7 @@ class _SubjectFocusOnboardingPageState
               backgroundColor: _surfaceColor,
               textColor: _selectedTextColor,
               fontWeight: FontWeight.w700,
-              fontSize: 16.sp,
+              fontSize: 18.sp,
               borderRadius: BorderRadius.circular(12.r),
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
               buttonHeight: 3,
@@ -496,7 +496,7 @@ class _SubjectFocusOnboardingPageState
             child: Text(
               subjectName,
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 color: tileTextColor,
                 fontWeight: FontWeight.w600,
               ),
@@ -562,7 +562,7 @@ class _SubjectFocusOnboardingPageState
         Text(
           'Môn học bạn muốn học nhiều hơn',
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 18.sp,
             color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
@@ -581,7 +581,7 @@ class _SubjectFocusOnboardingPageState
           child: Text(
             'Bạn có thể thay đổi lựa chọn này bất kỳ lúc nào.',
             style: TextStyle(
-              fontSize: 13.sp,
+              fontSize: 15.sp,
               color: _textSecondaryColor,
               height: 1.35,
             ),
@@ -603,7 +603,7 @@ class _SubjectFocusOnboardingPageState
         Text(
           helperText,
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 18.sp,
             color: _textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
@@ -662,7 +662,7 @@ class _SubjectFocusOnboardingPageState
             child: Text(
               label,
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 color: isSelected ? _selectedTextColor : _textPrimaryColor,
                 fontWeight: FontWeight.w600,
               ),

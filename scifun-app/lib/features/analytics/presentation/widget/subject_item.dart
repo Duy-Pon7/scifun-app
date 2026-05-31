@@ -31,7 +31,7 @@ class SubjectItem extends StatelessWidget {
                 child: Text(
                   '$title - đánh giá: $com',
                   style: TextStyle(
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                     color: Colors.black,
                   ),
                 ),
@@ -42,7 +42,7 @@ class SubjectItem extends StatelessWidget {
                   ? Text(
                       "$score điểm",
                       style: TextStyle(
-                        fontSize: 15.sp,
+                        fontSize: 18.sp,
                         color: Colors.red,
                       ),
                     )

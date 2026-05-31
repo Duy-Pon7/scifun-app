@@ -36,7 +36,7 @@ class LessonItem extends StatelessWidget {
                   title,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                   ),
                 ),
               ),
@@ -45,7 +45,7 @@ class LessonItem extends StatelessWidget {
                 style: TextStyle(
                   color: hasAttempted ? Colors.red : Colors.grey,
                   fontWeight: FontWeight.w500,
-                  fontSize: 15.sp,
+                  fontSize: 18.sp,
                 ),
               ),
             ],
@@ -64,7 +64,7 @@ class LessonItem extends StatelessWidget {
                       text: 'Điểm cao nhất: ',
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
-                        fontSize: 16.sp,
+                        fontSize: 18.sp,
                         color: Colors.black54,
                       ),
                     ),
@@ -72,7 +72,7 @@ class LessonItem extends StatelessWidget {
                       text: '${bestScore!.toStringAsFixed(2)} điểm',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 16.sp,
+                        fontSize: 18.sp,
                         color: AppColor.skyblue600,
                       ),
                     ),
@@ -91,7 +91,7 @@ class LessonItem extends StatelessWidget {
                     text: 'Số lần làm: ',
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       color: Colors.black54,
                     ),
                   ),
@@ -99,7 +99,7 @@ class LessonItem extends StatelessWidget {
                     text: '$attempts lần',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       color: hasAttempted ? Colors.black : Colors.grey,
                     ),
                   ),
@@ -117,7 +117,7 @@ class LessonItem extends StatelessWidget {
                         text: 'Lần làm cuối: ',
                         style: TextStyle(
                           fontWeight: FontWeight.w400,
-                          fontSize: 16.sp,
+                          fontSize: 18.sp,
                           color: Colors.black54,
                         ),
                       )
@@ -128,7 +128,7 @@ class LessonItem extends StatelessWidget {
                     fontWeight: completedTime == '---'
                         ? FontWeight.w400
                         : FontWeight.w600,
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     color: completedTime == '---' ? Colors.grey : Colors.black,
                     fontStyle: completedTime == '---'
                         ? FontStyle.italic

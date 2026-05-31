@@ -75,7 +75,7 @@ class ResultTestPage extends StatelessWidget {
                   "Quay về trang chủ",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -202,7 +202,7 @@ class ResultTestPage extends StatelessWidget {
 //                                           .textTheme
 //                                           .titleMedium!
 //                                           .copyWith(
-//                                             fontSize: 15.sp,
+//                                             fontSize: 18.sp,
 //                                             fontWeight: FontWeight.w400,
 //                                           ),
 //                                     )
@@ -237,7 +237,7 @@ class ResultTestPage extends StatelessWidget {
 //                                           .textTheme
 //                                           .titleMedium!
 //                                           .copyWith(
-//                                             fontSize: 15.sp,
+//                                             fontSize: 18.sp,
 //                                             fontWeight: FontWeight.w400,
 //                                           ),
 //                                     )
@@ -271,7 +271,7 @@ class ResultTestPage extends StatelessWidget {
 //                                           .textTheme
 //                                           .titleMedium!
 //                                           .copyWith(
-//                                             fontSize: 15.sp,
+//                                             fontSize: 18.sp,
 //                                             fontWeight: FontWeight.w400,
 //                                           ),
 //                                     )

@@ -118,7 +118,7 @@ Email: support@scifun.vn
                       data: addressHtml,
                       style: {
                         "body": Style(
-                          fontSize: FontSize(16.sp),
+                          fontSize: FontSize(18.sp),
                           fontWeight: FontWeight.w600,
                           textAlign: TextAlign.center,
                         ),

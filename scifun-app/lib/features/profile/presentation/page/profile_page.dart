@@ -257,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                  fontSize: 16.sp,
+                                  fontSize: 18.sp,
                                   fontWeight: FontWeight.w600,
                                 ),
                           ),
@@ -279,7 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Text(
                     'Âm lượng nhạc nền ${(backgroundMusicVolume * 100).round()}%',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 16.sp,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF4F4F4F),
                         ),
@@ -506,7 +506,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'Đăng xuất',
               style: TextStyle(
                 fontFamily: 'Baloo2',
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -690,7 +690,7 @@ Widget subscriptionCard(UserDataEntity user) {
               'Gói đang sử dụng',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -704,7 +704,7 @@ Widget subscriptionCard(UserDataEntity user) {
                 statusLabel,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 12.sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -733,7 +733,7 @@ Widget subscriptionCard(UserDataEntity user) {
                     : 'Hết hạn: ${formatDate(sub!.currentPeriodEnd!)}',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                 ),
               ),
             ),
@@ -755,7 +755,7 @@ Widget subscriptionCard(UserDataEntity user) {
             style: TextStyle(
               color: isExpired ? Colors.red : AppColor.skyblue600,
               fontWeight: FontWeight.w600,
-              fontSize: 13.sp,
+              fontSize: 15.sp,
             ),
           ),
         ),

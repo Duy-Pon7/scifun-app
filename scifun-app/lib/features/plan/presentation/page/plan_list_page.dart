@@ -248,7 +248,7 @@ class _PlanListPageState extends State<PlanListPage> {
                 return Center(
                   child: Text(
                     state.message,
-                    style: TextStyle(fontSize: 16.sp, color: Colors.red),
+                    style: TextStyle(fontSize: 18.sp, color: Colors.red),
                   ),
                 );
               }
@@ -385,7 +385,7 @@ class _PlanCard extends StatelessWidget {
           Text(
             'Truy cập đầy đủ các tính năng học tập và nội dung nâng cao.',
             style: TextStyle(
-              fontSize: 13.sp,
+              fontSize: 15.sp,
               color: Colors.grey[600],
             ),
           ),
@@ -504,7 +504,7 @@ class _DurationBadge extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12.sp,
+          fontSize: 14.sp,
           color: Colors.blue,
           fontWeight: FontWeight.w500,
         ),

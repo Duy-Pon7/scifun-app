@@ -70,7 +70,7 @@ class _VideoPageState extends State<VideoPage> {
                 Text(
                   'Lỗi khi tải video',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     color: Colors.red[600],
                   ),
                 ),
@@ -92,7 +92,7 @@ class _VideoPageState extends State<VideoPage> {
             width: double.infinity,
             height: 48.h,
             borderRadius: BorderRadius.circular(8.r),
-            fontSize: 16.sp,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
             onPressed: () {
               showModalBottomSheet(
@@ -211,7 +211,7 @@ class VideoTile extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 16.sp,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                         color: Colors.black87,
                       ),
@@ -222,7 +222,7 @@ class VideoTile extends StatelessWidget {
                       Text(
                         video.topic?.name ?? 'Unknown Topic',
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           color: Colors.blue,
                           fontWeight: FontWeight.w500,
                         ),
@@ -235,7 +235,7 @@ class VideoTile extends StatelessWidget {
                         Text(
                           'Thời lượng: ${video.duration ?? 0} phút',
                           style: TextStyle(
-                            fontSize: 11.sp,
+                            fontSize: 12.sp,
                             color: Colors.grey[600],
                           ),
                         ),
@@ -251,7 +251,7 @@ class VideoTile extends StatelessWidget {
                           child: Icon(
                             Symbols.play_arrow_rounded,
                             color: Colors.white,
-                            size: 16.sp,
+                            size: 18.sp,
                           ),
                         ),
                       ],
@@ -329,7 +329,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                 'Không thể tải video\nURL: ${widget.videoUrl}',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   color: Colors.red[600],
                 ),
               ),

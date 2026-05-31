@@ -117,8 +117,8 @@ class TestQuestionContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 110.w,
-              height: 110.w,
+              width: 120.w,
+              height: 120.w,
               child: FittedBox(
                 fit: BoxFit.contain,
                 child: Lottie.asset(
@@ -142,7 +142,7 @@ class TestQuestionContent extends StatelessWidget {
             child: Text(
               'Có thể chọn nhiều đáp án',
               style: TextStyle(
-                fontSize: 13.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColor.hurricane500,
               ),
@@ -156,7 +156,7 @@ class TestQuestionContent extends StatelessWidget {
                   ? 'Bạn đã chọn đúng.'
                   : 'Câu này chưa đúng. Đáp án đúng được tô màu xanh.',
               style: TextStyle(
-                fontSize: 13.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w700,
                 color: currentAnswerIsCorrect
                     ? const Color(0xFF1B5E20)
@@ -185,7 +185,7 @@ class TestQuestionContent extends StatelessWidget {
                       child: Text(
                         'Giải thích',
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.w700,
                           color: accentDark,
                         ),
@@ -219,7 +219,7 @@ class TestQuestionContent extends StatelessWidget {
               child: Text(
                 explanationText,
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: 18.sp,
                   color: const Color(0xFF3D3D3D),
                   height: 1.45,
                 ),

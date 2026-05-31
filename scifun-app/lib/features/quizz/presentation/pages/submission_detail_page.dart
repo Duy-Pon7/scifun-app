@@ -52,7 +52,7 @@ class SubmissionDetailPage extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.red.shade700,
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -170,7 +170,7 @@ class _SubmissionHeaderCard extends StatelessWidget {
                 Text(
                   'ID: ${data.submissionId ?? ''}',
                   style: TextStyle(
-                    fontSize: 11.sp,
+                    fontSize: 12.sp,
                     color: Colors.white.withValues(alpha: 0.85),
                   ),
                 ),
@@ -188,7 +188,7 @@ class _SubmissionHeaderCard extends StatelessWidget {
                   child: Text(
                     '$answersCount câu đã làm',
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
@@ -223,7 +223,7 @@ class _SubmissionHeaderCard extends StatelessWidget {
               Text(
                 'Điểm',
                 style: TextStyle(
-                  fontSize: 11.sp,
+                  fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.white.withValues(alpha: 0.9),
                 ),
@@ -265,7 +265,7 @@ class _AnswerSectionTitle extends StatelessWidget {
           child: Text(
             '$answerCount câu',
             style: TextStyle(
-              fontSize: 11.sp,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w700,
               color: AppColor.skyblue700,
             ),
@@ -291,7 +291,7 @@ class _EmptyAnswersCard extends StatelessWidget {
       child: Text(
         'Chưa có câu trả lời nào trong bài làm này.',
         style: TextStyle(
-          fontSize: 13.sp,
+          fontSize: 15.sp,
           color: const Color(0xFF4B5563),
         ),
       ),
@@ -358,7 +358,7 @@ class _AnswerItemCard extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w800,
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       height: 1,
                     ),
                   ),
@@ -373,7 +373,7 @@ class _AnswerItemCard extends StatelessWidget {
                         ? answer.questionText!.trim()
                         : 'Câu hỏi $index',
                     style: TextStyle(
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w700,
                       color: const Color(0xFF111827),
                       height: 1.35,
@@ -443,7 +443,7 @@ class _AnswerItemCard extends StatelessWidget {
                 child: Text(
                   'Giải thích: $explanation',
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 15.sp,
                     color: const Color(0xFF374151),
                     height: 1.45,
                   ),
@@ -494,7 +494,7 @@ class _AnswerGroupCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontSize: 12.sp,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w700,
               color: textColor.withValues(alpha: 0.9),
             ),
@@ -546,7 +546,7 @@ class _AnswerPill extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12.sp,
+          fontSize: 14.sp,
           color: textColor,
           height: 1.35,
         ),
@@ -603,7 +603,7 @@ class _LockedContent extends StatelessWidget {
                     children: [
                       Icon(
                         Symbols.lock_rounded,
-                        size: 15.sp,
+                        size: 18.sp,
                         color: const Color(0xFF6B7280),
                       ),
                       SizedBox(width: 6.w),
@@ -612,7 +612,7 @@ class _LockedContent extends StatelessWidget {
                           lockMessage,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 11.sp,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF4B5563),
                           ),

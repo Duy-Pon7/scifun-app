@@ -121,7 +121,7 @@ class _NotificationPageState extends State<NotificationPage> {
               SizedBox(height: 16.h),
               Text(
                 'Lỗi khi tải thông báo',
-                style: TextStyle(fontSize: 16.sp, color: Colors.red[600]),
+                style: TextStyle(fontSize: 18.sp, color: Colors.red[600]),
               ),
               SizedBox(height: 16.h),
               ElevatedButton(
@@ -207,7 +207,7 @@ class NotificationTile extends StatelessWidget {
                         child: Text(
                           item.title ?? '',
                           style: TextStyle(
-                            fontSize: 15.sp,
+                            fontSize: 18.sp,
                             fontWeight:
                                 isRead ? FontWeight.normal : FontWeight.bold,
                           ),
@@ -217,14 +217,14 @@ class NotificationTile extends StatelessWidget {
                       Text(
                         _formatDate(item.createdAt),
                         style:
-                            TextStyle(fontSize: 12.sp, color: Colors.grey[600]),
+                            TextStyle(fontSize: 14.sp, color: Colors.grey[600]),
                       ),
                     ],
                   ),
                   SizedBox(height: 6.h),
                   Text(
                     item.message ?? '',
-                    style: TextStyle(fontSize: 16.sp, color: Colors.grey[800]),
+                    style: TextStyle(fontSize: 18.sp, color: Colors.grey[800]),
                   ),
                 ],
               ),

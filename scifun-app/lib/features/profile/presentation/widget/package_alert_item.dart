@@ -41,7 +41,7 @@ class _PackageAlertItemState extends State<PackageAlertItem> {
                 child: Text(
                   widget.title,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 16.sp,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
                       ),
                   maxLines: 2,
@@ -54,7 +54,7 @@ class _PackageAlertItemState extends State<PackageAlertItem> {
                 child: Text(
                   widget.content,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 16.sp,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.w400,
                       ),
                   maxLines: 2,

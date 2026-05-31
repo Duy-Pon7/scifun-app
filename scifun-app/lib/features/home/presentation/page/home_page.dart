@@ -282,8 +282,8 @@ class _HomePageState extends State<HomePage>
                 alignment: Alignment.topCenter,
                 child: IgnorePointer(
                   child: SizedBox(
-                    width: catSize,
-                    height: catSize,
+                    width: catSize + 14,
+                    height: catSize + 14,
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Lottie.asset(
@@ -339,7 +339,7 @@ class _HomePageState extends State<HomePage>
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
-                                    fontSize: 16.sp,
+                                    fontSize: 18.sp,
                                   ),
                         ),
                       ],

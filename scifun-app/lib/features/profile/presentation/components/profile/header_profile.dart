@@ -29,19 +29,18 @@ class HeaderProfile extends StatelessWidget {
       spacing: 11.h,
       children: [
         SizedBox(
-          width: 118.w,
-          height: 118.w,
+          width: 180.w,
+          height: 180.w,
           child: Stack(
             clipBehavior: Clip.none,
+            alignment: Alignment.bottomCenter,
             children: [
-              Positioned(
-                bottom: 120.h,
-                left: 0,
-                right: 0,
+              Transform.translate(
+                offset: Offset(0, -75.h),
                 child: IgnorePointer(
                   child: SizedBox(
-                    width: 150.w,
-                    height: 150.w,
+                    width: 180.w,
+                    height: 180.w,
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Lottie.asset(
@@ -52,24 +51,16 @@ class HeaderProfile extends StatelessWidget {
                   ),
                 ),
               ),
-              Positioned(
-                right: 0,
-                bottom: 0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100.r),
-                  child: CustomNetworkAssetImage(
-                    imagePath: imgUrl,
-                    width: 100.w,
-                    height: 100.w,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100.r),
+                child: CustomNetworkAssetImage(
+                  imagePath: imgUrl,
+                  width: 100.w,
+                  height: 100.w,
                 ),
               ),
               if (isGuest && onGuestSyncTap != null)
-                Positioned(
-                  right: -4.w,
-                  bottom: 0,
-                  child: _GuestSyncPulseButton(onTap: onGuestSyncTap!),
-                ),
+                _GuestSyncPulseButton(onTap: onGuestSyncTap!),
             ],
           ),
         ),
@@ -97,7 +88,7 @@ class HeaderProfile extends StatelessWidget {
                 style: TextStyle(
                   color: AppColor.skyblue700,
                   fontWeight: FontWeight.w700,
-                  fontSize: 12.sp,
+                  fontSize: 14.sp,
                 ),
               ),
             ),
@@ -113,7 +104,7 @@ class HeaderProfile extends StatelessWidget {
                   style: TextStyle(
                     color: const Color(0xFF8A6700),
                     fontWeight: FontWeight.w700,
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                   ),
                 ),
               ),

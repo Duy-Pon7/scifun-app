@@ -23,8 +23,6 @@ class CustomNetworkAssetImage extends StatelessWidget {
       imageUrl: imagePath.startsWith("http")
           ? imagePath
           : "https://res.cloudinary.com/dglm2f7sr/image/upload/v1761373988/default_awmzq0.jpg",
-      // imageUrl:
-      //     'https://res.cloudinary.com/dglm2f7sr/image/upload/v1761373988/default_awmzq0.jpg',
       fit: fit,
       width: width,
       height: height,

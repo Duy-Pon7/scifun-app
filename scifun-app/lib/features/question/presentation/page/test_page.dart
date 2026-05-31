@@ -313,7 +313,7 @@ class _TestPageState extends State<TestPage> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: const Color(0xFF4F4F4F),
-                                      fontSize: 16.sp,
+                                      fontSize: 18.sp,
                                     ),
                                   ),
                                 ),

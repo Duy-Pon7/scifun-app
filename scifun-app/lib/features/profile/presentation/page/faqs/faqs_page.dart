@@ -41,7 +41,7 @@ class FaqsPage extends StatelessWidget {
                   child: Html(
                     data: faq.answer,
                     style: {
-                      "body": Style(fontSize: FontSize(13.sp)),
+                      "body": Style(fontSize: FontSize(15.sp)),
                       "p": Style(margin: Margins.only(bottom: 8)),
                     },
                   ),

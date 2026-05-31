@@ -333,12 +333,12 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         textInputAction: TextInputAction.next,
         style: TextStyle(
           color: AppColor.hurricane950,
-          fontSize: 16.sp,
+          fontSize: 18.sp,
           fontWeight: FontWeight.w500,
         ),
         hintStyle: TextStyle(
           color: AppColor.hurricane400,
-          fontSize: 15.sp,
+          fontSize: 18.sp,
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
         borderRadius: BorderRadius.circular(14.r),
@@ -362,12 +362,12 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         readOnly: true,
         style: TextStyle(
           color: AppColor.hurricane950,
-          fontSize: 16.sp,
+          fontSize: 18.sp,
           fontWeight: FontWeight.w500,
         ),
         hintStyle: TextStyle(
           color: AppColor.hurricane400,
-          fontSize: 15.sp,
+          fontSize: 18.sp,
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 13.h),
         borderRadius: BorderRadius.circular(14.r),
@@ -488,7 +488,7 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
         text,
         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
               color: AppColor.hurricane700,
-              fontSize: 13.sp,
+              fontSize: 15.sp,
               fontWeight: FontWeight.w600,
             ),
       ),

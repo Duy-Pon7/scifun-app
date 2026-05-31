@@ -99,7 +99,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
                 'Hoàn thành kiểm tra',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   color: Colors.grey.shade600,
                 ),
               ),
@@ -149,7 +149,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
                 backgroundColor: Colors.white,
                 buttonColor: accentLight,
                 textColor: accent,
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
               ),
               SizedBox(height: 12.h),
@@ -165,7 +165,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
                 backgroundColor: accent,
                 buttonColor: accentDark,
                 textColor: Colors.white,
-                fontSize: 16.sp,
+                fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
               ),
             ],
@@ -193,7 +193,7 @@ class _QuizResultPageState extends State<QuizResultPage> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 18.sp,
             color: Colors.grey.shade600,
           ),
         ),

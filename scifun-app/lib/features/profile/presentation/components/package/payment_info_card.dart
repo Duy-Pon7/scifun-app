@@ -89,7 +89,7 @@ class _PaymentInfoCardState extends State<PaymentInfoCard> {
                   child: Text(
                     subtitle,
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          fontSize: 15.sp,
+                          fontSize: 18.sp,
                           fontWeight: FontWeight.w400,
                           color: AppColor.hurricane800.withValues(alpha: 0.6),
                         ),

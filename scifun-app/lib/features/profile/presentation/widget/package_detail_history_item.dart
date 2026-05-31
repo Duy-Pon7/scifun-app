@@ -78,7 +78,7 @@
 //                     child: Text(
 //                       'Thời gian mua: ',
 //                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                             fontSize: 16.sp,
+//                             fontSize: 18.sp,
 //                             fontWeight: FontWeight.w400,
 //                           ),
 //                       textAlign: TextAlign.center,
@@ -92,7 +92,7 @@
 //                       DateFormat('dd/MM/yyyy HH:mm')
 //                           .format(widget.date.toLocal()),
 //                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                             fontSize: 16.sp,
+//                             fontSize: 18.sp,
 //                             fontWeight: FontWeight.w400,
 //                           ),
 //                       textAlign: TextAlign.center,
@@ -131,7 +131,7 @@
 //                           formattedPrice,
 //                           style:
 //                               Theme.of(context).textTheme.titleMedium!.copyWith(
-//                                     fontSize: 16.sp,
+//                                     fontSize: 18.sp,
 //                                     fontWeight: FontWeight.w400,
 //                                   ),
 //                           textAlign: TextAlign.center,
@@ -155,7 +155,7 @@
 //                     child: Text(
 //                       'Người thụ hưởng: ',
 //                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                             fontSize: 16.sp,
+//                             fontSize: 18.sp,
 //                             fontWeight: FontWeight.w400,
 //                           ),
 //                       textAlign: TextAlign.center,
@@ -172,7 +172,7 @@
 //                           widget.item?.bank?.accountHolder ?? "Không rõ",
 //                           style:
 //                               Theme.of(context).textTheme.titleMedium!.copyWith(
-//                                     fontSize: 16.sp,
+//                                     fontSize: 18.sp,
 //                                     fontWeight: FontWeight.w400,
 //                                   ),
 //                           textAlign: TextAlign.center,
@@ -196,7 +196,7 @@
 //                     child: Text(
 //                       'Ngân hàng: ',
 //                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                             fontSize: 16.sp,
+//                             fontSize: 18.sp,
 //                             fontWeight: FontWeight.w400,
 //                           ),
 //                       textAlign: TextAlign.center,
@@ -213,7 +213,7 @@
 //                           widget.item?.bank?.name ?? "Không rõ",
 //                           style:
 //                               Theme.of(context).textTheme.titleMedium!.copyWith(
-//                                     fontSize: 16.sp,
+//                                     fontSize: 18.sp,
 //                                     fontWeight: FontWeight.w400,
 //                                   ),
 //                           textAlign: TextAlign.center,
@@ -235,7 +235,7 @@
 //                   Text(
 //                     'STK: ',
 //                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-//                           fontSize: 16.sp,
+//                           fontSize: 18.sp,
 //                           fontWeight: FontWeight.w400,
 //                         ),
 //                     textAlign: TextAlign.center,
@@ -249,7 +249,7 @@
 //                         widget.item?.bank?.account ?? "Không rõ",
 //                         style:
 //                             Theme.of(context).textTheme.titleMedium!.copyWith(
-//                                   fontSize: 16.sp,
+//                                   fontSize: 18.sp,
 //                                   fontWeight: FontWeight.w400,
 //                                 ),
 //                         textAlign: TextAlign.center,

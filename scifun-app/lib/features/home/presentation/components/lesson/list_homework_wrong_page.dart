@@ -100,7 +100,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
             Text(
               "Làm lại",
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    fontSize: 15.sp,
+                    fontSize: 18.sp,
                     color: AppColor.skyblue500,
                     fontWeight: FontWeight.w400,
                   ),
@@ -243,7 +243,7 @@ class ListHomeworkWrongPage extends StatelessWidget {
                                       .textTheme
                                       .titleMedium!
                                       .copyWith(
-                                          fontSize: 15.sp, color: Colors.black),
+                                          fontSize: 18.sp, color: Colors.black),
                                 ),
                         ),
 

@@ -44,7 +44,6 @@ class SubjectItem extends StatelessWidget {
             curve: Curves.easeOutCubic,
             margin: EdgeInsets.only(top: 34.h),
             width: cardWidth ?? 125.w,
-            height: 160.h,
             padding: EdgeInsets.fromLTRB(10.w, 70.h, 10.w, 12.h),
             decoration: BoxDecoration(
               color: cardColor,
@@ -83,8 +82,8 @@ class SubjectItem extends StatelessWidget {
           AnimatedContainer(
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeOutCubic,
-            width: 82.w,
-            height: 82.w,
+            width: 100.w,
+            height: 100.w,
             padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color:

@@ -99,7 +99,7 @@
 //                                   "Hướng dẫn mua gói",
 //                                   style: TextStyle(
 //                                     color: AppColor.skyblue600,
-//                                     fontSize: 15.sp,
+//                                     fontSize: 18.sp,
 //                                     fontWeight: FontWeight.w400,
 //                                   ),
 //                                 ),

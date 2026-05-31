@@ -232,7 +232,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: const Color(0xFF667085),
-                            fontSize: 16.sp,
+                            fontSize: 18.sp,
                             height: 1.4,
                           ),
                         ),
@@ -244,7 +244,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                       itemCount: _messages.length + (_isSending ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index >= _messages.length) {
-                          return _ChatTypingBubble(fontSize: 13.sp);
+                          return _ChatTypingBubble(fontSize: 15.sp);
                         }
 
                         final item = _messages[index];
@@ -280,7 +280,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                         hintText: 'Hỏi Mèo điều bạn đang thắc mắc...',
                         hintStyle: TextStyle(
                           color: const Color(0xFF9AA4B2),
-                          fontSize: 16.sp,
+                          fontSize: 18.sp,
                         ),
                         filled: true,
                         fillColor: const Color(0xFFF2F5FA),
@@ -374,7 +374,7 @@ class _QuizChatBubble extends StatelessWidget {
         child: SelectableText(
           text,
           style: TextStyle(
-            fontSize: 16.sp,
+            fontSize: 18.sp,
             color: isUser ? Colors.white : const Color(0xFF2A3342),
             height: 1.35,
             fontWeight: FontWeight.w500,

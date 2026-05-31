@@ -201,7 +201,7 @@ class _QuizzPageState extends State<QuizzPage> {
             quizz.title ?? 'No title',
             style: TextStyle(
               fontWeight: isQuizPro ? FontWeight.bold : FontWeight.w600,
-              fontSize: 16.sp,
+              fontSize: 18.sp,
             ),
           ),
         ),
@@ -236,7 +236,7 @@ class _QuizzPageState extends State<QuizzPage> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 13.sp,
+              fontSize: 15.sp,
               color: Colors.grey[700],
             ),
           ),
@@ -277,9 +277,9 @@ class _QuizzPageState extends State<QuizzPage> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16.sp, color: AppColor.skyblue600),
+          Icon(icon, size: 18.sp, color: AppColor.skyblue600),
           SizedBox(width: 6.w),
-          Text(text, style: TextStyle(fontSize: 12.sp)),
+          Text(text, style: TextStyle(fontSize: 14.sp)),
         ],
       ),
     );
@@ -303,13 +303,13 @@ class _QuizzPageState extends State<QuizzPage> {
           LevelStatIcon(
             count: chevronCount,
             color: color,
-            size: 11.sp,
+            size: 12.sp,
           ),
           SizedBox(width: 6.w),
           Text(
             displayLevel,
             style: TextStyle(
-              fontSize: 11.sp,
+              fontSize: 12.sp,
               color: color,
               fontWeight: FontWeight.w700,
             ),

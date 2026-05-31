@@ -190,7 +190,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                     ? 'Gói Premium của bạn đã được kích hoạt thành công.'
                     : 'Nhấn nút bên dưới để đồng bộ trạng thái gói sau khi thanh toán MoMo.',
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   color: Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,
@@ -200,7 +200,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                 Text(
                   'Mã giao dịch: $_paymentRef',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w500,
                   ),
@@ -211,7 +211,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                 Text(
                   'Thời hạn gói: $_durationDays ngày',
                   style: TextStyle(
-                    fontSize: 13.sp,
+                    fontSize: 15.sp,
                     color: Colors.grey[600],
                   ),
                 ),
@@ -244,7 +244,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                         child: Text(
                           _statusMessage!,
                           style: TextStyle(
-                            fontSize: 16.sp,
+                            fontSize: 18.sp,
                             color: _isSuccess
                                 ? Colors.green[700]
                                 : Colors.red[700],
@@ -270,7 +270,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   child: Text(
                     'Quay lại',
                     style: TextStyle(
-                      fontSize: 16.sp,
+                      fontSize: 18.sp,
                       color: Colors.grey[600],
                     ),
                   ),

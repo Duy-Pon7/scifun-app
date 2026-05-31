@@ -69,7 +69,7 @@ void showTutorialBottomSheet(
                       HtmlWidget(
                         step?.content ?? "",
                         textStyle: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.w600),
+                            fontSize: 18.sp, fontWeight: FontWeight.w600),
                       ),
                       SizedBox(height: 12.h),
                       Center(

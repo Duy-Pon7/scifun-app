@@ -147,7 +147,7 @@ class _HeaderHomeState extends State<HeaderHome> {
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColor.hurricane900,
               fontWeight: FontWeight.w700,
-              fontSize: 11.sp,
+              fontSize: 12.sp,
             ),
       ),
     );
@@ -165,7 +165,7 @@ class _HeaderHomeState extends State<HeaderHome> {
       height: avatarBoxSize,
       child: Stack(
         clipBehavior: Clip.none,
-        alignment: Alignment.bottomRight,
+        alignment: Alignment.bottomCenter,
         children: [
           Transform.translate(
             offset: Offset(0, -mascotLift),

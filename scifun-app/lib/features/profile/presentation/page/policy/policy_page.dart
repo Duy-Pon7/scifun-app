@@ -26,7 +26,7 @@ class PolicyPage extends StatelessWidget {
                 data: mockPolicyHtml,
                 style: {
                   "body": Style(
-                    fontSize: FontSize(16.sp),
+                    fontSize: FontSize(18.sp),
                     color: Colors.black87,
                     fontWeight: FontWeight.w400,
                   ),

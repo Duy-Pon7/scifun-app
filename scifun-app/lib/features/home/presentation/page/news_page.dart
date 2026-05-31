@@ -57,7 +57,7 @@
 //               Text(
 //                 DateFormat("dd/MM/yyyy").format(createdAt),
 //                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-//                       fontSize: 13.sp,
+//                       fontSize: 15.sp,
 //                       fontWeight: FontWeight.w600,
 //                       color: AppColor.hurricane800.withValues(alpha: 0.6),
 //                     ),
@@ -80,7 +80,7 @@
 //                 data: content,
 //                 style: {
 //                   "body": Style(
-//                     fontSize: FontSize(16.sp),
+//                     fontSize: FontSize(18.sp),
 //                     color: Theme.of(context).textTheme.bodyLarge?.color,
 //                   ),
 //                   "p": Style(

@@ -94,7 +94,7 @@ class _CustomExpansionTileLessonState extends State<CustomExpansionTileLesson> {
                     '${widget.completedCount}/${widget.children.length}',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      fontSize: 15.sp,
+                      fontSize: 18.sp,
                     ),
                   ),
 

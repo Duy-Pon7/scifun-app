@@ -151,7 +151,7 @@ class _ChangeSubjectPageState extends State<ChangeSubjectPage> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: 12.sp,
+                                fontSize: 14.sp,
                                 color: Colors.white.withValues(alpha: 0.92),
                               ),
                             ),

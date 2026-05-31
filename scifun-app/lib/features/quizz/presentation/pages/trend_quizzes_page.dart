@@ -66,7 +66,7 @@ class TrendQuizzesList extends StatelessWidget {
                 child: Text(
                   'Bài kiểm tra thịnh hành',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -159,7 +159,7 @@ class TrendQuizzesList extends StatelessWidget {
                                                       ? FontWeight.bold
                                                       : FontWeight.w600,
                                                   fontSize:
-                                                      isCompact ? 13.sp : 16.sp,
+                                                      isCompact ? 15.sp : 18.sp,
                                                 ),
                                               ),
                                               if (quizz.score != null)
@@ -170,8 +170,8 @@ class TrendQuizzesList extends StatelessWidget {
                                                       TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     fontSize: isCompact
-                                                        ? 11.sp
-                                                        : 12.sp,
+                                                        ? 12.sp
+                                                        : 14.sp,
                                                     color: AppColor.skyblue600,
                                                     fontWeight: FontWeight.w500,
                                                   ),
@@ -188,7 +188,7 @@ class TrendQuizzesList extends StatelessWidget {
                                         maxLines: descriptionMaxLines,
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          fontSize: 12.sp,
+                                          fontSize: 14.sp,
                                           color: Colors.grey[700],
                                         ),
                                       ),
@@ -241,9 +241,9 @@ class TrendQuizzesList extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12.sp, color: AppColor.skyblue600),
+          Icon(icon, size: 14.sp, color: AppColor.skyblue600),
           SizedBox(width: 6.w),
-          AutoSizeText(text, style: TextStyle(fontSize: 12.sp)),
+          AutoSizeText(text, style: TextStyle(fontSize: 14.sp)),
         ],
       ),
     );
@@ -273,7 +273,7 @@ class TrendQuizzesList extends StatelessWidget {
           AutoSizeText(
             displayLevel,
             style: TextStyle(
-              fontSize: 11.sp,
+              fontSize: 12.sp,
               color: color,
               fontWeight: FontWeight.w700,
             ),
