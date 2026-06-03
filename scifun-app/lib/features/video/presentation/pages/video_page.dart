@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
+import 'package:sci_fun/common/widget/app_youtube_player.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -10,7 +12,7 @@ import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
 import 'package:sci_fun/features/video/domain/entity/video_entity.dart';
 import 'package:sci_fun/features/video/presentation/cubit/video_pagination_cubit.dart';
 import 'package:sci_fun/features/video/presentation/pages/youtube_page.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class VideoPage extends StatefulWidget {
   final String topicId;
@@ -130,6 +132,93 @@ class VideoTile extends StatelessWidget {
     required this.video,
   });
 
+  String? get _thumbnailUrl {
+    final url = video.url;
+    if (url == null || url.isEmpty) {
+      return null;
+    }
+
+    final videoId = YoutubePlayerController.convertUrlToId(url);
+    if (videoId == null || videoId.isEmpty) {
+      return null;
+    }
+
+    return YoutubePlayerController.getThumbnail(
+      videoId: videoId,
+      quality: ThumbnailQuality.high,
+      webp: true,
+    );
+  }
+
+  Widget _buildThumbnail() {
+    final thumbnailUrl = _thumbnailUrl;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(6.r),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (thumbnailUrl != null)
+            CachedNetworkImage(
+              imageUrl: thumbnailUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: Colors.grey[300],
+                alignment: Alignment.center,
+                child: SizedBox(
+                  width: 20.w,
+                  height: 20.w,
+                  child: const CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+              errorWidget: (context, url, error) => _ThumbnailFallback(),
+            )
+          else
+            _ThumbnailFallback(),
+          Container(
+            color: Colors.black.withValues(alpha: 0.18),
+          ),
+          Center(
+            child: Container(
+              width: 34.w,
+              height: 34.w,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.6),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Symbols.play_arrow_rounded,
+                color: Colors.white,
+                size: 22.sp,
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 4.h,
+            right: 4.w,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: 4.w,
+                vertical: 2.h,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(3.r),
+              ),
+              child: Text(
+                '${video.duration ?? 0}m',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10.sp,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -159,7 +248,6 @@ class VideoTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Thumbnail
               Container(
                 width: 120.w,
                 height: 80.h,
@@ -167,45 +255,13 @@ class VideoTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6.r),
                   color: Colors.grey[300],
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      Symbols.video_library_rounded,
-                      size: 40.sp,
-                      color: Colors.grey[600],
-                    ),
-                    Positioned(
-                      bottom: 4.h,
-                      right: 4.w,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 4.w,
-                          vertical: 2.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black87,
-                          borderRadius: BorderRadius.circular(3.r),
-                        ),
-                        child: Text(
-                          '${video.duration ?? 0}m',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10.sp,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                child: _buildThumbnail(),
               ),
               SizedBox(width: 12.w),
-              // Video Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
                     Text(
                       video.title ?? 'Untitled Video',
                       maxLines: 2,
@@ -217,7 +273,6 @@ class VideoTile extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 6.h),
-                    // Topic
                     if (video.topic != null)
                       Text(
                         video.topic?.name ?? 'Unknown Topic',
@@ -228,7 +283,6 @@ class VideoTile extends StatelessWidget {
                         ),
                       ),
                     SizedBox(height: 8.h),
-                    // Duration and play button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -267,6 +321,21 @@ class VideoTile extends StatelessWidget {
   }
 }
 
+class _ThumbnailFallback extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.grey[300],
+      alignment: Alignment.center,
+      child: Icon(
+        Symbols.video_library_rounded,
+        size: 40.sp,
+        color: Colors.grey[600],
+      ),
+    );
+  }
+}
+
 class VideoPlayerPage extends StatefulWidget {
   final String videoUrl;
   final String title;
@@ -282,68 +351,16 @@ class VideoPlayerPage extends StatefulWidget {
 }
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  YoutubePlayerController? _youtubePlayerController;
-  String? _videoId;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Dùng hàm có sẵn của package
-    _videoId = YoutubePlayer.convertUrlToId(widget.videoUrl);
-
-    if (_videoId != null) {
-      _youtubePlayerController = YoutubePlayerController(
-        initialVideoId: _videoId!,
-        flags: const YoutubePlayerFlags(
-          autoPlay: true,
-          mute: false,
-        ),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _youtubePlayerController?.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Nếu không lấy được videoId hoặc controller chưa init -> báo lỗi
-    if (_videoId == null || _youtubePlayerController == null) {
-      return Scaffold(
-        appBar: BasicAppbar(title: widget.title),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.error_outline_rounded,
-                size: 64.sp,
-                color: Colors.red,
-              ),
-              SizedBox(height: 16.h),
-              Text(
-                'Không thể tải video\nURL: ${widget.videoUrl}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  color: Colors.red[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: BasicAppbar(title: widget.title),
-      body: YoutubePlayer(
-        controller: _youtubePlayerController!,
-        showVideoProgressIndicator: true,
+      body: Padding(
+        padding: EdgeInsets.all(16.w),
+        child: AppYoutubePlayer(
+          videoUrl: widget.videoUrl,
+          autoPlay: true,
+        ),
       ),
     );
   }
