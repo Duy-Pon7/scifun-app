@@ -56,7 +56,7 @@ class ListSubjects extends StatelessWidget {
           builder: (context, state) {
             if (state is PaginationLoading<SubjectEntity>) {
               return SizedBox(
-                height: 150.h,
+                height: 160.h,
                 child: const Center(
                   child: AppLoadingIndicator(
                     message: '\u0110ang t\u1ea3i trang ch\u1ee7...',
@@ -73,7 +73,7 @@ class ListSubjects extends StatelessWidget {
 
               if (items.isEmpty) {
                 return SizedBox(
-                  height: 150.h,
+                  height: 160.h,
                   child: const Center(
                     child: AppEmptyState(
                       message: 'Không có môn học',
@@ -85,7 +85,7 @@ class ListSubjects extends StatelessWidget {
               }
 
               return SizedBox(
-                height: 150.h,
+                height: 160.h,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -159,7 +159,7 @@ class ListSubjects extends StatelessWidget {
 
             if (state is PaginationError<SubjectEntity>) {
               return SizedBox(
-                height: 150.h,
+                height: 160.h,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -180,7 +180,7 @@ class ListSubjects extends StatelessWidget {
             }
 
             return SizedBox(
-              height: 150.h,
+              height: 160.h,
               child: const Center(
                 child: AppEmptyState(
                   message: 'Không có môn học',

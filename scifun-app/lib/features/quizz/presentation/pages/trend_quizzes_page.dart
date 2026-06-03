@@ -232,7 +232,7 @@ class TrendQuizzesList extends StatelessWidget {
 
   Widget _buildMetaItem({required IconData icon, required String text}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       decoration: BoxDecoration(
         color: AppColor.skyblue600.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(999),
@@ -242,7 +242,6 @@ class TrendQuizzesList extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 14.sp, color: AppColor.skyblue600),
-          SizedBox(width: 6.w),
           AutoSizeText(text, style: TextStyle(fontSize: 14.sp)),
         ],
       ),

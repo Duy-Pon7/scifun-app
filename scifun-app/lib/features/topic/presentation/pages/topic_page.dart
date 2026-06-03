@@ -192,7 +192,8 @@ class _TopicPageState extends State<TopicPage> {
                             ),
                           ),
                         )
-                      : Icon(Symbols.play_lesson_rounded, color: AppColor.skyblue600),
+                      : Icon(Symbols.play_lesson_rounded,
+                          color: AppColor.skyblue600, size: 30),
                   title: Text(
                     topic.name ?? 'No title',
                     style: const TextStyle(fontWeight: FontWeight.bold),
