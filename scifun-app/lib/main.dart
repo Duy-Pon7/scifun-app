@@ -89,8 +89,35 @@ Future<void> _bootstrapSound() async {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(SoundService.instance.resumeLoop());
+      return;
+    }
+
+    unawaited(SoundService.instance.pauseLoop());
+  }
 
   void _unlockAudioAfterUserGesture() {
     unawaited(SoundService.instance.registerUserGesture());
