@@ -3,7 +3,7 @@ class AppImage {
 
   static const String _basePath = 'assets/images/';
 
-  static const String logo = '${_basePath}logo.png';
+  static const String logo = '${_basePath}logo_2.png';
   static const String notifications = '${_basePath}notifications.png';
   static const String itemAuth = '${_basePath}item_auth.png';
   static const String noti = '${_basePath}noti.png';
