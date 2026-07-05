@@ -17,7 +17,6 @@ import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/sound_service.dart';
 import 'package:sci_fun/core/utils/assets/app_vector.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
-import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/chat/admin_chat_page.dart';
 import 'package:sci_fun/features/chat/chat_connection_config.dart';
@@ -25,6 +24,7 @@ import 'package:sci_fun/features/chat/user_chat_page.dart';
 import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 import 'package:sci_fun/features/profile/presentation/components/profile/header_profile.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 import 'package:sci_fun/features/profile/presentation/page/about_us/about_us_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_page/change_infomation_page.dart';
 import 'package:sci_fun/features/profile/presentation/page/change_pass/change_pass.dart';
@@ -98,7 +98,6 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     _userCubit = context.read<UserCubit>();
-    _userCubit.getUser(token: sl<SharePrefsService>().getUserData()!);
   }
 
   Future<void> _openChatSupport() async {
@@ -312,109 +311,91 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => sl<AuthBloc>()..add(AuthGetSession()),
-        ),
-        BlocProvider(
-          create: (_) {
-            final token = sl<SharePrefsService>().getUserData();
-            if (token != null) {
-              return sl<UserCubit>()..getUser(token: token);
-            }
-            return sl<UserCubit>();
-          },
-        ),
-      ],
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              height: ScreenUtil().screenHeight * 0.3,
-              decoration: BoxDecoration(
-                color: AppColor.skyblue400,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(ScreenUtil().screenHeight * 0.09),
-                  bottomRight:
-                      Radius.circular(ScreenUtil().screenHeight * 0.09),
-                ),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Container(
+            height: ScreenUtil().screenHeight * 0.3,
+            decoration: BoxDecoration(
+              color: AppColor.skyblue400,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(ScreenUtil().screenHeight * 0.09),
+                bottomRight: Radius.circular(ScreenUtil().screenHeight * 0.09),
               ),
             ),
-            Positioned(top: 0, right: 0, child: _rightWave()),
-            SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      child: Text(
-                        'Trang cá nhân',
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 20.sp,
-                            ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(16.w),
-                      margin: EdgeInsets.symmetric(horizontal: 16.w),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0x1AFF0300),
-                            blurRadius: 10.r,
-                            offset: Offset(0, 2.h),
+          ),
+          Positioned(top: 0, right: 0, child: _rightWave()),
+          SingleChildScrollView(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    child: Text(
+                      'Trang cá nhân',
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20.sp,
                           ),
-                        ],
-                      ),
-                      child: BlocBuilder<UserCubit, UserState>(
-                        builder: (context, state) {
-                          final user =
-                              state is UserLoaded ? state.user.data : null;
-                          final remainingDays = user == null
-                              ? 0
-                              : _resolveUserRemainingDays(user);
-                          final isGuest = user?.isGuest == true;
-
-                          return Column(
-                            spacing: 16.h,
-                            children: [
-                              HeaderProfile(
-                                imgUrl: user?.avatar ??
-                                    'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
-                                name: user?.fullname ?? 'Khách',
-                                remainingPackage: '$remainingDays ngày',
-                                isGuest: isGuest,
-                                onGuestSyncTap: isGuest
-                                    ? () {
-                                        Navigator.push(
-                                          context,
-                                          slidePage(
-                                            const GuestSyncProcedurePage(),
-                                          ),
-                                        );
-                                      }
-                                    : null,
-                              ),
-                              if (user != null) subscriptionCard(user),
-                              if (state is UserError) _errorStateBanner(state),
-                              _profileActions(),
-                            ],
-                          );
-                        },
-                      ),
                     ),
-                  ],
-                ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(16.w),
+                    margin: EdgeInsets.symmetric(horizontal: 16.w),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0x1AFF0300),
+                          blurRadius: 10.r,
+                          offset: Offset(0, 2.h),
+                        ),
+                      ],
+                    ),
+                    child: BlocBuilder<UserCubit, UserState>(
+                      builder: (context, state) {
+                        final user =
+                            state is UserLoaded ? state.user.data : null;
+                        final remainingDays =
+                            user == null ? 0 : _resolveUserRemainingDays(user);
+                        final isGuest = user?.isGuest == true;
+
+                        return Column(
+                          spacing: 16.h,
+                          children: [
+                            HeaderProfile(
+                              imgUrl: user?.avatar ??
+                                  'https://cdn-icons-png.flaticon.com/512/8345/8345328.png',
+                              name: user?.fullname ?? 'Khách',
+                              remainingPackage: '$remainingDays ngày',
+                              isGuest: isGuest,
+                              onGuestSyncTap: isGuest
+                                  ? () {
+                                      Navigator.push(
+                                        context,
+                                        slidePage(
+                                          const GuestSyncProcedurePage(),
+                                        ),
+                                      );
+                                    }
+                                  : null,
+                            ),
+                            if (user != null) subscriptionCard(user),
+                            if (state is UserError) _errorStateBanner(state),
+                            _profileActions(),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -554,8 +535,23 @@ class _ProfilePageState extends State<ProfilePage> {
     String title,
     void Function()? onTap,
   ) {
+    final requiresGuestSync = icon == Symbols.person_rounded ||
+        icon == Symbols.lock_rounded ||
+        icon == Symbols.shopping_cart_rounded;
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap == null
+          ? null
+          : () async {
+              if (requiresGuestSync) {
+                final canAccess = await guardGuestRestrictedFeature(context);
+                if (!canAccess || !context.mounted) {
+                  return;
+                }
+              }
+
+              onTap();
+            },
       child: Container(
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(

@@ -46,8 +46,8 @@ class _SigninFormState extends State<SigninForm> {
     super.dispose();
   }
 
-  Future<void> _listener(BuildContext _, AuthState state) async {
-    if (!mounted) return;
+  Future<void> _listener(BuildContext context, AuthState state) async {
+    if (!context.mounted) return;
     print('statesignin $state');
 
     if (state is AuthLoading) {
@@ -59,11 +59,11 @@ class _SigninFormState extends State<SigninForm> {
     }
 
     await EasyLoading.dismiss();
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     if (state is AuthFailure) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
+        if (!context.mounted) return;
         showCustomAlertDialog(
           context,
           'Đăng nhập thất bại',
@@ -78,10 +78,11 @@ class _SigninFormState extends State<SigninForm> {
       if (!state.isGuest) {
         final userId = sl<SharePrefsService>().getUserData();
         if (userId != null && userId.isNotEmpty) {
-          await sl<UserCubit>().getUser(token: userId);
+          final userCubit = context.read<UserCubit>();
+          await userCubit.getUser(token: userId);
         }
       }
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       final shouldShowOnboarding = state.isFirstLogin == true;
 
@@ -174,7 +175,9 @@ class _SigninFormState extends State<SigninForm> {
               obscureText: state,
               suffixIcon: IconButton(
                 icon: Icon(
-                  state ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
+                  state
+                      ? Symbols.visibility_rounded
+                      : Symbols.visibility_off_rounded,
                 ),
                 onPressed: () =>
                     context.read<ObscureTextCubit>().toggleObscureText(),

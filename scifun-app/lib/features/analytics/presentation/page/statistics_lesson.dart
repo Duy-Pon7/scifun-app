@@ -53,9 +53,6 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
-        ),
         BlocProvider.value(
           value: sl<ProgressCubit>(),
         ),

@@ -15,6 +15,7 @@ import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 
 import 'package:intl/intl.dart';
 
@@ -55,22 +56,31 @@ class _ChangeInfomationFormState extends State<ChangeInfomationForm> {
 
   void _onChange() {
     if (_formKey.currentState!.validate()) {
-      FocusScope.of(context).unfocus();
-      final selectedImage = context.read<SelectImageCubit>().state.image;
-      final userState = context.read<UserCubit>().state;
-      if (userState is UserLoaded) {
-        final userId = userState.user.data?.id ?? '';
-        _userCubit.updateUser(
-          token: token,
-          userId: userId,
-          fullname: _fullnameCon.text.trim(),
-          dob: selectedBirthday ?? DateTime(2000, 1, 1),
-          sex: _genderFieldValue ?? 1,
-          level:
-              LevelHelper.normalize(_levelFieldValue) ?? LevelHelper.beginner,
-          avatar: selectedImage,
-        );
-      }
+      _submitChange();
+    }
+  }
+
+  Future<void> _submitChange() async {
+    FocusScope.of(context).unfocus();
+
+    final canAccess = await guardGuestRestrictedFeature(context);
+    if (!canAccess || !mounted) {
+      return;
+    }
+
+    final selectedImage = context.read<SelectImageCubit>().state.image;
+    final userState = context.read<UserCubit>().state;
+    if (userState is UserLoaded) {
+      final userId = userState.user.data?.id ?? '';
+      _userCubit.updateUser(
+        token: token,
+        userId: userId,
+        fullname: _fullnameCon.text.trim(),
+        dob: selectedBirthday ?? DateTime(2000, 1, 1),
+        sex: _genderFieldValue ?? 1,
+        level: LevelHelper.normalize(_levelFieldValue) ?? LevelHelper.beginner,
+        avatar: selectedImage,
+      );
     }
   }
 

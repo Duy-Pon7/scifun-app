@@ -46,9 +46,7 @@ void main() async {
             BlocProvider.value(value: sl<IsAuthorizedCubit>()..isAuthorized()),
             BlocProvider.value(value: sl<DashboardCubit>()),
             BlocProvider(create: (context) => sl<QuizzCubit>()),
-            BlocProvider(
-              create: (_) => sl<SubjectCubit>()..loadInitial(searchQuery: ''),
-            ),
+            BlocProvider(create: (_) => sl<SubjectCubit>()),
             BlocProvider.value(value: sl<ProgressCubit>()),
           ],
           child: const MyApp(),

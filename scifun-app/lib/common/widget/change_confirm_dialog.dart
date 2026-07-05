@@ -75,6 +75,27 @@ Future<bool?> showLogoutConfirmDialog({
   );
 }
 
+Future<bool?> showGuestSyncRequiredDialog({
+  required BuildContext context,
+  String titleText = '\u0110\u1ed3ng b\u1ed9 t\u00e0i kho\u1ea3n \u0111\u1ec3 ti\u1ebfp t\u1ee5c',
+  String messageText =
+      'Vui l\u00f2ng \u0111\u1ed3ng b\u1ed9 t\u00e0i kho\u1ea3n \u0111\u1ec3 d\u00f9ng ch\u1ee9c n\u0103ng n\u00e0y nha!',
+  String cancelButtonText = '\u0110\u1ec3 sau',
+  String confirmButtonText = '\u0110\u1ed3ng b\u1ed9',
+  VoidCallback? onCancelTap,
+  VoidCallback? onConfirmTap,
+}) {
+  return showChangeConfirmDialog(
+    context: context,
+    titleText: titleText,
+    messageText: messageText,
+    cancelButtonText: cancelButtonText,
+    confirmButtonText: confirmButtonText,
+    onCancelTap: onCancelTap,
+    onConfirmTap: onConfirmTap,
+  );
+}
+
 class ChangeConfirmDialog extends StatelessWidget {
   const ChangeConfirmDialog({
     super.key,

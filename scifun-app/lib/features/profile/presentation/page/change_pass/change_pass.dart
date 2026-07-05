@@ -16,6 +16,7 @@ import 'package:sci_fun/core/utils/assets/app_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 
 class ChangePass extends StatefulWidget {
   const ChangePass({super.key});
@@ -70,6 +71,9 @@ class _ChangePassState extends State<ChangePass> {
       await sl<IsAuthorizedCubit>().logout();
       // Clear UserCubit to ensure other UI pieces don't show old info
       sl<UserCubit>().clear();
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const SigninPage()),
         (route) => false,
@@ -128,9 +132,13 @@ class _ChangePassState extends State<ChangePass> {
 
   Widget _changeButton() => BasicButton(
         text: "Lưu thay đổi",
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
             FocusScope.of(context).unfocus();
+            final canAccess = await guardGuestRestrictedFeature(context);
+            if (!canAccess || !mounted) {
+              return;
+            }
             context.read<AuthBloc>().add(AuthChangePass(
                 oldPass: _passOldCon.text.trim(),
                 newPass: _passNewCon.text.trim(),

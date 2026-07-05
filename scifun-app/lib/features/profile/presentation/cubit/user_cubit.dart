@@ -45,6 +45,10 @@ class UserError extends UserState {
 class UserCubit extends Cubit<UserState> {
   final GetInfoUser getInfoUser;
   final UpdateInfoUser updateInfoUser;
+  String? _loadedToken;
+  String? _pendingToken;
+  Future<UserGetEntity?>? _pendingRequest;
+  int _requestNonce = 0;
 
   UserCubit({
     required this.getInfoUser,
@@ -55,22 +59,75 @@ class UserCubit extends Cubit<UserState> {
     if (!isClosed) emit(state);
   }
 
-  Future<UserGetEntity?> getUser({required String token}) async {
+  Future<UserGetEntity?> getUser({
+    required String token,
+    bool forceRefresh = false,
+  }) async {
+    final normalizedToken = token.trim();
+    if (normalizedToken.isEmpty) {
+      return null;
+    }
+
+    if (_pendingRequest != null && _pendingToken == normalizedToken) {
+      return _pendingRequest!;
+    }
+
+    final currentState = state;
+    if (!forceRefresh &&
+        currentState is UserLoaded &&
+        _loadedToken == normalizedToken) {
+      return currentState.user;
+    }
+
+    final requestNonce = ++_requestNonce;
+    final request = _fetchUser(
+      token: normalizedToken,
+      requestNonce: requestNonce,
+    );
+    _pendingToken = normalizedToken;
+    _pendingRequest = request;
+
+    final user = await request;
+
+    if (identical(_pendingRequest, request)) {
+      _pendingRequest = null;
+      _pendingToken = null;
+      if (user != null) {
+        _loadedToken = normalizedToken;
+      }
+    }
+
+    return user;
+  }
+
+  Future<UserGetEntity?> _fetchUser({
+    required String token,
+    required int requestNonce,
+  }) async {
     _tryEmit(UserLoading());
     try {
       final res = await getInfoUser.call(token: token);
       return await res.fold(
         (failure) {
+          if (requestNonce != _requestNonce) {
+            return null;
+          }
           _tryEmit(UserError(failure.message));
           return null;
         },
         (data) {
           final user = data!;
+          if (requestNonce != _requestNonce) {
+            return user;
+          }
           _tryEmit(UserLoaded(user));
           return user;
         },
       );
     } catch (e) {
+      if (requestNonce != _requestNonce) {
+        return null;
+      }
       _tryEmit(UserError(e.toString()));
       return null;
     }
@@ -161,6 +218,10 @@ class UserCubit extends Cubit<UserState> {
 
   /// Clear current user state (used on logout)
   void clear() {
+    _loadedToken = null;
+    _pendingToken = null;
+    _pendingRequest = null;
+    _requestNonce++;
     _tryEmit(UserInitial());
   }
 }

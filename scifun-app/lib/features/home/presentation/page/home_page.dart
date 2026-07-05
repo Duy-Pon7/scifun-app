@@ -39,6 +39,33 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _loadSelectedSubjectFromPrefs();
+    _loadCurrentUser();
+    _loadSubjectsIfNeeded();
+  }
+
+  void _loadCurrentUser() {
+    final token = sl<SharePrefsService>().getUserData()?.trim();
+    if (token == null || token.isEmpty) {
+      return;
+    }
+
+    context.read<UserCubit>().getUser(token: token);
+  }
+
+  void _loadSubjectsIfNeeded() {
+    final subjectCubit = context.read<SubjectCubit>();
+    final state = subjectCubit.state;
+    final hasDefaultQueryLoaded = state.searchQuery.isEmpty &&
+        state.filterId == null &&
+        (state is PaginationLoading<SubjectEntity> ||
+            state is PaginationLoadingMore<SubjectEntity> ||
+            state is PaginationSuccess<SubjectEntity>);
+
+    if (hasDefaultQueryLoaded) {
+      return;
+    }
+
+    subjectCubit.getSubjects(searchQuery: '');
   }
 
   void _loadSelectedSubjectFromPrefs() {
@@ -167,19 +194,7 @@ class _HomePageState extends State<HomePage>
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) {
-            final token = sl<SharePrefsService>().getUserData();
-            if (token != null) {
-              return sl<UserCubit>()..getUser(token: token);
-            }
-            return sl<UserCubit>();
-          },
-        ),
-        BlocProvider(
           create: (context) => sl<NewsCubit>()..getNews(),
-        ),
-        BlocProvider(
-          create: (context) => sl<SubjectCubit>()..getSubjects(searchQuery: ""),
         ),
       ],
       child: Scaffold(
@@ -192,7 +207,10 @@ class _HomePageState extends State<HomePage>
                   EasyLoading.dismiss();
                   final token = sl<SharePrefsService>().getUserData();
                   if (token != null && token.isNotEmpty) {
-                    sl<UserCubit>().getUser(token: token);
+                    context.read<UserCubit>().getUser(
+                          token: token,
+                          forceRefresh: true,
+                        );
                   }
                 } else if (state is AuthFailure) {
                   EasyLoading.dismiss();

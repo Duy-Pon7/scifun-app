@@ -6,8 +6,6 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/helper/level_helper.dart';
 import 'package:sci_fun/common/widget/basic_input_field.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
-import 'package:sci_fun/core/di/injection.dart';
-import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/home/presentation/page/search_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
@@ -27,17 +25,6 @@ class HeaderHome extends StatefulWidget {
 class _HeaderHomeState extends State<HeaderHome> {
   static const String _avatarMascotLottiePath =
       'assets/lottie_json/cat_hide_and_seek.json';
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final token = sl<SharePrefsService>().getUserData();
-      if (token != null && token.isNotEmpty) {
-        context.read<UserCubit>().getUser(token: token);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {

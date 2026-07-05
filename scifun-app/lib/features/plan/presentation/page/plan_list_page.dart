@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
-import 'package:sci_fun/common/helper/transition_page.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
@@ -18,9 +15,8 @@ import 'package:sci_fun/features/plan/domain/entity/checkout_response.dart';
 import 'package:sci_fun/features/plan/domain/entity/plan_entity.dart';
 import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
 import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
-import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
-import 'package:sci_fun/features/profile/presentation/page/guest_sync/guest_sync_procedure_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PlanListPage extends StatefulWidget {
@@ -335,35 +331,6 @@ class _PlanCard extends StatelessWidget {
 
   const _PlanCard({required this.plan});
 
-  Future<bool> _isGuestAccount(BuildContext context) async {
-    final userState = context.read<UserCubit>().state;
-    if (userState is UserLoaded) {
-      return userState.user.data?.isGuest == true;
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    if (token == null || token.isEmpty) return false;
-
-    try {
-      final parts = token.split('.');
-      if (parts.length < 2) return false;
-
-      final payload = utf8.decode(
-        base64Url.decode(base64Url.normalize(parts[1])),
-      );
-      final map = jsonDecode(payload);
-      if (map is! Map<String, dynamic>) return false;
-
-      final claim = map['isGuest'];
-      if (claim is bool) return claim;
-      if (claim is String) return claim.toLowerCase() == 'true';
-      return false;
-    } catch (_) {
-      return false;
-    }
-  }
-
   Future<void> _savePendingPayment(CheckoutResponse response) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -466,13 +433,8 @@ class _PlanCard extends StatelessWidget {
                 backgroundColor: AppColor.skyblue400,
               ),
               onPressed: () async {
-                final isGuest = await _isGuestAccount(context);
-                if (!context.mounted) return;
-                if (isGuest) {
-                  Navigator.push(
-                    context,
-                    slidePage(const GuestSyncProcedurePage()),
-                  );
+                final canAccess = await guardGuestRestrictedFeature(context);
+                if (!canAccess || !context.mounted) {
                   return;
                 }
 

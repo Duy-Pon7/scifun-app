@@ -13,6 +13,7 @@ import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 import 'package:sci_fun/features/question/presentation/page/test_page.dart';
 import 'package:sci_fun/features/quizz/domain/entity/quizz_entity.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/quizz_cubit.dart';
@@ -99,8 +100,15 @@ class _QuizzPageState extends State<QuizzPage> {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: () {
+                  onTap: () async {
                     if (isLocked) {
+                      final canAccess = await guardGuestRestrictedFeature(
+                        context,
+                      );
+                      if (!canAccess || !context.mounted) {
+                        return;
+                      }
+
                       Navigator.push(
                         context,
                         slidePage(const PlanListPage()),
