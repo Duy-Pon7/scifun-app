@@ -1,3 +1,4 @@
+import 'package:sci_fun/common/helper/log_debug.dart';
 import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/leaderboards/domain/entity/leaderboards_entity.dart';
 import 'package:sci_fun/features/leaderboards/domain/usecase/get_all_leaderboards.dart';
@@ -6,6 +7,7 @@ import 'package:sci_fun/features/leaderboards/domain/usecase/rebuild_leaderboard
 class LeaderboardsCubit extends PaginationCubit<LeaderboardsEntity> {
   final GetLeaderboard getLeaderboard;
   final RebuildLeaderboard rebuildLeaderboard;
+  bool _isRebuilding = false;
 
   LeaderboardsCubit({
     required this.getLeaderboard,
@@ -15,15 +17,12 @@ class LeaderboardsCubit extends PaginationCubit<LeaderboardsEntity> {
 
   String _period = 'alltime';
 
-  /// =======================
-  /// FETCH DATA (PHÂN TRANG)
-  /// =======================
   @override
   Future<List<LeaderboardsEntity>> fetchData(
     int page,
     int limit, {
     String? searchQuery,
-    String? filterId, // subjectId
+    String? filterId,
   }) async {
     final res = await getLeaderboard(
       GetLeaderboardParams(
@@ -40,9 +39,6 @@ class LeaderboardsCubit extends PaginationCubit<LeaderboardsEntity> {
     );
   }
 
-  /// =======================
-  /// LOAD FIRST PAGE
-  /// =======================
   Future<void> loadLeaderboards({
     required String subjectId,
     String period = 'alltime',
@@ -54,46 +50,68 @@ class LeaderboardsCubit extends PaginationCubit<LeaderboardsEntity> {
     );
   }
 
-  /// =======================
-  /// REBUILD + REFRESH
-  /// =======================
   Future<void> rebuildAndRefresh({
     required String subjectId,
     String period = 'alltime',
   }) async {
+    if (_isRebuilding) return;
+
     _period = period;
+    _isRebuilding = true;
 
-    final res = await rebuildLeaderboard(
-      RebuildLeaderboardParams(subjectId: subjectId),
-    );
-    await res.fold(
-      (failure) async {
-        emit(
-          PaginationError<LeaderboardsEntity>(
-            error: failure.message,
-            items: state.items,
-            currentPage: state.currentPage,
-            searchQuery: state.searchQuery,
-            filterId: subjectId,
-          ),
-        );
-      },
-      (result) async {
-        // debug log
-        try {
-          print(
-              'Rebuild result: subjectId=${result.subjectId}, period=${result.period}, updated=${result.updated}, notified=${result.notified}');
-        } catch (_) {}
-        try {
-          // If server reported updates, wait a bit for the background job
-          // to finish so that subsequent GET returns updated data.
-          if (result.updated > 0) {
-            await Future.delayed(const Duration(milliseconds: 1500));
-          }
-        } catch (_) {}
+    try {
+      final res = await rebuildLeaderboard(
+        RebuildLeaderboardParams(subjectId: subjectId),
+      );
 
-        await refresh(); // load lại trang 1
-      },
+      await res.fold(
+        (failure) async {
+          emit(
+            PaginationError<LeaderboardsEntity>(
+              error: failure.message,
+              items: state.items,
+              currentPage: state.currentPage,
+              searchQuery: state.searchQuery,
+              filterId: subjectId,
+            ),
+          );
+        },
+        (result) async {
+          logApiSuccess(
+            source: 'LeaderboardsCubit.rebuildAndRefresh',
+            data: {
+              'subjectId': result.subjectId,
+              'period': result.period,
+              'updated': result.updated,
+              'notified': result.notified,
+            },
+          );
+
+          try {
+            if (result.updated > 0) {
+              await Future.delayed(const Duration(milliseconds: 1500));
+            }
+          } catch (_) {}
+
+          await super.refresh();
+        },
+      );
+    } finally {
+      _isRebuilding = false;
+    }
+  }
+
+  @override
+  Future<void> refresh() async {
+    final subjectId = state.filterId;
+    if (subjectId == null || subjectId.isEmpty) {
+      await super.refresh();
+      return;
+    }
+
+    await rebuildAndRefresh(
+      subjectId: subjectId,
+      period: _period,
     );
   }
 }

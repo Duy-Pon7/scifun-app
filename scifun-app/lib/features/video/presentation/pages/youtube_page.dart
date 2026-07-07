@@ -16,11 +16,16 @@ class YoutubePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BasicAppbar(title: title),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: AppYoutubePlayer(
-          videoUrl: videoUrl,
-          autoPlay: true,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: AppYoutubePlayer(
+              videoUrl: videoUrl,
+              autoPlay: true,
+            ),
+          ),
         ),
       ),
     );

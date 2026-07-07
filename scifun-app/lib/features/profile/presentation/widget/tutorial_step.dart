@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:sci_fun/common/widget/custom_network_asset_image.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
@@ -66,10 +66,16 @@ void showTutorialBottomSheet(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 20.h),
-                      HtmlWidget(
-                        step?.content ?? "",
-                        textStyle: TextStyle(
-                            fontSize: 18.sp, fontWeight: FontWeight.w600),
+                      Html(
+                        data: step?.content ?? "",
+                        style: {
+                          "body": Style(
+                            margin: Margins.zero,
+                            fontSize: FontSize(18.sp),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          "p": Style(margin: Margins.only(bottom: 12)),
+                        },
                       ),
                       SizedBox(height: 12.h),
                       Center(

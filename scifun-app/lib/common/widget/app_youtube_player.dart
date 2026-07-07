@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:sci_fun/common/helper/open_link.dart';
+import 'package:sci_fun/common/helper/youtube_helper.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class AppYoutubePlayer extends StatefulWidget {
   final String videoUrl;
@@ -20,6 +23,16 @@ class AppYoutubePlayer extends StatefulWidget {
 class _AppYoutubePlayerState extends State<AppYoutubePlayer> {
   YoutubePlayerController? _controller;
   String? _videoId;
+  String? _errorMessage;
+
+  bool get _supportsInlinePlayback {
+    if (kIsWeb) {
+      return false;
+    }
+
+    return defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+  }
 
   @override
   void initState() {
@@ -37,34 +50,102 @@ class _AppYoutubePlayerState extends State<AppYoutubePlayer> {
   }
 
   void _configurePlayer() {
-    final nextVideoId = YoutubePlayerController.convertUrlToId(widget.videoUrl);
+    if (!_supportsInlinePlayback) {
+      _videoId = YoutubeHelper.extractVideoId(widget.videoUrl);
+      _closeController();
+      _setError('Nen tang hien tai chua ho tro phat YouTube trong ung dung.');
+      return;
+    }
+
+    final nextVideoId = YoutubeHelper.extractVideoId(widget.videoUrl);
 
     if (nextVideoId == null || nextVideoId.isEmpty) {
       _videoId = null;
       _closeController();
-      if (mounted) {
-        setState(() {});
-      }
+      _setError(
+        widget.videoUrl.trim().isEmpty
+            ? 'Khong tim thay URL video.'
+            : 'Khong the phat video nay.',
+      );
       return;
     }
 
     if (_videoId == nextVideoId && _controller != null) {
+      _errorMessage = null;
+      if (widget.autoPlay) {
+        _controller!.load(nextVideoId);
+      } else {
+        _controller!.cue(nextVideoId);
+      }
       return;
     }
 
     _videoId = nextVideoId;
+    _errorMessage = null;
     _closeController();
-    _controller = YoutubePlayerController.fromVideoId(
-      videoId: nextVideoId,
-      autoPlay: widget.autoPlay,
-      params: const YoutubePlayerParams(
-        showControls: true,
-        showFullscreenButton: true,
+
+    final controller = YoutubePlayerController(
+      initialVideoId: nextVideoId,
+      flags: YoutubePlayerFlags(
+        autoPlay: widget.autoPlay,
+        controlsVisibleAtStart: true,
         enableCaption: true,
-        strictRelatedVideos: true,
-        playsInline: true,
+        useHybridComposition: true,
       ),
-    );
+    )..addListener(_handleControllerUpdate);
+
+    _controller = controller;
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _handleControllerUpdate() {
+    final controller = _controller;
+    if (controller == null || !mounted) {
+      return;
+    }
+
+    final errorCode = controller.value.errorCode;
+    if (errorCode == 0) {
+      if (_errorMessage != null) {
+        setState(() {
+          _errorMessage = null;
+        });
+      }
+      return;
+    }
+
+    final message = _buildYoutubeErrorMessage(errorCode);
+    if (_errorMessage == message) {
+      return;
+    }
+
+    setState(() {
+      _errorMessage = message;
+    });
+  }
+
+  String _buildYoutubeErrorMessage(int errorCode) {
+    switch (errorCode) {
+      case 1:
+        return 'Lien ket YouTube khong hop le.';
+      case 100:
+        return 'Video nay khong con kha dung.';
+      case 101:
+      case 105:
+      case 150:
+        return 'Video nay khong cho phep phat trong ung dung.';
+      case 2:
+      case 5:
+      default:
+        return 'Khong the tai video trong ung dung.';
+    }
+  }
+
+  void _setError(String message) {
+    _errorMessage = message;
 
     if (mounted) {
       setState(() {});
@@ -75,7 +156,8 @@ class _AppYoutubePlayerState extends State<AppYoutubePlayer> {
     final controller = _controller;
     _controller = null;
     if (controller != null) {
-      controller.close();
+      controller.removeListener(_handleControllerUpdate);
+      controller.dispose();
     }
   }
 
@@ -87,31 +169,85 @@ class _AppYoutubePlayerState extends State<AppYoutubePlayer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_videoId == null || _controller == null) {
+    if (_errorMessage != null) {
       return _VideoPlayerError(
-        message: widget.videoUrl.trim().isEmpty
-            ? 'Khong tim thay URL video.'
-            : 'Khong the phat video nay.',
+        message: _errorMessage!,
+        onOpenExternally: _openExternally,
       );
     }
 
-    return YoutubePlayerScaffold(
-      controller: _controller!,
-      aspectRatio: widget.aspectRatio,
+    if (_videoId == null || _controller == null) {
+      return const _VideoPlayerLoading();
+    }
+
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        key: ValueKey(_videoId),
+        controller: _controller!,
+        aspectRatio: widget.aspectRatio,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Colors.red,
+        progressColors: const ProgressBarColors(
+          playedColor: Colors.red,
+          handleColor: Colors.redAccent,
+        ),
+        onReady: () {
+          if (!mounted) {
+            return;
+          }
+
+          if (_errorMessage != null) {
+            setState(() {
+              _errorMessage = null;
+            });
+          }
+        },
+      ),
       builder: (context, player) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: player,
-        );
+        return player;
       },
+    );
+  }
+
+  Future<void> _openExternally() async {
+    final videoId = _videoId;
+    if (videoId != null && videoId.isNotEmpty) {
+      await openLink(link: 'https://www.youtube.com/watch?v=$videoId');
+      return;
+    }
+
+    final originalUrl = widget.videoUrl.trim();
+    if (originalUrl.isNotEmpty) {
+      await openLink(link: originalUrl);
+    }
+  }
+}
+
+class _VideoPlayerLoading extends StatelessWidget {
+  const _VideoPlayerLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const AspectRatio(
+      aspectRatio: 16 / 9,
+      child: ColoredBox(
+        color: Colors.black12,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }
 
 class _VideoPlayerError extends StatelessWidget {
   final String message;
+  final Future<void> Function()? onOpenExternally;
 
-  const _VideoPlayerError({required this.message});
+  const _VideoPlayerError({
+    required this.message,
+    this.onOpenExternally,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -124,10 +260,23 @@ class _VideoPlayerError extends StatelessWidget {
           color: Colors.black12,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            if (onOpenExternally != null) ...[
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => onOpenExternally!.call(),
+                child: const Text('Mo tren YouTube'),
+              ),
+            ],
+          ],
         ),
       ),
     );

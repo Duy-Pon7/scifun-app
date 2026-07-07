@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:sci_fun/common/helper/youtube_helper.dart';
 import 'package:sci_fun/common/widget/app_empty_state.dart';
-import 'package:sci_fun/common/widget/app_youtube_player.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/common/widget/pagination_list_view.dart';
@@ -12,7 +12,6 @@ import 'package:sci_fun/features/quizz/presentation/pages/quizz_page.dart';
 import 'package:sci_fun/features/video/domain/entity/video_entity.dart';
 import 'package:sci_fun/features/video/presentation/cubit/video_pagination_cubit.dart';
 import 'package:sci_fun/features/video/presentation/pages/youtube_page.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class VideoPage extends StatefulWidget {
   final String topicId;
@@ -138,16 +137,7 @@ class VideoTile extends StatelessWidget {
       return null;
     }
 
-    final videoId = YoutubePlayerController.convertUrlToId(url);
-    if (videoId == null || videoId.isEmpty) {
-      return null;
-    }
-
-    return YoutubePlayerController.getThumbnail(
-      videoId: videoId,
-      quality: ThumbnailQuality.high,
-      webp: true,
-    );
+    return YoutubeHelper.buildThumbnailUrl(url);
   }
 
   Widget _buildThumbnail() {
@@ -228,20 +218,26 @@ class VideoTile extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          if (video.url != null && video.url!.isNotEmpty) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => YoutubePage(
-                  videoUrl: video.url!,
-                  title: video.title ?? 'Video',
-                ),
-              ),
-            );
-          } else {
+          final videoUrl = video.url;
+          final videoId = videoUrl == null || videoUrl.isEmpty
+              ? null
+              : YoutubeHelper.extractVideoId(videoUrl);
+
+          if (videoId == null || videoId.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Không có URL video')),
+              const SnackBar(content: Text('URL video không hợp lệ')),
             );
+            return;
           }
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => YoutubePage(
+                videoUrl: videoId,
+                title: video.title ?? 'Video',
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: EdgeInsets.all(12.w),
@@ -336,7 +332,7 @@ class _ThumbnailFallback extends StatelessWidget {
   }
 }
 
-class VideoPlayerPage extends StatefulWidget {
+class VideoPlayerPage extends StatelessWidget {
   final String videoUrl;
   final String title;
 
@@ -347,21 +343,10 @@ class VideoPlayerPage extends StatefulWidget {
   });
 
   @override
-  State<VideoPlayerPage> createState() => _VideoPlayerPageState();
-}
-
-class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppbar(title: widget.title),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: AppYoutubePlayer(
-          videoUrl: widget.videoUrl,
-          autoPlay: true,
-        ),
-      ),
+    return YoutubePage(
+      videoUrl: videoUrl,
+      title: title,
     );
   }
 }
