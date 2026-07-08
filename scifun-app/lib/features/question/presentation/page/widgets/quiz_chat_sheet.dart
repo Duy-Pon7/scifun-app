@@ -8,8 +8,96 @@ import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/network/dio_client.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 
+class QuizChatController extends ChangeNotifier {
+  QuizChatController({DioClient? dioClient})
+      : _dioClient = dioClient ?? sl<DioClient>();
+
+  final DioClient _dioClient;
+  final List<QuizChatMessage> _messages = <QuizChatMessage>[];
+  bool _isSending = false;
+  bool _isDisposed = false;
+
+  List<QuizChatMessage> get messages =>
+      List<QuizChatMessage>.unmodifiable(_messages);
+
+  bool get isSending => _isSending;
+
+  Future<void> sendMessage(String message) async {
+    final normalizedMessage = message.trim();
+    if (normalizedMessage.isEmpty || _isSending || _isDisposed) {
+      return;
+    }
+
+    _messages.add(
+      QuizChatMessage(
+        text: normalizedMessage,
+        isUser: true,
+      ),
+    );
+    _isSending = true;
+    _notifySafely();
+
+    try {
+      final response = await _dioClient.post(
+        url: ChatApiUrls.ask,
+        data: {
+          'message': normalizedMessage,
+        },
+      );
+
+      if (_isDisposed) return;
+      _messages.add(
+        QuizChatMessage(
+          text: _extractReplyText(response.data),
+          isUser: false,
+        ),
+      );
+      _notifySafely();
+    } on DioException catch (error) {
+      if (_isDisposed) return;
+      _messages.add(
+        QuizChatMessage(
+          text: _extractErrorText(error),
+          isUser: false,
+        ),
+      );
+      _notifySafely();
+    } catch (_) {
+      if (_isDisposed) return;
+      _messages.add(
+        const QuizChatMessage(
+          text: 'Mèo chưa gửi được câu hỏi này. Bạn thử lại giúp mình nhé!',
+          isUser: false,
+        ),
+      );
+      _notifySafely();
+    } finally {
+      if (!_isDisposed) {
+        _isSending = false;
+        _notifySafely();
+      }
+    }
+  }
+
+  void _notifySafely() {
+    if (_isDisposed) return;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+}
+
 class QuizChatSheet extends StatefulWidget {
-  const QuizChatSheet({super.key});
+  const QuizChatSheet({
+    super.key,
+    required this.controller,
+  });
+
+  final QuizChatController controller;
 
   @override
   State<QuizChatSheet> createState() => _QuizChatSheetState();
@@ -19,13 +107,29 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final List<_QuizChatMessage> _messages = <_QuizChatMessage>[];
-  bool _isSending = false;
 
   @override
   void initState() {
     super.initState();
     _inputFocusNode.addListener(_handleInputFocusChange);
+    widget.controller.addListener(_handleChatStateChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant QuizChatSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(oldWidget.controller, widget.controller)) {
+      return;
+    }
+
+    oldWidget.controller.removeListener(_handleChatStateChange);
+    widget.controller.addListener(_handleChatStateChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
   }
 
   @override
@@ -33,134 +137,18 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
     _inputController.dispose();
     _inputFocusNode.removeListener(_handleInputFocusChange);
     _inputFocusNode.dispose();
+    widget.controller.removeListener(_handleChatStateChange);
     _scrollController.dispose();
     super.dispose();
   }
 
   Future<void> _sendMessage() async {
     final message = _inputController.text.trim();
-    if (message.isEmpty || _isSending) return;
+    if (message.isEmpty || widget.controller.isSending) return;
 
     _inputController.clear();
     FocusScope.of(context).unfocus();
-
-    setState(() {
-      _messages.add(
-        _QuizChatMessage(
-          text: message,
-          isUser: true,
-        ),
-      );
-      _isSending = true;
-    });
-    _scrollToBottom();
-
-    try {
-      final response = await sl<DioClient>().post(
-        url: ChatApiUrls.ask,
-        data: {
-          'message': message,
-        },
-      );
-
-      final reply = _extractReplyText(response.data);
-      if (!mounted) return;
-      setState(() {
-        _messages.add(
-          _QuizChatMessage(
-            text: reply,
-            isUser: false,
-          ),
-        );
-      });
-    } on DioException catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _messages.add(
-          _QuizChatMessage(
-            text: _extractErrorText(e),
-            isUser: false,
-          ),
-        );
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _messages.add(
-          const _QuizChatMessage(
-            text: 'Mèo chưa gửi được câu hỏi này. Bạn thử lại giúp mình nhé!',
-            isUser: false,
-          ),
-        );
-      });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSending = false;
-        });
-      }
-    }
-  }
-
-  String _extractReplyText(dynamic data) {
-    if (data is String && data.trim().isNotEmpty) {
-      return _cleanReplyText(data);
-    }
-
-    if (data is Map<String, dynamic>) {
-      final status = data['status'];
-      final rootMessage = data['message'];
-      if (status is num &&
-          status >= 400 &&
-          rootMessage is String &&
-          rootMessage.trim().isNotEmpty) {
-        return 'Mèo báo: ${rootMessage.trim()}';
-      }
-
-      final nestedData = data['data'];
-      if (nestedData is Map<String, dynamic>) {
-        final reply = nestedData['reply'];
-        if (reply is String && reply.trim().isNotEmpty) {
-          return _cleanReplyText(reply);
-        }
-      }
-
-      final rootReply = data['reply'];
-      if (rootReply is String && rootReply.trim().isNotEmpty) {
-        return _cleanReplyText(rootReply);
-      }
-
-      if (rootMessage is String && rootMessage.trim().isNotEmpty) {
-        return _cleanReplyText(rootMessage);
-      }
-    }
-
-    return 'Mèo chưa đọc được phản hồi hợp lệ từ hệ thống. Bạn thử hỏi lại nha!';
-  }
-
-  String _extractErrorText(DioException error) {
-    final responseData = error.response?.data;
-    logResponseData(
-      responseData,
-      source: 'QuizChatSheet._extractErrorText',
-    );
-    if (responseData is Map<String, dynamic>) {
-      final message = responseData['message'];
-      if (message is String && message.trim().isNotEmpty) {
-        return 'Mèo báo: ${message.trim()}';
-      }
-    }
-
-    final errorMessage = error.message;
-    if (errorMessage != null && errorMessage.trim().isNotEmpty) {
-      return 'Mèo gặp trục trặc: ${errorMessage.trim()}';
-    }
-
-    return 'Mèo bị rớt kết nối mất rồi. Bạn thử lại sau ít giây nhé!';
-  }
-
-  String _cleanReplyText(String text) {
-    return text.replaceAll('**', '').trim();
+    await widget.controller.sendMessage(message);
   }
 
   void _scrollToBottom() {
@@ -184,10 +172,18 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
     _scrollToBottom();
   }
 
+  void _handleChatStateChange() {
+    if (!mounted) return;
+    setState(() {});
+    _scrollToBottom();
+  }
+
   @override
   Widget build(BuildContext context) {
     final sheetHeight = MediaQuery.of(context).size.height * 0.78;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final messages = widget.controller.messages;
+    final isSending = widget.controller.isSending;
 
     return SafeArea(
       top: false,
@@ -247,7 +243,7 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
               ),
               const Divider(height: 1),
               Expanded(
-                child: _messages.isEmpty
+                child: messages.isEmpty
                     ? Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 30.w),
@@ -265,13 +261,13 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                     : ListView.builder(
                         controller: _scrollController,
                         padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
-                        itemCount: _messages.length + (_isSending ? 1 : 0),
+                        itemCount: messages.length + (isSending ? 1 : 0),
                         itemBuilder: (context, index) {
-                          if (index >= _messages.length) {
+                          if (index >= messages.length) {
                             return _ChatTypingBubble(fontSize: 15.sp);
                           }
 
-                          final item = _messages[index];
+                          final item = messages[index];
                           return _QuizChatBubble(
                             text: item.text,
                             isUser: item.isUser,
@@ -323,13 +319,13 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
                     ),
                     SizedBox(width: 8.w),
                     InkWell(
-                      onTap: _isSending ? null : _sendMessage,
+                      onTap: isSending ? null : _sendMessage,
                       borderRadius: BorderRadius.circular(16.r),
                       child: Container(
                         width: 48.w,
                         height: 48.w,
                         decoration: BoxDecoration(
-                          color: _isSending
+                          color: isSending
                               ? const Color(0xFFB7D8EC)
                               : AppColor.skyblue500,
                           borderRadius: BorderRadius.circular(16.r),
@@ -352,8 +348,8 @@ class _QuizChatSheetState extends State<QuizChatSheet> {
   }
 }
 
-class _QuizChatMessage {
-  const _QuizChatMessage({
+class QuizChatMessage {
+  const QuizChatMessage({
     required this.text,
     required this.isUser,
   });
@@ -440,4 +436,65 @@ class _ChatTypingBubble extends StatelessWidget {
       ),
     );
   }
+}
+
+String _extractReplyText(dynamic data) {
+  if (data is String && data.trim().isNotEmpty) {
+    return _cleanReplyText(data);
+  }
+
+  if (data is Map<String, dynamic>) {
+    final status = data['status'];
+    final rootMessage = data['message'];
+    if (status is num &&
+        status >= 400 &&
+        rootMessage is String &&
+        rootMessage.trim().isNotEmpty) {
+      return 'Mèo báo: ${rootMessage.trim()}';
+    }
+
+    final nestedData = data['data'];
+    if (nestedData is Map<String, dynamic>) {
+      final reply = nestedData['reply'];
+      if (reply is String && reply.trim().isNotEmpty) {
+        return _cleanReplyText(reply);
+      }
+    }
+
+    final rootReply = data['reply'];
+    if (rootReply is String && rootReply.trim().isNotEmpty) {
+      return _cleanReplyText(rootReply);
+    }
+
+    if (rootMessage is String && rootMessage.trim().isNotEmpty) {
+      return _cleanReplyText(rootMessage);
+    }
+  }
+
+  return 'Mèo chưa đọc được phản hồi hợp lệ từ hệ thống. Bạn thử hỏi lại nha!';
+}
+
+String _extractErrorText(DioException error) {
+  final responseData = error.response?.data;
+  logResponseData(
+    responseData,
+    source: 'QuizChatSheet._extractErrorText',
+  );
+  if (responseData is Map<String, dynamic>) {
+    final message = responseData['message'];
+    if (message is String && message.trim().isNotEmpty) {
+      return 'Mèo báo: ${message.trim()}';
+    }
+  }
+
+  final errorMessage = error.message;
+  if (errorMessage != null && errorMessage.trim().isNotEmpty) {
+    return 'Mèo gặp trục trặc: ${errorMessage.trim()}';
+  }
+
+  return 'Mèo bị rớt kết nối mất rồi. Bạn thử lại sau ít giây nhé!';
+}
+
+String _cleanReplyText(String text) {
+  return text.replaceAll('**', '').trim();
 }

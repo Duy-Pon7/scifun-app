@@ -7,14 +7,139 @@ import 'package:sci_fun/common/models/chat_models.dart';
 class ChatApiService {
   ChatApiService(this.apiBaseUrl);
 
+  static final Map<String, Uri> _chatRootCache = {};
+
   final String apiBaseUrl;
 
   String _base() => apiBaseUrl.replaceAll(RegExp(r'/+$'), '');
+
+  Uri? _resolvedChatRoot;
 
   Map<String, String> _headers(String token) => {
         'Authorization': 'Bearer $token',
         'Accept': 'application/json',
       };
+
+  String get _chatRootCacheKey {
+    try {
+      return Uri.parse(_base()).origin;
+    } catch (_) {
+      return _base();
+    }
+  }
+
+  Uri _normalizeRoot(Uri uri) {
+    final normalizedPath =
+        uri.path == '/' ? '' : uri.path.replaceFirst(RegExp(r'/+$'), '');
+    return uri.replace(
+      path: normalizedPath,
+      query: null,
+      fragment: null,
+    );
+  }
+
+  String _joinPath(String left, String right) {
+    final normalizedLeft =
+        left == '/' ? '' : left.replaceFirst(RegExp(r'/+$'), '');
+    final normalizedRight = right.replaceFirst(RegExp(r'^/+'), '');
+
+    if (normalizedLeft.isEmpty) {
+      return '/$normalizedRight';
+    }
+    return '$normalizedLeft/$normalizedRight';
+  }
+
+  Uri _chatEndpoint(
+    Uri root,
+    String suffix, {
+    Map<String, String>? queryParameters,
+  }) {
+    return root.replace(
+      path: _joinPath(root.path, 'chat/$suffix'),
+      queryParameters: queryParameters == null || queryParameters.isEmpty
+          ? null
+          : queryParameters,
+      fragment: null,
+    );
+  }
+
+  String? _stripTrailingVersion(String path) {
+    final normalized = path.replaceFirst(RegExp(r'/v\d+$'), '');
+    if (normalized == path || normalized.isEmpty) return null;
+    return normalized;
+  }
+
+  String? _stripApiVersion(String path) {
+    final match = RegExp(r'^(.*?/api)/v\d+$').firstMatch(path);
+    if (match == null) return null;
+
+    final apiPath = match.group(1);
+    if (apiPath == null || apiPath.isEmpty) return null;
+    return apiPath;
+  }
+
+  List<Uri> _chatRootCandidates() {
+    final candidates = <Uri>[];
+    final seen = <String>{};
+
+    void add(Uri uri) {
+      final normalized = _normalizeRoot(uri);
+      final key = normalized.toString();
+      if (seen.add(key)) {
+        candidates.add(normalized);
+      }
+    }
+
+    final cachedRoot = _resolvedChatRoot ?? _chatRootCache[_chatRootCacheKey];
+    if (cachedRoot != null) {
+      add(cachedRoot);
+    }
+
+    final baseUri = Uri.parse(_base());
+    final originUri = _normalizeRoot(
+      baseUri.replace(path: '', query: null, fragment: null),
+    );
+    final basePath = baseUri.path == '/'
+        ? ''
+        : baseUri.path.replaceFirst(RegExp(r'/+$'), '');
+
+    final apiPath = _stripApiVersion(basePath);
+    if (apiPath != null) {
+      add(originUri.replace(path: apiPath));
+    }
+
+    final versionlessPath = _stripTrailingVersion(basePath);
+    if (versionlessPath != null) {
+      add(originUri.replace(path: versionlessPath));
+    }
+
+    if (basePath.isNotEmpty) {
+      add(originUri.replace(path: basePath));
+    }
+
+    add(originUri.replace(path: '/api'));
+    add(originUri);
+
+    return candidates;
+  }
+
+  void _rememberChatRoot(Uri? requestUri) {
+    if (requestUri == null) return;
+
+    final match = RegExp(r'/chat(?:/|$)').firstMatch(requestUri.path);
+    if (match == null) return;
+
+    final root = _normalizeRoot(
+      requestUri.replace(
+        path: requestUri.path.substring(0, match.start),
+        query: null,
+        fragment: null,
+      ),
+    );
+
+    _resolvedChatRoot = root;
+    _chatRootCache[_chatRootCacheKey] = root;
+  }
 
   String? _pickConversationId(dynamic obj) {
     if (obj is Map<String, dynamic>) {
@@ -63,6 +188,7 @@ class ChatApiService {
       try {
         final res = await http.post(u, headers: headers);
         if (res.statusCode >= 200 && res.statusCode < 300) {
+          _rememberChatRoot(res.request?.url ?? u);
           logApiSuccess(
             source: source,
             data: {'url': u.toString(), 'statusCode': res.statusCode},
@@ -93,7 +219,9 @@ class ChatApiService {
             'response': res.body,
           },
         );
-        throw Exception(message);
+        throw _StopFallbackException(message);
+      } on _StopFallbackException {
+        rethrow;
       } catch (e) {
         logApiFailure(
           source: source,
@@ -119,6 +247,7 @@ class ChatApiService {
       try {
         final res = await http.get(u, headers: headers);
         if (res.statusCode >= 200 && res.statusCode < 300) {
+          _rememberChatRoot(res.request?.url ?? u);
           logApiSuccess(
             source: source,
             data: {'url': u.toString(), 'statusCode': res.statusCode},
@@ -149,7 +278,9 @@ class ChatApiService {
             'response': res.body,
           },
         );
-        throw Exception(message);
+        throw _StopFallbackException(message);
+      } on _StopFallbackException {
+        rethrow;
       } catch (e) {
         logApiFailure(
           source: source,
@@ -170,31 +301,17 @@ class ChatApiService {
   }) async {
     const source = 'ChatApiService.openConversation';
     try {
-      final base = _base();
-      final origin = Uri.parse(apiBaseUrl).origin;
-      final baseNoVersion = base.replaceAll(RegExp(r'/api/v\d+$'), '');
       final normalizedType = type.trim().toUpperCase();
-
-      List<Uri> buildCandidates(String root) {
-        final list = <Uri>[];
-        if (normalizedType.isNotEmpty) {
-          list.add(Uri.parse('$root/chat/conversation?type=$normalizedType'));
-          list.add(
-              Uri.parse('$root/api/chat/conversation?type=$normalizedType'));
-        }
-        list.add(Uri.parse('$root/chat/conversation'));
-        list.add(Uri.parse('$root/api/chat/conversation'));
-        return list;
-      }
-
-      final candidates = <Uri>[
-        ...buildCandidates(base),
-        ...buildCandidates(origin),
-      ];
-
-      if (baseNoVersion != base) {
-        candidates.addAll(buildCandidates(baseNoVersion));
-      }
+      final query = normalizedType.isEmpty
+          ? null
+          : <String, String>{'type': normalizedType};
+      final candidates = _chatRootCandidates()
+          .map((root) => _chatEndpoint(
+                root,
+                'conversation',
+                queryParameters: query,
+              ))
+          .toList();
 
       final res = await _postWithFallbacks(candidates, {
         ..._headers(token),
@@ -232,21 +349,9 @@ class ChatApiService {
   }) async {
     const source = 'ChatApiService.listConversations';
     try {
-      final base = _base();
-      final origin = Uri.parse(apiBaseUrl).origin;
-      final baseNoVersion = base.replaceAll(RegExp(r'/api/v\d+$'), '');
-
-      final candidates = <Uri>[
-        Uri.parse('$base/chat/conversations'),
-        Uri.parse('$base/api/chat/conversations'),
-        Uri.parse('$origin/chat/conversations'),
-        Uri.parse('$origin/api/chat/conversations'),
-      ];
-
-      if (baseNoVersion != base) {
-        candidates.add(Uri.parse('$baseNoVersion/api/chat/conversations'));
-        candidates.add(Uri.parse('$baseNoVersion/chat/conversations'));
-      }
+      final candidates = _chatRootCandidates()
+          .map((root) => _chatEndpoint(root, 'conversations'))
+          .toList();
 
       final res = await _getWithFallbacks(candidates, _headers(token));
 
@@ -281,27 +386,18 @@ class ChatApiService {
   }) async {
     const source = 'ChatApiService.getMessages';
     try {
-      final base = _base();
-      final origin = Uri.parse(apiBaseUrl).origin;
-      final baseNoVersion = base.replaceAll(RegExp(r'/api/v\d+$'), '');
-
-      final candidates = <Uri>[
-        Uri.parse(
-            '$base/chat/$conversationId/messages?page=$page&limit=$limit'),
-        Uri.parse(
-            '$base/api/chat/$conversationId/messages?page=$page&limit=$limit'),
-        Uri.parse(
-            '$origin/chat/$conversationId/messages?page=$page&limit=$limit'),
-        Uri.parse(
-            '$origin/api/chat/$conversationId/messages?page=$page&limit=$limit'),
-      ];
-
-      if (baseNoVersion != base) {
-        candidates.add(Uri.parse(
-            '$baseNoVersion/api/chat/$conversationId/messages?page=$page&limit=$limit'));
-        candidates.add(Uri.parse(
-            '$baseNoVersion/chat/$conversationId/messages?page=$page&limit=$limit'));
-      }
+      final candidates = _chatRootCandidates()
+          .map(
+            (root) => _chatEndpoint(
+              root,
+              '$conversationId/messages',
+              queryParameters: {
+                'page': '$page',
+                'limit': '$limit',
+              },
+            ),
+          )
+          .toList();
 
       final res = await _getWithFallbacks(candidates, _headers(token));
 
@@ -337,4 +433,13 @@ class ChatApiService {
       rethrow;
     }
   }
+}
+
+class _StopFallbackException implements Exception {
+  _StopFallbackException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }

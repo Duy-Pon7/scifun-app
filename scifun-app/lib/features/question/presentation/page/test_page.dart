@@ -33,6 +33,7 @@ class _TestPageState extends State<TestPage> {
   late final QuestionCubit cubit;
   late final QuestionByIdCubit questionByIdCubit;
   late final SubmitQuizCubit submitQuizCubit;
+  late final QuizChatController quizChatController;
 
   int currentIndex = 0;
   bool isAnswerChecked = false;
@@ -55,10 +56,12 @@ class _TestPageState extends State<TestPage> {
     cubit.loadInitial(filterId: widget.quizzId);
     questionByIdCubit = sl<QuestionByIdCubit>();
     submitQuizCubit = SubmitQuizCubit(sl<SubmitQuiz>());
+    quizChatController = QuizChatController();
   }
 
   @override
   void dispose() {
+    quizChatController.dispose();
     cubit.close();
     questionByIdCubit.close();
     submitQuizCubit.close();
@@ -92,7 +95,7 @@ class _TestPageState extends State<TestPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const QuizChatSheet(),
+      builder: (_) => QuizChatSheet(controller: quizChatController),
     );
   }
 

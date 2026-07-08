@@ -37,7 +37,6 @@ class _UserChatPageState extends State<UserChatPage> {
   String? _token;
   String? _selfId;
   String? _conversationId;
-  bool _isConnected = false;
   bool _loading = true;
 
   @override
@@ -339,14 +338,9 @@ class _UserChatPageState extends State<UserChatPage> {
         getToken: widget.getToken,
         onError: (e) => debugPrint('WS error: $e'),
       );
-      _isConnected = RealtimeService.I.isConnected;
       _selfId = _myId ?? _selfId;
 
       _connSub = RealtimeService.I.connectionStream.listen((connected) {
-        if (!mounted) return;
-        setState(() {
-          _isConnected = connected;
-        });
         if (!connected) return;
 
         _selfId = _myId ?? _selfId;
@@ -393,15 +387,6 @@ class _UserChatPageState extends State<UserChatPage> {
   }
 
   Future<void> _send() async {
-    if (!_isConnected) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ket noi chat dang bi gian doan.')),
-        );
-      }
-      return;
-    }
-
     final cid = _conversationId;
     final t = _text.text.trim();
     if (cid == null || t.isEmpty) return;
@@ -424,15 +409,22 @@ class _UserChatPageState extends State<UserChatPage> {
 
     _scrollToBottom();
 
-    final sent = await RealtimeService.I.sendChatMessage(
-      conversationId: cid,
-      content: t,
-    );
-    if (!sent && mounted) {
+    try {
+      final sent = await RealtimeService.I.sendChatMessage(
+        conversationId: cid,
+        content: t,
+      );
+      if (!sent && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tin nhan duoc xep hang va se gui khi ket noi lai.'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tin nhan duoc xep hang va se gui khi ket noi lai.'),
-        ),
+        SnackBar(content: Text('Gui tin nhan that bai: $e')),
       );
     }
   }

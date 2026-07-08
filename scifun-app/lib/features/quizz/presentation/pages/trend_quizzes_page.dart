@@ -162,20 +162,7 @@ class TrendQuizzesList extends StatelessWidget {
                                                       isCompact ? 15.sp : 18.sp,
                                                 ),
                                               ),
-                                              if (quizz.score != null)
-                                                Text(
-                                                  'Điểm: ${(quizz.score! * 100).toStringAsFixed(0)}%',
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: isCompact
-                                                        ? 12.sp
-                                                        : 14.sp,
-                                                    color: AppColor.skyblue600,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
+                                             
                                             ],
                                           ),
                                         ),

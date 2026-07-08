@@ -188,81 +188,34 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
   @override
   Future<bool> markAllAsRead() async {
     const source = 'NotificationRemoteDatasource.markAllAsRead';
-
-    final skyblue = NotificationApiUrls.markAsReadAll;
+    final endpoint = NotificationApiUrls.markAsReadAll;
     try {
-      final res = await dioClient.post(url: skyblue);
-      if (_checkSuccess(res.data)) {
+      final res = await dioClient.post(url: endpoint);
+      final statusCode = res.statusCode ?? 0;
+
+      if ((statusCode >= 200 && statusCode < 300) || _checkSuccess(res.data)) {
         logApiSuccess(
           source: source,
-          data: {'endpoint': skyblue, 'response': res.data},
-        );
-        return true;
-      }
-
-      logApiFailure(
-        source: source,
-        data: {
-          'message': 'Skyblue endpoint did not indicate success',
-          'endpoint': skyblue,
-          'response': res.data,
-        },
-      );
-    } on DioException catch (e) {
-      final respData = e.response?.data;
-      if (_checkSuccess(respData)) {
-        logApiSuccess(
-          source: source,
-          data: {'endpoint': skyblue, 'response': respData},
-        );
-        return true;
-      }
-
-      logApiFailure(
-        source: source,
-        data: {
-          'message': 'Skyblue endpoint failed',
-          'endpoint': skyblue,
-          'error': e.toString(),
-          'response': respData,
-        },
-      );
-    }
-
-    final fallback = '/api/v1/mark-all-as-read';
-    try {
-      final res2 = await dioClient.post(url: fallback);
-      if (_checkSuccess(res2.data)) {
-        logApiSuccess(
-          source: source,
-          data: {'endpoint': fallback, 'response': res2.data},
+          data: {'endpoint': endpoint, 'response': res.data},
         );
         return true;
       }
 
       final message =
-          'Mark all as read failed: ${(res2.data?['message'] ?? res2.data ?? '').toString()}';
+          'Mark all as read failed: ${(res.data?['message'] ?? res.data ?? '').toString()}';
       logApiFailure(
         source: source,
-        data: {'message': message, 'endpoint': fallback, 'response': res2.data},
+        data: {'message': message, 'endpoint': endpoint, 'response': res.data},
       );
       throw ServerException(message: message);
     } on DioException catch (e) {
       final respData = e.response?.data;
-      if (_checkSuccess(respData)) {
-        logApiSuccess(
-          source: source,
-          data: {'endpoint': fallback, 'response': respData},
-        );
-        return true;
-      }
-
       final message = 'Failed to mark all notifications as read';
       logApiFailure(
         source: source,
         data: {
           'message': message,
-          'endpoint': fallback,
+          'endpoint': endpoint,
           'error': e.toString(),
           'response': respData,
         },
@@ -272,7 +225,7 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
       final message = 'Failed to mark all notifications as read: $e';
       logApiFailure(
         source: source,
-        data: {'message': message, 'endpoint': fallback, 'error': e.toString()},
+        data: {'message': message, 'endpoint': endpoint, 'error': e.toString()},
       );
       throw ServerException(message: message);
     }

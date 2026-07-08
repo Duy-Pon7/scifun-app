@@ -98,7 +98,7 @@ class NotificationApiUrls {
   static const String getNotifications = '/notifications';
   static const String deleteNoti = '/notifications';
   static const String markAsRead = '/notifications/read';
-  static const String markAsReadAll = '/notifications/read-all';
+  static const String markAsReadAll = '/mark-all-as-read';
 }
 
 class HomeApiUrls {
