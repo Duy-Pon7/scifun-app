@@ -44,6 +44,7 @@ class Datum extends Equatable {
   Datum({
     required this.duration,
     required this.questionCount,
+    required this.accessTier,
     required this.score,
     required this.level,
     required this.description,
@@ -56,6 +57,7 @@ class Datum extends Equatable {
 
   final int? duration;
   final int? questionCount;
+  final String? accessTier;
   final double? score;
   final String? level;
   final String? description;
@@ -68,6 +70,7 @@ class Datum extends Equatable {
   Datum copyWith({
     int? duration,
     int? questionCount,
+    String? accessTier,
     double? score,
     String? level,
     String? description,
@@ -80,6 +83,7 @@ class Datum extends Equatable {
     return Datum(
       duration: duration ?? this.duration,
       questionCount: questionCount ?? this.questionCount,
+      accessTier: accessTier ?? this.accessTier,
       score: score ?? this.score,
       level: level ?? this.level,
       description: description ?? this.description,
@@ -95,6 +99,7 @@ class Datum extends Equatable {
     return Datum(
       duration: json["duration"],
       questionCount: json["questionCount"],
+      accessTier: json["accessTier"],
       score: json["score"],
       level: json["level"] ?? json["topic"]?["level"],
       description: json["description"],
@@ -109,6 +114,7 @@ class Datum extends Equatable {
   Map<String, dynamic> toJson() => {
         "duration": duration,
         "questionCount": questionCount,
+        "accessTier": accessTier,
         "score": score,
         "level": level,
         "description": description,
@@ -123,6 +129,7 @@ class Datum extends Equatable {
   List<Object?> get props => [
         duration,
         questionCount,
+        accessTier,
         score,
         level,
         description,

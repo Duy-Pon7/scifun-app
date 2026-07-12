@@ -24,6 +24,7 @@ class DatumModel extends Datum {
   DatumModel({
     required super.duration,
     required super.questionCount,
+    required super.accessTier,
     required super.score,
     required super.level,
     required super.description,
@@ -38,6 +39,7 @@ class DatumModel extends Datum {
     return DatumModel(
       duration: (json['duration'] as num?)?.toInt(),
       questionCount: (json['questionCount'] as num?)?.toInt(),
+      accessTier: json['accessTier'],
       score: (json['score'] as num?)?.toDouble(),
       level: json['level'] ?? json['topic']?['level'],
       description: json['description'],
@@ -53,6 +55,7 @@ class DatumModel extends Datum {
   Map<String, dynamic> toJson() => {
         'duration': duration,
         'questionCount': questionCount,
+        'accessTier': accessTier,
         'score': score,
         'level': level,
         'description': description,

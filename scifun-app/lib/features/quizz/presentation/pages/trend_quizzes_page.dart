@@ -12,7 +12,10 @@ import 'package:sci_fun/common/widget/level_stat_icon.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
+import 'package:sci_fun/features/plan/presentation/page/plan_list_page.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 import 'package:sci_fun/features/question/presentation/page/test_page.dart';
 import 'package:sci_fun/features/quizz/presentation/cubit/trend_quizz_cubit.dart';
 
@@ -78,13 +81,16 @@ class TrendQuizzesList extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 8.w),
                   itemBuilder: (context, index) {
                     final quizz = items[index];
-                    final isPro = quizz.score != null && quizz.score! > 0.8;
+                    final isHighlighted =
+                        quizz.score != null && quizz.score! > 0.8;
+                    final isQuizPro = quizz.accessTier == 'PRO';
                     final level = LevelHelper.normalize(quizz.level);
 
                     return GestureDetector(
                       onTap: () => _openTrendQuiz(
                         context,
                         quizzId: quizz.id ?? '',
+                        isQuizPro: isQuizPro,
                         quizzLevel: level ?? quizz.level,
                       ),
                       child: SizedBox(
@@ -93,10 +99,10 @@ class TrendQuizzesList extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12.0),
                             side: BorderSide(
-                              color: isPro
+                              color: isHighlighted
                                   ? AppColor.skyblue600
                                   : Colors.grey[300]!,
-                              width: isPro ? 2.0 : 1.0,
+                              width: isHighlighted ? 2.0 : 1.0,
                             ),
                           ),
                           child: Padding(
@@ -155,14 +161,13 @@ class TrendQuizzesList extends StatelessWidget {
                                                 maxLines: isCompact ? 1 : 2,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                  fontWeight: isPro
+                                                  fontWeight: isHighlighted
                                                       ? FontWeight.bold
                                                       : FontWeight.w600,
                                                   fontSize:
                                                       isCompact ? 15.sp : 18.sp,
                                                 ),
                                               ),
-                                             
                                             ],
                                           ),
                                         ),
@@ -304,11 +309,29 @@ class TrendQuizzesList extends StatelessWidget {
   Future<void> _openTrendQuiz(
     BuildContext context, {
     required String quizzId,
+    required bool isQuizPro,
     required String? quizzLevel,
   }) async {
     final normalizedId = quizzId.trim();
     if (normalizedId.isEmpty) {
       return;
+    }
+
+    if (isQuizPro) {
+      final canAccess = await guardGuestRestrictedFeature(context);
+      if (!canAccess || !context.mounted) {
+        return;
+      }
+
+      final isProUser = await _isCurrentUserPro(context);
+      if (!context.mounted) {
+        return;
+      }
+
+      if (!isProUser) {
+        await _openPlanListPage(context);
+        return;
+      }
     }
 
     final userLevel = _resolveCurrentUserLevel(context);
@@ -331,6 +354,26 @@ class TrendQuizzesList extends StatelessWidget {
     Navigator.push(
       context,
       slidePage(TestPage(quizzId: normalizedId)),
+    );
+  }
+
+  Future<bool> _isCurrentUserPro(BuildContext context) async {
+    final token = sl<SharePrefsService>().getUserData();
+    if (token == null || token.isEmpty) {
+      return false;
+    }
+
+    try {
+      return await context.read<ProCubit>().isCheckPro(token: token);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> _openPlanListPage(BuildContext context) async {
+    await Navigator.push(
+      context,
+      slidePage(const PlanListPage()),
     );
   }
 
