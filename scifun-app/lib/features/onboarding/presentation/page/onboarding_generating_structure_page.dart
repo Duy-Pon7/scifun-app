@@ -47,7 +47,7 @@ class _OnboardingGeneratingStructurePageState
   static const String _loadingMessage = 'Đang tạo cấu trúc kiến thức phù hợp';
   static const String _loadingLottieAssetPath =
       'assets/lottie_json/space_cat.json';
-  static const Duration _holdBeforeNavigate = Duration(seconds: 5);
+  static const Duration _holdBeforeNavigate = Duration(seconds: 3);
 
   bool _isSubmitting = true;
   String? _errorMessage;
@@ -218,7 +218,7 @@ class _OnboardingGeneratingStructurePageState
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             child: _isSubmitting
                 ? AppLoadingIndicator(
-                    size: 300.w,
+                    size: 400.w,
                     message: _loadingMessage,
                     lottieAssetPath: _loadingLottieAssetPath,
                   )

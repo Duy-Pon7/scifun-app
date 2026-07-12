@@ -366,7 +366,7 @@ class QuestionWordBubble extends StatelessWidget {
             borderRadius: BorderRadius.circular(18.r),
             border: Border.all(color: borderColor, width: 1.3),
           ),
-          child: Text(
+          child: AutoSizeText(
             text,
             textAlign: TextAlign.left,
             maxLines: 2,

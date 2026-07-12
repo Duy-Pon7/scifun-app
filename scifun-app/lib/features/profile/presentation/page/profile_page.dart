@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -581,21 +582,27 @@ class _ProfilePageState extends State<ProfilePage> {
           borderRadius: BorderRadius.circular(24.r),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              spacing: 12.w,
-              children: [
-                Icon(icon, color: AppColor.skyblue600),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 19.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                ),
-              ],
+            Expanded(
+              child: Row(
+                spacing: 12.w,
+                children: [
+                  Icon(icon, color: AppColor.skyblue600),
+                  Expanded(
+                    child: AutoSizeText(
+                      title,
+                      maxLines: 2,
+                      minFontSize: 12,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontSize: 19.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+            SizedBox(width: 8.w),
             Icon(Symbols.arrow_forward_ios_rounded, size: 18.w),
           ],
         ),
@@ -671,13 +678,29 @@ bool _isUserSubscriptionExpired(
   return hasEndDate ? remainingDays <= 0 : false;
 }
 
+String _resolvePackageLabel(UserDataEntity user) {
+  final normalizedTier = user.subscription?.tier?.trim().toUpperCase();
+
+  if (user.isGuest == true) {
+    return 'FREE';
+  }
+
+  if (normalizedTier == null ||
+      normalizedTier.isEmpty ||
+      normalizedTier == 'NONE') {
+    return 'FREE';
+  }
+
+  return normalizedTier;
+}
+
 Widget subscriptionCard(UserDataEntity user) {
   final sub = user.subscription;
   final isGuest = user.isGuest == true;
   final remainingDays = _resolveUserRemainingDays(user);
   final isExpired =
       _isUserSubscriptionExpired(user, remainingDays: remainingDays);
-  final packageLabel = isGuest ? 'GUEST' : (sub?.tier?.toUpperCase() ?? 'FREE');
+  final packageLabel = _resolvePackageLabel(user);
   final statusLabel =
       isGuest ? 'Tài khoản khách' : (isExpired ? 'Hết hạn' : 'Đang hoạt động');
 
