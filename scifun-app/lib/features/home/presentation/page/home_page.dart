@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
@@ -11,14 +12,13 @@ import 'package:sci_fun/core/services/ws_bootstrap.dart';
 import 'package:sci_fun/core/utils/subject_theme_helper.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/chat/chat_connection_config.dart';
+import 'package:sci_fun/features/comment/presentation/pages/comment_page.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/list_subjects.dart';
 import 'package:sci_fun/features/home/presentation/cubit/news_cubit.dart';
-import 'package:sci_fun/features/comment/presentation/pages/comment_page.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/quizz/presentation/pages/trend_quizzes_page.dart';
-import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/features/subject/domain/entity/subject_entity.dart';
 import 'package:sci_fun/features/subject/presentation/cubit/subject_cubit.dart';
 import 'package:sci_fun/features/subject/presentation/page/change_subject_page.dart';
@@ -72,14 +72,20 @@ class _HomePageState extends State<HomePage>
     final prefs = sl<SharePrefsService>();
     final savedId = (prefs.getSelectedSubjectId() ?? '').trim();
     final savedName = (prefs.getSelectedSubjectName() ?? '').trim();
+    final initialSubjectId = savedId.isNotEmpty
+        ? savedId
+        : SharePrefsService.defaultSelectedSubjectId;
+    final initialSubjectName = savedName.isNotEmpty
+        ? savedName
+        : SharePrefsService.defaultSelectedSubjectName;
 
     if (!mounted) {
       return;
     }
 
     setState(() {
-      _selectedSubjectId = savedId;
-      _selectedSubjectName = savedName;
+      _selectedSubjectId = initialSubjectId;
+      _selectedSubjectName = initialSubjectName;
     });
   }
 
@@ -92,8 +98,9 @@ class _HomePageState extends State<HomePage>
       return;
     }
 
-    final normalizedName =
-        subjectName.trim().isEmpty ? 'Vật lý' : subjectName.trim();
+    final normalizedName = subjectName.trim().isEmpty
+        ? SharePrefsService.defaultSelectedSubjectName
+        : subjectName.trim();
 
     if (_selectedSubjectId == normalizedId &&
         _selectedSubjectName == normalizedName) {
@@ -129,7 +136,7 @@ class _HomePageState extends State<HomePage>
 
       if (resolvedName.isEmpty) {
         for (final subject in subjects) {
-          if ((subject.id ?? '') == savedId) {
+          if ((subject.id ?? '').trim() == savedId) {
             resolvedName = (subject.name ?? '').trim();
             break;
           }
@@ -144,13 +151,24 @@ class _HomePageState extends State<HomePage>
     }
 
     SubjectEntity? defaultSubject;
+
     for (final subject in subjects) {
-      if ((subject.id ?? '').isEmpty) {
-        continue;
-      }
-      if (SubjectThemeHelper.isPhysics(subject.name)) {
+      if ((subject.id ?? '').trim() ==
+          SharePrefsService.defaultSelectedSubjectId) {
         defaultSubject = subject;
         break;
+      }
+    }
+
+    if (defaultSubject == null) {
+      for (final subject in subjects) {
+        if ((subject.id ?? '').isEmpty) {
+          continue;
+        }
+        if (SubjectThemeHelper.isPhysics(subject.name)) {
+          defaultSubject = subject;
+          break;
+        }
       }
     }
 
@@ -164,6 +182,10 @@ class _HomePageState extends State<HomePage>
     }
 
     if (defaultSubject == null || (defaultSubject.id ?? '').isEmpty) {
+      _saveAndApplySelectedSubject(
+        subjectId: SharePrefsService.defaultSelectedSubjectId,
+        subjectName: SharePrefsService.defaultSelectedSubjectName,
+      );
       return;
     }
 
@@ -202,7 +224,6 @@ class _HomePageState extends State<HomePage>
           listeners: [
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
-                // When a user logs in or session is refreshed, reload user info
                 if (state is AuthUserSuccess || state is AuthUserLoginSuccess) {
                   EasyLoading.dismiss();
                   final token = sl<SharePrefsService>().getUserData();
@@ -224,8 +245,10 @@ class _HomePageState extends State<HomePage>
                   _syncSelectedSubjectFromServer(state.items);
                 } else if (state is PaginationError<SubjectEntity>) {
                   EasyLoading.dismiss();
-                  EasyLoading.showToast(state.error ?? 'Lỗi',
-                      toastPosition: EasyLoadingToastPosition.bottom);
+                  EasyLoading.showToast(
+                    state.error ?? 'Lỗi',
+                    toastPosition: EasyLoadingToastPosition.bottom,
+                  );
                 } else {
                   EasyLoading.dismiss();
                 }
@@ -235,57 +258,59 @@ class _HomePageState extends State<HomePage>
           child: BackgroundHome(
             subjectName: activeSubjectName,
             child: SafeArea(
-              child: Builder(builder: (newcontext) {
-                return Column(
-                  children: [
-                    Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          newcontext.read<NewsCubit>().getNews();
-                          newcontext
-                              .read<SubjectCubit>()
-                              .getSubjects(searchQuery: "");
-                          newcontext.read<AuthBloc>().add(AuthGetSession());
-                        },
-                        child: ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: EdgeInsets.only(
-                            left: 16.w,
-                            right: 16.w,
-                            top: 16.w,
-                            bottom:
-                                MediaQuery.of(newcontext).padding.bottom + 96.h,
+              child: Builder(
+                builder: (newcontext) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: () async {
+                            newcontext.read<NewsCubit>().getNews();
+                            newcontext
+                                .read<SubjectCubit>()
+                                .getSubjects(searchQuery: '');
+                            newcontext.read<AuthBloc>().add(AuthGetSession());
+                          },
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.only(
+                              left: 16.w,
+                              right: 16.w,
+                              top: 16.w,
+                              bottom: MediaQuery.of(newcontext).padding.bottom +
+                                  96.h,
+                            ),
+                            children: [
+                              HeaderHome(subjectName: activeSubjectName),
+                              SizedBox(height: 16.h),
+                              ListSubjects(
+                                selectedSubjectId: _selectedSubjectId,
+                                onSubjectSelected: (subjectId, subjectName) {
+                                  _saveAndApplySelectedSubject(
+                                    subjectId: subjectId,
+                                    subjectName: subjectName,
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 16.h),
+                              TrendQuizzesList(
+                                key: ValueKey('trend-$activeSubjectId'),
+                                subjectId: activeSubjectId,
+                              ),
+                              SizedBox(height: 16.h),
+                              CommentPage(),
+                              SizedBox(height: 16.h),
+                              WsBootstrap(
+                                wsUrl: wsUrlForEnvironment(),
+                              ),
+                            ],
                           ),
-                          children: [
-                            HeaderHome(subjectName: activeSubjectName),
-                            SizedBox(height: 16.h),
-                            ListSubjects(
-                              selectedSubjectId: _selectedSubjectId,
-                              onSubjectSelected: (subjectId, subjectName) {
-                                _saveAndApplySelectedSubject(
-                                  subjectId: subjectId,
-                                  subjectName: subjectName,
-                                );
-                              },
-                            ),
-                            SizedBox(height: 16.h),
-                            TrendQuizzesList(
-                              key: ValueKey('trend-$activeSubjectId'),
-                              subjectId: activeSubjectId,
-                            ),
-                            SizedBox(height: 16.h),
-                            CommentPage(),
-                            SizedBox(height: 16.h),
-                            WsBootstrap(
-                              wsUrl: wsUrlForEnvironment(),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
-                );
-              }),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

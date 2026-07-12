@@ -6,6 +6,8 @@ enum SharePrefsKey { accessToken, searchHistory }
 
 class SharePrefsService {
   final SharedPreferences _prefs;
+  static const String defaultSelectedSubjectId = '693443593ad457141c52aedd';
+  static const String defaultSelectedSubjectName = 'Vật lý';
   static const String _keyToken = 'auth_token';
   static const String _keySaveSession = 'save_session';
   static const String _keyUserData = 'user_data';
@@ -14,8 +16,6 @@ class SharePrefsService {
   static const String _keyOnboardingLevel = 'onboarding_level';
   static const String _keyBackgroundMusicEnabled = 'bgm_enabled';
   static const String _keyBackgroundMusicVolume = 'bgm_volume';
-  static const String _defaultSubjectName = 'Vật lý';
-
   SharePrefsService({required SharedPreferences prefs}) : _prefs = prefs {
     AppColor.applySubjectName(getSelectedSubjectName());
   }
@@ -64,8 +64,9 @@ class SharePrefsService {
     required String subjectName,
   }) async {
     final normalizedId = subjectId.trim();
-    final normalizedName =
-        subjectName.trim().isEmpty ? _defaultSubjectName : subjectName.trim();
+    final normalizedName = subjectName.trim().isEmpty
+        ? defaultSelectedSubjectName
+        : subjectName.trim();
     AppColor.applySubjectName(normalizedName);
 
     if (normalizedId.isEmpty) {
@@ -81,7 +82,8 @@ class SharePrefsService {
   }
 
   String? getSelectedSubjectName() {
-    return _prefs.getString(_keySelectedSubjectName) ?? _defaultSubjectName;
+    return _prefs.getString(_keySelectedSubjectName) ??
+        defaultSelectedSubjectName;
   }
 
   String? getOnboardingLevel() {

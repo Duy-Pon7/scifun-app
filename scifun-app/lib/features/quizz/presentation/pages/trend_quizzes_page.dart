@@ -29,13 +29,13 @@ class TrendQuizzesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final normalizedSubjectId = (subjectId ?? '').trim();
+    final normalizedSubjectId = (subjectId ?? '').trim().isNotEmpty
+        ? subjectId!.trim()
+        : SharePrefsService.defaultSelectedSubjectId;
 
     return BlocProvider(
       create: (_) => sl<TrendQuizzCubit>()
-        ..fetchTrendQuizzes(
-          subjectId: normalizedSubjectId.isEmpty ? null : normalizedSubjectId,
-        ),
+        ..fetchTrendQuizzes(subjectId: normalizedSubjectId),
       child: BlocBuilder<TrendQuizzCubit, TrendQuizzState>(
         builder: (context, state) {
           if (state is TrendQuizzLoading) {

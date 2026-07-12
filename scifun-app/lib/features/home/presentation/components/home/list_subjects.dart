@@ -29,7 +29,9 @@ class ListSubjects extends StatelessWidget {
         (sl<SharePrefsService>().getSelectedSubjectId() ?? '').trim();
     final activeSelectedSubjectId = selectedSubjectId.trim().isNotEmpty
         ? selectedSubjectId.trim()
-        : persistedSubjectId;
+        : persistedSubjectId.isNotEmpty
+            ? persistedSubjectId
+            : SharePrefsService.defaultSelectedSubjectId;
 
     return Column(
       children: [
@@ -42,7 +44,7 @@ class ListSubjects extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                'M\u00f4n h\u1ecdc',
+                'Môn học',
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                       fontSize: 19.sp,
                       fontWeight: FontWeight.w600,
@@ -59,7 +61,7 @@ class ListSubjects extends StatelessWidget {
                 height: 160.h,
                 child: const Center(
                   child: AppLoadingIndicator(
-                    message: '\u0110ang t\u1ea3i trang ch\u1ee7...',
+                    message: 'Đang tải trang chủ...',
                   ),
                 ),
               );
@@ -98,7 +100,7 @@ class ListSubjects extends StatelessWidget {
                             final subjectName =
                                 subject.name?.trim().isNotEmpty == true
                                     ? subject.name!.trim()
-                                    : 'M\u00f4n h\u1ecdc';
+                                    : 'Môn học';
                             final isSelected =
                                 activeSelectedSubjectId == subjectId;
 
@@ -165,13 +167,13 @@ class ListSubjects extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'L\u1ed7i khi t\u1ea3i m\u00f4n h\u1ecdc: ${state.error}',
+                        'Lỗi khi tải môn học: ${state.error}',
                       ),
                       ElevatedButton(
                         onPressed: () => context
                             .read<SubjectCubit>()
                             .getSubjects(searchQuery: ''),
-                        child: const Text('Th\u1eed l\u1ea1i'),
+                        child: const Text('Thử lại'),
                       ),
                     ],
                   ),

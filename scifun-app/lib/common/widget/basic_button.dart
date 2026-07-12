@@ -22,7 +22,7 @@ class BasicButton extends StatelessWidget {
     this.borderWidth,
     this.border = false,
     this.borderColor,
-    this.buttonHeight = 4,
+    this.buttonHeight = 8,
   }) : assert(
           (text != null && child == null) || (text == null && child != null),
           'Provide either text or child.',
