@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -316,69 +317,60 @@ class _ProgressStatsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 30.w,
-            height: 30.w,
-            decoration: BoxDecoration(
-              color: AppColor.skyblue100,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(
-              icon,
-              color: AppColor.skyblue700,
-              size: 18.sp,
-            ),
-          ),
-          SizedBox(height: 10.h),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: AppColor.skyblue900,
-            ),
-          ),
-          SizedBox(height: 2.h),
-          Text(
-            periodLabel,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.bodySmall?.copyWith(
-              fontSize: 10.sp,
-              color: AppColor.hurricane600,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 30.w,
+                height: 30.w,
+                decoration: BoxDecoration(
+                  color: AppColor.skyblue100,
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(
+                  icon,
+                  color: AppColor.skyblue700,
+                  size: 18.sp,
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColor.skyblue900,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 12.h),
-          Text(
-            '$submissions',
-            style: textTheme.titleLarge?.copyWith(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.w800,
-              color: AppColor.skyblue700,
-            ),
-          ),
-          SizedBox(height: 2.h),
-          Text(
-            'Lượt nộp',
-            style: textTheme.bodySmall?.copyWith(
-              fontSize: 10.sp,
-              color: AppColor.hurricane600,
-            ),
+          Row(
+            children: [
+              Text(
+                '$submissions',
+                style: textTheme.titleLarge?.copyWith(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w800,
+                  color: AppColor.skyblue700,
+                ),
+              ),
+              SizedBox(width: 4.w),
+              Text(
+                'Lượt nộp',
+                style: textTheme.bodySmall?.copyWith(
+                  fontSize: 12.sp,
+                  color: AppColor.hurricane600,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 10.h),
           Row(
             children: [
               Expanded(
                 child: _ProgressStatsMetric(
-                  label: 'Xong',
-                  value: '$completedQuizzes',
-                ),
-              ),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: _ProgressStatsMetric(
-                  label: 'TB',
+                  label: 'Điểm TB',
                   value: averageScore,
                 ),
               ),
@@ -409,25 +401,28 @@ class _ProgressStatsMetric extends StatelessWidget {
         color: AppColor.skyblue50,
         borderRadius: BorderRadius.circular(10.r),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AutoSizeText(
             label,
             style: textTheme.bodySmall?.copyWith(
-              fontSize: 9.sp,
+              fontSize: 15.sp,
               color: AppColor.hurricane600,
             ),
           ),
-          SizedBox(height: 2.h),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.bodyMedium?.copyWith(
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w700,
-              color: AppColor.skyblue800,
+          Expanded(
+            flex: 5,
+            child: AutoSizeText(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: textTheme.bodyMedium?.copyWith(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColor.skyblue800,
+              ),
             ),
           ),
         ],

@@ -109,7 +109,6 @@ class ListStatisticsLesson extends StatelessWidget {
                     )
                   ],
                 ),
-                SizedBox(height: 40.h),
                 ...topics.map((topic) {
                   return Column(
                     children: [
