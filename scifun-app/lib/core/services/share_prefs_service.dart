@@ -103,7 +103,7 @@ class SharePrefsService {
 
   double getBackgroundMusicVolume() {
     final saved = _prefs.getDouble(_keyBackgroundMusicVolume);
-    if (saved == null) return 0.2;
+    if (saved == null) return 0.6;
     return saved.clamp(0.0, 1.0).toDouble();
   }
 

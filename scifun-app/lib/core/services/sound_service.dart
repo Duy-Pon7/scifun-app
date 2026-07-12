@@ -93,7 +93,7 @@ class SoundService {
   static final SoundService instance = SoundService._internal();
 
   static const String _assetPrefix = 'assets/sounds/';
-  static const double _defaultLoopVolume = 0.45;
+  static const double _defaultLoopVolume = 0.6;
   static const double _defaultEffectVolume = 0.4;
   static const Set<SoundEffectTrack> _eagerPreloadEffects = {
     SoundEffectTrack.luyenTap1Dragged,
