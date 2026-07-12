@@ -77,11 +77,34 @@ Future<bool?> showLogoutConfirmDialog({
 
 Future<bool?> showGuestSyncRequiredDialog({
   required BuildContext context,
-  String titleText = '\u0110\u1ed3ng b\u1ed9 t\u00e0i kho\u1ea3n \u0111\u1ec3 ti\u1ebfp t\u1ee5c',
+  String titleText =
+      '\u0110\u1ed3ng b\u1ed9 t\u00e0i kho\u1ea3n \u0111\u1ec3 ti\u1ebfp t\u1ee5c',
   String messageText =
       'Vui l\u00f2ng \u0111\u1ed3ng b\u1ed9 t\u00e0i kho\u1ea3n \u0111\u1ec3 d\u00f9ng ch\u1ee9c n\u0103ng n\u00e0y nha!',
   String cancelButtonText = '\u0110\u1ec3 sau',
   String confirmButtonText = '\u0110\u1ed3ng b\u1ed9',
+  VoidCallback? onCancelTap,
+  VoidCallback? onConfirmTap,
+}) {
+  return showChangeConfirmDialog(
+    context: context,
+    titleText: titleText,
+    messageText: messageText,
+    cancelButtonText: cancelButtonText,
+    confirmButtonText: confirmButtonText,
+    onCancelTap: onCancelTap,
+    onConfirmTap: onConfirmTap,
+  );
+}
+
+Future<bool?> showProRequiredDialog({
+  required BuildContext context,
+  String titleText =
+      'B\u00e0i n\u00e0y ch\u1ec9 d\u00e0nh cho t\u00e0i kho\u1ea3n PRO',
+  String messageText =
+      'B\u1ea1n c\u1ea7n n\u00e2ng c\u1ea5p PRO \u0111\u1ec3 l\u00e0m b\u00e0i n\u00e0y. B\u1ea1n c\u00f3 mu\u1ed1n xem g\u00f3i mua ngay kh\u00f4ng?',
+  String cancelButtonText = '\u0110\u1ec3 sau',
+  String confirmButtonText = 'Mua PRO',
   VoidCallback? onCancelTap,
   VoidCallback? onConfirmTap,
 }) {

@@ -370,7 +370,7 @@ class QuestionWordBubble extends StatelessWidget {
             text,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: 22.sp,
+              fontSize: 30.sp,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF3D3D3D),
               height: 1.2,

@@ -312,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     value: backgroundMusicVolume,
                     min: 0,
                     max: 1,
-                    divisions: 20,
+                    divisions: 60,
                     activeColor: AppColor.skyblue500,
                     inactiveColor: AppColor.skyblue100,
                     onChanged: (value) {

@@ -156,17 +156,35 @@ class TrendQuizzesList extends StatelessWidget {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                quizz.title ?? 'No title',
-                                                maxLines: isCompact ? 1 : 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontWeight: isHighlighted
-                                                      ? FontWeight.bold
-                                                      : FontWeight.w600,
-                                                  fontSize:
-                                                      isCompact ? 15.sp : 18.sp,
-                                                ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      quizz.title ?? 'No title',
+                                                      maxLines:
+                                                          isCompact ? 1 : 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            isHighlighted
+                                                                ? FontWeight
+                                                                    .bold
+                                                                : FontWeight
+                                                                    .w600,
+                                                        fontSize: isCompact
+                                                            ? 15.sp
+                                                            : 18.sp,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8.w),
+                                                  _buildAccessTierBadge(
+                                                    isQuizPro: isQuizPro,
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -329,6 +347,13 @@ class TrendQuizzesList extends StatelessWidget {
       }
 
       if (!isProUser) {
+        final shouldOpenPlan = await showProRequiredDialog(
+          context: context,
+        );
+        if (shouldOpenPlan != true || !context.mounted) {
+          return;
+        }
+
         await _openPlanListPage(context);
         return;
       }
@@ -374,6 +399,27 @@ class TrendQuizzesList extends StatelessWidget {
     await Navigator.push(
       context,
       slidePage(const PlanListPage()),
+    );
+  }
+
+  Widget _buildAccessTierBadge({required bool isQuizPro}) {
+    final backgroundColor =
+        isQuizPro ? AppColor.skyblue600 : Colors.green.shade600;
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        isQuizPro ? 'PRO' : 'FREE',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 10.sp,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
     );
   }
 
