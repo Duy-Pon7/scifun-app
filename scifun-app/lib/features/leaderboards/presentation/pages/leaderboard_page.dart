@@ -61,22 +61,6 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     return Scaffold(
       appBar: BasicAppbar(
         title: '🏆 Bảng xếp hạng',
-        rightIcon: GestureDetector(
-          onTap: () => _cubit.refresh(),
-          child: Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Symbols.refresh_rounded,
-              color: accentColor,
-              size: 20,
-            ),
-          ),
-        ),
         showBack: true,
       ),
       body: Container(

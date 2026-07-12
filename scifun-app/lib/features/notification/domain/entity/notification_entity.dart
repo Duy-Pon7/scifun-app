@@ -85,15 +85,17 @@ class Item extends Equatable {
   }
 
   factory Item.fromJson(Map<String, dynamic> json) {
+    final rawId = json["id"] ?? json["_id"];
+
     return Item(
-      id: json["id"],
-      userId: json["userId"],
-      type: json["type"],
-      title: json["title"],
-      message: json["message"],
+      id: rawId?.toString(),
+      userId: json["userId"]?.toString(),
+      type: json["type"]?.toString(),
+      title: json["title"]?.toString(),
+      message: json["message"]?.toString(),
       data: json["data"] == null ? null : Data.fromJson(json["data"]),
-      link: json["link"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      link: json["link"]?.toString(),
+      createdAt: DateTime.tryParse(json["createdAt"]?.toString() ?? ""),
       read: json["read"],
     );
   }

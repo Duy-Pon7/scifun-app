@@ -9,7 +9,6 @@ import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/notification/domain/entity/notification_entity.dart';
 import 'package:sci_fun/features/notification/presentation/cubit/notification_cubit.dart';
-import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -64,16 +63,23 @@ class _NotificationPageState extends State<NotificationPage> {
               Icon(
                 Symbols.error_outline_rounded,
                 size: 64.sp,
-                color: Colors.red,
+                color: AppColor.physics500,
               ),
               SizedBox(height: 16.h),
               Text(
                 'Lỗi khi tải thông báo',
-                style: TextStyle(fontSize: 18.sp, color: Colors.red[600]),
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  color: AppColor.physics600,
+                ),
               ),
               SizedBox(height: 16.h),
               ElevatedButton(
                 onPressed: () => _notificationCubit.refresh(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.physics500,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Thử lại'),
               ),
             ],
@@ -97,11 +103,8 @@ class NotificationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRead = item.read ?? false;
-    final subjectName = item.data?.subjectName;
-    final hasSubject = subjectName?.trim().isNotEmpty == true;
-    final accentColor =
-        hasSubject ? AppColor.subject500(subjectName) : AppColor.skyblue500;
-    final unreadBackground = accentColor.withValues(alpha: 0.08);
+    final accentColor = AppColor.physics500;
+    final unreadBackground = AppColor.physics50;
 
     return InkWell(
       onTap: () async {

@@ -33,7 +33,13 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
     const source = 'NotificationRemoteDatasource.getNotifications';
     try {
       final url = NotificationApiUrls.getNotifications;
-      final res = await dioClient.get(url: url);
+      final res = await dioClient.get(
+        url: url,
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+        },
+      );
 
       if (res.statusCode == 200) {
         final data = res.data['data'];
