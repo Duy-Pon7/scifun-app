@@ -31,7 +31,6 @@ class _QuizResultPageState extends State<QuizResultPage> {
   Widget build(BuildContext context) {
     final int correctAnswers = widget.result['correctAnswers'] ?? 0;
     final dynamic scoreValue = widget.result['score'] ?? 0;
-    final int totalQuestions = widget.result['totalQuestions'] ?? 0;
 
     final double score = scoreValue is num
         ? scoreValue.toDouble()
@@ -114,10 +113,6 @@ class _QuizResultPageState extends State<QuizResultPage> {
                   _buildStatItem(
                     value: score.toStringAsFixed(1),
                     label: 'Điểm',
-                  ),
-                  _buildStatItem(
-                    value: '$totalQuestions\'0"',
-                    label: 'Thời gian',
                   ),
                 ],
               ),

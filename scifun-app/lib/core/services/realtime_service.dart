@@ -24,6 +24,80 @@ class RealtimeService {
   dynamic _chatSubscription;
   String? _selfId;
 
+  String? _extractUserIdFromToken(String? token) {
+    try {
+      final raw = token?.trim();
+      if (raw == null || raw.isEmpty) return null;
+
+      final parts = raw.split('.');
+      if (parts.length < 2) return null;
+
+      final payload = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final data = jsonDecode(payload);
+      if (data is! Map<String, dynamic>) return null;
+
+      final id = data['userId'] ??
+          data['user_id'] ??
+          data['uid'] ??
+          data['sub'] ??
+          data['id'];
+      final value = id?.toString().trim();
+      return value == null || value.isEmpty ? null : value;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Map<String, dynamic>? _decodeJsonMap(String? body) {
+    if (body == null || body.isEmpty) return null;
+
+    try {
+      final json = jsonDecode(body);
+      if (json is Map<String, dynamic>) return json;
+      if (json is Map) {
+        return Map<String, dynamic>.from(json);
+      }
+    } catch (e) {
+      print('Failed to decode socket payload: $e');
+    }
+
+    return null;
+  }
+
+  Map<String, dynamic> _normalizeNotificationPayload(
+      Map<String, dynamic> json) {
+    var current = Map<String, dynamic>.from(json);
+
+    while (true) {
+      final nested =
+          current['notification'] ?? current['data'] ?? current['payload'];
+      if (nested is! Map) {
+        return current;
+      }
+      current = Map<String, dynamic>.from(nested);
+    }
+  }
+
+  void _subscribeIfConnected({
+    required String destination,
+    required void Function(StompFrame frame) callback,
+  }) {
+    final client = _client;
+    if (client == null || !client.connected) return;
+
+    try {
+      client.subscribe(
+        destination: destination,
+        callback: callback,
+      );
+      print('Subscribed to $destination');
+    } catch (e) {
+      print('Failed to subscribe to $destination: $e');
+    }
+  }
+
   Stream<Map<String, dynamic>> get commentStream => _commentController.stream;
   Stream<Map<String, dynamic>> get notificationStream => _notiController.stream;
   Stream<ChatMessage> get chatStream => _chatController.stream;
@@ -132,6 +206,7 @@ class RealtimeService {
     }
 
     final token = await getToken();
+    final tokenUserId = _extractUserIdFromToken(token);
 
     _client = StompClient(
       config: StompConfig(
@@ -157,56 +232,45 @@ class RealtimeService {
 
         onConnect: (StompFrame frame) {
           // Broadcast comment mới: messagingTemplate.convertAndSend("/topic/comment/new", ...)
-          _client!.subscribe(
+          _subscribeIfConnected(
             destination: '/topic/comment/new',
             callback: (f) {
-              final body = f.body;
-              if (body == null || body.isEmpty) return;
-              final json = jsonDecode(body);
-              if (json is Map<String, dynamic>) {
+              final json = _decodeJsonMap(f.body);
+              if (json != null) {
                 _commentController.add(json);
               }
             },
           );
-          // debug
-          try {
-            print('Subscribed to /topic/comment/new');
-          } catch (_) {}
 
           // Notification theo user: convertAndSendToUser(userId, "/queue/notifications", ...)
-          _client!.subscribe(
-            destination: '/user/queue/notifications',
-            callback: (f) {
-              final body = f.body;
-              if (body == null || body.isEmpty) return;
-              final json = jsonDecode(body);
-              if (json is Map<String, dynamic>) {
-                _notiController.add(json);
-              }
-            },
-          );
-          // debug
-          try {
-            print('Subscribed to /user/queue/notifications');
-          } catch (_) {}
+          final notificationDestinations = <String>{
+            '/user/queue/notifications',
+            '/queue/notifications',
+            if (tokenUserId != null) '/user/$tokenUserId/queue/notifications',
+          };
+
+          for (final destination in notificationDestinations) {
+            _subscribeIfConnected(
+              destination: destination,
+              callback: (f) {
+                final json = _decodeJsonMap(f.body);
+                if (json == null) return;
+                _notiController.add(_normalizeNotificationPayload(json));
+              },
+            );
+          }
 
           // Optional: subscribe to reply notifications if backend sends replies to this destination
-          _client!.subscribe(
+          _subscribeIfConnected(
             destination: '/user/queue/comment/reply',
             callback: (f) {
-              final body = f.body;
-              if (body == null || body.isEmpty) return;
-              final json = jsonDecode(body);
-              if (json is Map<String, dynamic>) {
+              final json = _decodeJsonMap(f.body);
+              if (json != null) {
                 // For now we add to comment stream to show replies as comments
                 _commentController.add(json);
               }
             },
           );
-          // debug
-          try {
-            print('Subscribed to /user/queue/comment/reply');
-          } catch (_) {}
 
           // Capture 'user-name' if provided by the server in CONNECTED headers
           try {

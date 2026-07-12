@@ -8,10 +8,8 @@ import 'package:sci_fun/common/cubit/pagination_cubit.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
-import 'package:sci_fun/core/services/ws_bootstrap.dart';
 import 'package:sci_fun/core/utils/subject_theme_helper.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:sci_fun/features/chat/chat_connection_config.dart';
 import 'package:sci_fun/features/comment/presentation/pages/comment_page.dart';
 import 'package:sci_fun/features/home/presentation/components/home/background_home.dart';
 import 'package:sci_fun/features/home/presentation/components/home/header_home.dart';
@@ -299,10 +297,6 @@ class _HomePageState extends State<HomePage>
                               ),
                               SizedBox(height: 16.h),
                               CommentPage(),
-                              SizedBox(height: 16.h),
-                              WsBootstrap(
-                                wsUrl: wsUrlForEnvironment(),
-                              ),
                             ],
                           ),
                         ),

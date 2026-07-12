@@ -126,6 +126,8 @@ class SoundService {
   bool _hasUserGesture = !kIsWeb;
   bool _didWarmUpEffects = false;
   bool _pendingLoopStartAfterGesture = false;
+  int _loopSuspendCount = 0;
+  bool _resumeLoopAfterSuspend = false;
   double _loopVolume = _defaultLoopVolume;
   double _effectVolume = _defaultEffectVolume;
   SoundLoopTrack? _currentLoopTrack;
@@ -174,6 +176,10 @@ class SoundService {
     }
 
     if (!_isLoopEnabled) return;
+    if (_loopSuspendCount > 0) {
+      _resumeLoopAfterSuspend = true;
+      return;
+    }
     if (kIsWeb && !_hasUserGesture) {
       _pendingLoopStartAfterGesture = true;
       return;
@@ -201,6 +207,10 @@ class SoundService {
   Future<void> resumeLoop() async {
     await _ensureInitialized();
     if (!_isLoopEnabled || _currentLoopTrack == null) return;
+    if (_loopSuspendCount > 0) {
+      _resumeLoopAfterSuspend = true;
+      return;
+    }
     if (kIsWeb && !_hasUserGesture) {
       _pendingLoopStartAfterGesture = true;
       return;
@@ -232,7 +242,47 @@ class SoundService {
 
     if (!enabled) {
       _pendingLoopStartAfterGesture = false;
+      _resumeLoopAfterSuspend = false;
       await _loopPlayer.pause();
+      return;
+    }
+
+    await resumeLoop();
+  }
+
+  Future<void> suspendLoop() async {
+    final shouldResume = _isLoopEnabled &&
+        _currentLoopTrack != null &&
+        (_loopPlayer.playing || _pendingLoopStartAfterGesture);
+
+    _loopSuspendCount += 1;
+    if (_loopSuspendCount > 1) {
+      if (shouldResume) {
+        _resumeLoopAfterSuspend = true;
+      }
+      return;
+    }
+
+    _resumeLoopAfterSuspend = shouldResume;
+    _pendingLoopStartAfterGesture = false;
+
+    if (!_isInitialized) return;
+    await _loopPlayer.pause();
+  }
+
+  Future<void> restoreLoop() async {
+    if (_loopSuspendCount == 0) {
+      return;
+    }
+
+    _loopSuspendCount -= 1;
+    if (_loopSuspendCount > 0) {
+      return;
+    }
+
+    final shouldResume = _resumeLoopAfterSuspend;
+    _resumeLoopAfterSuspend = false;
+    if (!shouldResume) {
       return;
     }
 
@@ -310,6 +360,8 @@ class SoundService {
     _isInitialized = false;
     _didWarmUpEffects = false;
     _pendingLoopStartAfterGesture = false;
+    _loopSuspendCount = 0;
+    _resumeLoopAfterSuspend = false;
     _hasUserGesture = !kIsWeb;
   }
 

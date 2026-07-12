@@ -12,13 +12,16 @@ import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/core/di/injection.dart';
 import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/services/sound_service.dart';
+import 'package:sci_fun/core/services/ws_bootstrap.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/core/utils/theme/app_theme.dart';
 import 'package:sci_fun/features/analytics/presentation/cubits/progress_cubit.dart';
 import 'package:sci_fun/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:sci_fun/features/auth/presentation/page/signin/signin_page.dart';
+import 'package:sci_fun/features/chat/chat_connection_config.dart';
 import 'package:sci_fun/features/home/presentation/cubit/dashboard_cubit.dart';
 import 'package:sci_fun/features/home/presentation/page/dashboard_page.dart';
+import 'package:sci_fun/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/bloc/package_bloc.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
@@ -146,12 +149,39 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 title: 'Sci Fun',
                 theme: AppTheme.theme,
                 builder: EasyLoading.init(),
-                home: isAuthorized ? DashboardPage() : const SigninPage(),
+                home: isAuthorized
+                    ? const _AuthorizedAppShell()
+                    : const SigninPage(),
               ),
             );
           },
         );
       },
+    );
+  }
+}
+
+class _AuthorizedAppShell extends StatefulWidget {
+  const _AuthorizedAppShell();
+
+  @override
+  State<_AuthorizedAppShell> createState() => _AuthorizedAppShellState();
+}
+
+class _AuthorizedAppShellState extends State<_AuthorizedAppShell> {
+  @override
+  void initState() {
+    super.initState();
+    sl<NotificationCubit>().ensureLoaded();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        DashboardPage(),
+        WsBootstrap(wsUrl: wsUrlForEnvironment()),
+      ],
     );
   }
 }
