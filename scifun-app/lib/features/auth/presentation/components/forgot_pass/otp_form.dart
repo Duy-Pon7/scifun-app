@@ -65,9 +65,9 @@ class _OtpFormState extends State<OtpForm> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _clearSessionAndExitApp() async {
+  Future<void> _clearSessionAndNavigateToSignin() async {
     EasyLoading.show(
-      status: 'Đang thoát ứng dụng...',
+      status: 'Đang chuyển về đăng nhập...',
       maskType: EasyLoadingMaskType.black,
     );
 
@@ -81,7 +81,15 @@ class _OtpFormState extends State<OtpForm> {
     } catch (_) {}
 
     await EasyLoading.dismiss();
-    await SystemNavigator.pop();
+    if (!mounted) {
+      return;
+    }
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const SigninPage(),
+      ),
+      (route) => false,
+    );
   }
 
   @override
@@ -116,12 +124,12 @@ class _OtpFormState extends State<OtpForm> {
             );
           } else {
             if (widget.isGuestConvertFlow) {
-              await _clearSessionAndExitApp();
+              await _clearSessionAndNavigateToSignin();
             } else {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SigninPage(),
+                  builder: (context) => const SigninPage(),
                 ),
               );
             }

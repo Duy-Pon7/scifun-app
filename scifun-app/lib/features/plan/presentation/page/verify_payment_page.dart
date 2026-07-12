@@ -7,8 +7,11 @@ import 'package:sci_fun/common/cubit/is_authorized_cubit.dart';
 import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/basic_button.dart';
+import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 
 class VerifyPaymentPage extends StatefulWidget {
   const VerifyPaymentPage({super.key});
@@ -48,7 +51,6 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
     await prefs.remove(_pendingPaymentRefKey);
     await prefs.remove(_pendingDurationDaysKey);
 
-    // Cleanup old keys kept for backward compatibility.
     await prefs.remove('pending_appTransId');
     await prefs.remove('pending_durationDays');
   }
@@ -56,6 +58,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
   Future<void> _verifyPayment() async {
     final isAuthorizedCubit = context.read<IsAuthorizedCubit>();
     final proCubit = context.read<ProCubit>();
+    final userCubit = context.read<UserCubit>();
 
     setState(() {
       _isLoading = true;
@@ -63,14 +66,13 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token');
+      final userId = sl<SharePrefsService>().getUserData()?.trim();
 
-      if (token == null) {
+      if (userId == null || userId.isEmpty) {
         setState(() {
           _isLoading = false;
           _statusMessage =
-              'Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại rồi kiểm tra thanh toán.';
+              'Không tìm thấy người dùng hiện tại. Vui lòng đăng nhập lại rồi kiểm tra thanh toán.';
           _isSuccess = false;
         });
         return;
@@ -87,13 +89,17 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
       }
 
       isAuthorizedCubit.isAuthorized();
-      final isPro = await proCubit.isCheckPro(token: token);
+      await userCubit.getUser(
+        token: userId,
+        forceRefresh: true,
+      );
+      final isPro = await proCubit.isCheckPro(token: userId);
 
       if (!isPro) {
         setState(() {
           _isLoading = false;
           _statusMessage =
-              'Chưa xác nhận được thanh toán MoMo (${_paymentRef!}). Nếu bạn vừa thanh toán, chờ 10-30 giây rồi kiểm tra lại.';
+              'Chưa xác nhận được thanh toán MoMo ($_paymentRef). Nếu bạn vừa thanh toán, chờ 10-30 giây rồi kiểm tra lại.';
           _isSuccess = false;
         });
         return;
@@ -104,7 +110,7 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
       setState(() {
         _isLoading = false;
         _statusMessage =
-            'Thanh toán thành công (${_paymentRef!}). Đang khởi động lại ứng dụng...';
+            'Thanh toán thành công ($_paymentRef). Đang khởi động lại ứng dụng...';
         _isSuccess = true;
       });
 
@@ -124,13 +130,17 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
   Future<void> _resetApp() async {
     final isAuthorizedCubit = context.read<IsAuthorizedCubit>();
     final proCubit = context.read<ProCubit>();
+    final userCubit = context.read<UserCubit>();
 
     isAuthorizedCubit.isAuthorized();
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    if (token != null) {
-      await proCubit.isCheckPro(token: token);
+    final userId = sl<SharePrefsService>().getUserData()?.trim();
+    if (userId != null && userId.isNotEmpty) {
+      await userCubit.getUser(
+        token: userId,
+        forceRefresh: true,
+      );
+      await proCubit.isCheckPro(token: userId);
     }
 
     if (mounted) {
@@ -138,7 +148,8 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-              'Nâng cấp gói thành công! Chào mừng bạn đến với gói Premium.'),
+            'Nâng cấp gói thành công! Chào mừng bạn đến với gói Premium.',
+          ),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 3),
         ),
@@ -167,7 +178,9 @@ class _VerifyPaymentPageState extends State<VerifyPaymentPage> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  _isSuccess ? Symbols.check_circle_outline_rounded : Symbols.payment_rounded,
+                  _isSuccess
+                      ? Symbols.check_circle_outline_rounded
+                      : Symbols.payment_rounded,
                   size: 60.w,
                   color: _isSuccess ? Colors.green : AppColor.skyblue500,
                 ),

@@ -10,12 +10,14 @@ import 'package:sci_fun/common/widget/app_loading_indicator.dart';
 import 'package:sci_fun/common/widget/basic_appbar.dart';
 import 'package:sci_fun/common/widget/change_confirm_dialog.dart';
 import 'package:sci_fun/core/di/injection.dart';
+import 'package:sci_fun/core/services/share_prefs_service.dart';
 import 'package:sci_fun/core/utils/theme/app_color.dart';
 import 'package:sci_fun/features/plan/domain/entity/checkout_response.dart';
 import 'package:sci_fun/features/plan/domain/entity/plan_entity.dart';
 import 'package:sci_fun/features/plan/domain/usecase/create_checkout.dart';
 import 'package:sci_fun/features/plan/presentation/cubit/plan_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/cubit/pro_cubit.dart';
+import 'package:sci_fun/features/profile/presentation/cubit/user_cubit.dart';
 import 'package:sci_fun/features/profile/presentation/helper/guest_feature_guard.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -35,6 +37,7 @@ class _PlanListPageState extends State<PlanListPage> {
 
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _uriSub;
+  bool _shouldRefreshCallerOnExit = false;
 
   @override
   void initState() {
@@ -157,14 +160,29 @@ class _PlanListPageState extends State<PlanListPage> {
   Future<bool> _refreshPremiumState() async {
     final isAuthorizedCubit = context.read<IsAuthorizedCubit>();
     final proCubit = context.read<ProCubit>();
+    final userCubit = context.read<UserCubit>();
 
     isAuthorizedCubit.isAuthorized();
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    if (token == null) return false;
+    final userId = sl<SharePrefsService>().getUserData()?.trim();
+    if (userId == null || userId.isEmpty) {
+      return false;
+    }
 
-    return proCubit.isCheckPro(token: token);
+    await userCubit.getUser(
+      token: userId,
+      forceRefresh: true,
+    );
+
+    return proCubit.isCheckPro(token: userId);
+  }
+
+  Future<void> _popWithResult() async {
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pop(_shouldRefreshCallerOnExit);
   }
 
   Future<void> _handlePaymentCallback(
@@ -196,6 +214,8 @@ class _PlanListPageState extends State<PlanListPage> {
         );
         return;
       }
+
+      _shouldRefreshCallerOnExit = true;
 
       if (mounted) {
         showDialog(
@@ -271,51 +291,64 @@ class _PlanListPageState extends State<PlanListPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => sl<PlanCubit>()..getPlans(),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF6F7FB),
-        appBar: const BasicAppbar(
-          title: 'Gói dịch vụ',
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: BlocBuilder<PlanCubit, PlanState>(
-            builder: (context, state) {
-              if (state is PlanLoading) {
-                return const Center(
-                  child: AppLoadingIndicator(
-                    message: 'Đang tải gói dịch vụ...',
-                  ),
-                );
-              }
+      child: PopScope<bool>(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) {
+            return;
+          }
 
-              if (state is PlansLoaded) {
-                final plans = state.plans;
-                if (plans.isEmpty) {
+          _popWithResult();
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF6F7FB),
+          appBar: BasicAppbar(
+            title: 'Gói dịch vụ',
+            onBackPress: () {
+              _popWithResult();
+            },
+          ),
+          body: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: BlocBuilder<PlanCubit, PlanState>(
+              builder: (context, state) {
+                if (state is PlanLoading) {
                   return const Center(
-                    child: AppEmptyState(message: 'Không có gói nào'),
+                    child: AppLoadingIndicator(
+                      message: 'Đang tải gói dịch vụ...',
+                    ),
                   );
                 }
 
-                return ListView.separated(
-                  itemCount: plans.length,
-                  separatorBuilder: (_, __) => SizedBox(height: 16.h),
-                  itemBuilder: (context, index) {
-                    return _PlanCard(plan: plans[index]);
-                  },
-                );
-              }
+                if (state is PlansLoaded) {
+                  final plans = state.plans;
+                  if (plans.isEmpty) {
+                    return const Center(
+                      child: AppEmptyState(message: 'Không có gói nào'),
+                    );
+                  }
 
-              if (state is PlanError) {
-                return Center(
-                  child: Text(
-                    state.message,
-                    style: TextStyle(fontSize: 18.sp, color: Colors.red),
-                  ),
-                );
-              }
+                  return ListView.separated(
+                    itemCount: plans.length,
+                    separatorBuilder: (_, __) => SizedBox(height: 16.h),
+                    itemBuilder: (context, index) {
+                      return _PlanCard(plan: plans[index]);
+                    },
+                  );
+                }
 
-              return const SizedBox.shrink();
-            },
+                if (state is PlanError) {
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: TextStyle(fontSize: 18.sp, color: Colors.red),
+                    ),
+                  );
+                }
+
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ),
       ),

@@ -48,7 +48,7 @@ class GuestSyncProcedurePage extends StatelessWidget {
               ),
               SizedBox(height: 8.h),
               Text(
-                'Nhập thông tin tài khoản, nhấn đồng bộ để hệ thống gửi OTP, xác thực OTP thành công sẽ thoát ứng dụng.',
+                'Nhập thông tin tài khoản, nhấn đồng bộ để hệ thống gửi OTP, xác thực OTP thành công sẽ đưa bạn về màn hình đăng nhập.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.black54,
                     ),

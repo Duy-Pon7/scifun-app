@@ -62,6 +62,19 @@ class _QuizzPageState extends State<QuizzPage> {
     setState(() => isProUser = pro);
   }
 
+  Future<void> _openPlanListPage() async {
+    final result = await Navigator.push(
+      context,
+      slidePage(const PlanListPage()),
+    );
+    final shouldRefresh = result == true;
+    if (!mounted || !shouldRefresh) {
+      return;
+    }
+
+    await _initStateAsync();
+  }
+
   @override
   void didUpdateWidget(covariant QuizzPage oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -109,10 +122,7 @@ class _QuizzPageState extends State<QuizzPage> {
                         return;
                       }
 
-                      Navigator.push(
-                        context,
-                        slidePage(const PlanListPage()),
-                      );
+                      await _openPlanListPage();
                       return;
                     }
 

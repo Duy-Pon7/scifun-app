@@ -168,6 +168,31 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Future<void> _refreshCurrentUser() async {
+    final userId = sl<SharePrefsService>().getUserData()?.trim();
+    if (userId == null || userId.isEmpty) {
+      return;
+    }
+
+    await _userCubit.getUser(
+      token: userId,
+      forceRefresh: true,
+    );
+  }
+
+  Future<void> _openPlanListPage() async {
+    final result = await Navigator.push(
+      context,
+      slidePage(const PlanListPage()),
+    );
+    final shouldRefresh = result == true;
+    if (!mounted || !shouldRefresh) {
+      return;
+    }
+
+    await _refreshCurrentUser();
+  }
+
   Future<void> _toggleBackgroundMusic(bool isEnabled) async {
     final prefs = sl<SharePrefsService>();
     await prefs.saveBackgroundMusicEnabled(isEnabled);
@@ -426,10 +451,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _openSoundSettings();
         }),
         _itemNavigator(Symbols.shopping_cart_rounded, 'Mua gói', () {
-          Navigator.push(
-            context,
-            slidePage(const PlanListPage()),
-          );
+          unawaited(_openPlanListPage());
         }),
         _itemNavigator(Symbols.receipt_long_rounded, 'Lịch sử mua gói', () {
           Navigator.push(
