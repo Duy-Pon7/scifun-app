@@ -369,7 +369,7 @@ class QuestionWordBubble extends StatelessWidget {
           child: AutoSizeText(
             text,
             textAlign: TextAlign.left,
-            maxLines: 2,
+            maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 30.sp,

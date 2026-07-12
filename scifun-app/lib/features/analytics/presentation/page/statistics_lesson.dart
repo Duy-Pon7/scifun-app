@@ -31,30 +31,40 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
 
   late final ProgressCubit _progressCubit;
   late final ProgressStatsCubit _progressStatsCubit;
+  late final SelectedSubjectCubit _selectedSubjectCubit;
   bool _didInitDefaultSubject = false;
   String? _lastAppliedPersistedSubjectId;
+  List<SubjectEntity> _subjects = const [];
 
   @override
   void initState() {
     super.initState();
     _progressCubit = sl<ProgressCubit>();
     _progressStatsCubit = sl<ProgressStatsCubit>();
+    _selectedSubjectCubit = SelectedSubjectCubit();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _fetchProgressStatsIfVisible();
+      _refreshAnalyticsIfVisible();
     });
   }
 
   @override
   void dispose() {
+    _selectedSubjectCubit.close();
+    _progressCubit.close();
     _progressStatsCubit.close();
     super.dispose();
   }
 
-  void _fetchProgressStatsIfVisible() {
-    if (context.read<DashboardCubit>().state == _analyticsTabIndex) {
-      _progressStatsCubit.fetchProgressStats();
+  void _refreshAnalyticsIfVisible() {
+    if (context.read<DashboardCubit>().state != _analyticsTabIndex) return;
+
+    _progressStatsCubit.fetchProgressStats();
+
+    final subjectId = _resolveActiveSubjectId();
+    if (subjectId != null) {
+      _progressCubit.fetchProgress(subjectId);
     }
   }
 
@@ -81,18 +91,28 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
     return null;
   }
 
+  String? _resolveActiveSubjectId() {
+    final selectedId = (_selectedSubjectCubit.state ?? '').trim();
+    if (selectedId.isNotEmpty) {
+      return selectedId;
+    }
+
+    return _persistedSubjectIdIn(_subjects) ??
+        _firstNonNullSubjectId(_subjects);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _progressCubit),
         BlocProvider.value(value: _progressStatsCubit),
-        BlocProvider(create: (_) => SelectedSubjectCubit()),
+        BlocProvider.value(value: _selectedSubjectCubit),
       ],
       child: BlocListener<DashboardCubit, int>(
         listenWhen: (previous, current) =>
             previous != _analyticsTabIndex && current == _analyticsTabIndex,
-        listener: (context, _) => _progressStatsCubit.fetchProgressStats(),
+        listener: (context, _) => _refreshAnalyticsIfVisible(),
         child: Scaffold(
           appBar: const BasicAppbar(title: 'Thống kê', showBack: false),
           body: ValueListenableBuilder(
@@ -116,9 +136,9 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
 
                   if (subjectState is PaginationSuccess<SubjectEntity>) {
                     final subjects = subjectState.items;
+                    _subjects = subjects;
                     final persistedSubjectId = _persistedSubjectIdIn(subjects);
-                    final selectedSubjectCubit =
-                        context.read<SelectedSubjectCubit>();
+                    final selectedSubjectCubit = _selectedSubjectCubit;
 
                     if (subjects.isEmpty) {
                       return const Center(
@@ -163,11 +183,13 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
                             child: BlocBuilder<ProgressStatsCubit,
                                 ProgressStatsState>(
                               builder: (context, statsState) {
-                                final stats = statsState is ProgressStatsLoaded
-                                    ? statsState.stats
-                                    : const ProgressStatsEntity.empty();
+                                if (statsState is ProgressStatsLoaded) {
+                                  return _ProgressStatsOverview(
+                                    stats: statsState.stats,
+                                  );
+                                }
 
-                                return _ProgressStatsOverview(stats: stats);
+                                return const _ProgressStatsOverview();
                               },
                             ),
                           ),
@@ -207,9 +229,9 @@ class _StatisticsLessonState extends State<StatisticsLesson> {
 }
 
 class _ProgressStatsOverview extends StatelessWidget {
-  const _ProgressStatsOverview({required this.stats});
+  const _ProgressStatsOverview({this.stats});
 
-  final ProgressStatsEntity stats;
+  final ProgressStatsEntity? stats;
 
   ProgressStatsPeriodEntity? _latestPeriod(
     List<ProgressStatsPeriodEntity> periods,
@@ -234,19 +256,19 @@ class _ProgressStatsOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final day = _latestPeriod(stats.day);
-    final week = _latestPeriod(stats.week);
-    final month = _latestPeriod(stats.month);
+    final day = stats == null ? null : _latestPeriod(stats!.day);
+    final week = stats == null ? null : _latestPeriod(stats!.week);
+    final month = stats == null ? null : _latestPeriod(stats!.month);
 
     return Row(
       children: [
         Expanded(
           child: _ProgressStatsCard(
             title: 'Ngày',
-            periodLabel: day?.periodLabel ?? 'Hôm nay',
-            submissions: day?.totalSubmissions ?? 0,
-            completedQuizzes: day?.completedQuizzes ?? 0,
-            averageScore: _formatScore(day?.averageScore ?? 0),
+            periodLabel: day?.periodLabel ?? '',
+            submissions: day?.totalSubmissions,
+            completedQuizzes: day?.completedQuizzes,
+            averageScore: day == null ? null : _formatScore(day.averageScore),
             icon: Icons.today_rounded,
           ),
         ),
@@ -254,10 +276,10 @@ class _ProgressStatsOverview extends StatelessWidget {
         Expanded(
           child: _ProgressStatsCard(
             title: 'Tuần',
-            periodLabel: week?.periodLabel ?? 'Tuần này',
-            submissions: week?.totalSubmissions ?? 0,
-            completedQuizzes: week?.completedQuizzes ?? 0,
-            averageScore: _formatScore(week?.averageScore ?? 0),
+            periodLabel: week?.periodLabel ?? '',
+            submissions: week?.totalSubmissions,
+            completedQuizzes: week?.completedQuizzes,
+            averageScore: week == null ? null : _formatScore(week.averageScore),
             icon: Icons.date_range_rounded,
           ),
         ),
@@ -265,10 +287,11 @@ class _ProgressStatsOverview extends StatelessWidget {
         Expanded(
           child: _ProgressStatsCard(
             title: 'Tháng',
-            periodLabel: month?.periodLabel ?? 'Tháng này',
-            submissions: month?.totalSubmissions ?? 0,
-            completedQuizzes: month?.completedQuizzes ?? 0,
-            averageScore: _formatScore(month?.averageScore ?? 0),
+            periodLabel: month?.periodLabel ?? '',
+            submissions: month?.totalSubmissions,
+            completedQuizzes: month?.completedQuizzes,
+            averageScore:
+                month == null ? null : _formatScore(month.averageScore),
             icon: Icons.calendar_month_rounded,
           ),
         ),
@@ -289,9 +312,9 @@ class _ProgressStatsCard extends StatelessWidget {
 
   final String title;
   final String periodLabel;
-  final int submissions;
-  final int completedQuizzes;
-  final String averageScore;
+  final int? submissions;
+  final int? completedQuizzes;
+  final String? averageScore;
   final IconData icon;
 
   @override
@@ -345,34 +368,39 @@ class _ProgressStatsCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 12.h),
-          Row(
-            children: [
-              Text(
-                '$submissions',
-                style: textTheme.titleLarge?.copyWith(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w800,
-                  color: AppColor.skyblue700,
+          if (submissions != null)
+            Row(
+              children: [
+                Text(
+                  '$submissions',
+                  style: textTheme.titleLarge?.copyWith(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w800,
+                    color: AppColor.skyblue700,
+                  ),
                 ),
-              ),
-              SizedBox(width: 4.w),
-              Text(
-                'Lượt nộp',
-                style: textTheme.bodySmall?.copyWith(
-                  fontSize: 12.sp,
-                  color: AppColor.hurricane600,
+                SizedBox(width: 4.w),
+                Text(
+                  'Lượt nộp',
+                  style: textTheme.bodySmall?.copyWith(
+                    fontSize: 12.sp,
+                    color: AppColor.hurricane600,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            )
+          else
+            SizedBox(height: 28.h),
           SizedBox(height: 10.h),
           Row(
             children: [
               Expanded(
-                child: _ProgressStatsMetric(
-                  label: 'Điểm TB',
-                  value: averageScore,
-                ),
+                child: averageScore == null
+                    ? SizedBox(height: 34.h)
+                    : _ProgressStatsMetric(
+                        label: 'Điểm TB',
+                        value: averageScore!,
+                      ),
               ),
             ],
           ),
