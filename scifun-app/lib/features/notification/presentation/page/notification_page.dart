@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -22,68 +21,17 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   late NotificationCubit _notificationCubit;
 
-  StreamSubscription<PaginationState<Item>>? _cubitSub;
   final ScrollController _listController = ScrollController();
-  String? _lastTopId;
 
   @override
   void initState() {
     super.initState();
     _notificationCubit = sl<NotificationCubit>();
-    // load initial notifications via cubit's loadInitial so states are emitted and UI updates
-    _notificationCubit.loadInitial().then((_) {
-      final s = _notificationCubit.state;
-      if (s is PaginationSuccess<Item> && s.items.isNotEmpty) {
-        // Set baseline so we don't show a snack for the initial load
-        _lastTopId = s.items.first.id;
-      }
-    });
-
-    // Show a small snackbar and scroll-to-top whenever the top notification changes
-    _cubitSub = _notificationCubit.stream.listen((state) {
-      if (state is PaginationSuccess<Item>) {
-        if (state.items.isNotEmpty) {
-          final top = state.items.first;
-          if (top.id != _lastTopId) {
-            _lastTopId = top.id;
-
-            // show snack bar (non-blocking)
-            try {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${top.title ?? ''}\n${top.message ?? ''}'),
-                  action: SnackBarAction(
-                    label: 'Xem',
-                    onPressed: () {
-                      if (top.link != null && top.link!.isNotEmpty) {
-                        try {
-                          Navigator.of(context).pushNamed(top.link!);
-                        } catch (_) {}
-                      }
-                    },
-                  ),
-                  duration: const Duration(seconds: 5),
-                ),
-              );
-            } catch (_) {}
-
-            // scroll to top to reveal new notification
-            try {
-              _listController.animateTo(
-                0.0,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            } catch (_) {}
-          }
-        }
-      }
-    });
+    _notificationCubit.ensureLoaded();
   }
 
   @override
   void dispose() {
-    _cubitSub?.cancel();
     _listController.dispose();
     // NotificationCubit is registered as a lazy singleton in DI, do not close it here.
     super.dispose();
@@ -157,6 +105,8 @@ class NotificationTile extends StatelessWidget {
 
     return InkWell(
       onTap: () async {
+        final navigator = Navigator.of(context);
+
         // Mark as read first (if id available)
         if (item.id != null && item.id!.isNotEmpty) {
           try {
@@ -167,7 +117,7 @@ class NotificationTile extends StatelessWidget {
         // Try to navigate to item.link if provided. Host app should register routes.
         if (item.link != null && item.link!.isNotEmpty) {
           try {
-            Navigator.of(context).pushNamed(item.link!);
+            navigator.pushNamed(item.link!);
           } catch (_) {
             // ignore if route not found
           }

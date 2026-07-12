@@ -37,6 +37,14 @@ final class NotificationCubit extends PaginationCubit<Item> {
     });
   }
 
+  int get unreadCount => state.items.where((item) => item.read != true).length;
+
+  Future<void> ensureLoaded() async {
+    if (state is PaginationInitial<Item> || state is PaginationError<Item>) {
+      await loadInitial();
+    }
+  }
+
   @override
   Future<List<Item>> fetchData(
     int page,

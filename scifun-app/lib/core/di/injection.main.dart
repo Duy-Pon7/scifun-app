@@ -139,7 +139,13 @@ Future<void> _statisticsInti() async {
     ..registerFactory<ProgressRepository>(
         () => ProgressRepositoryImpl(progressRemoteDatasource: sl()))
     ..registerFactory(() => GetProgress(progressRepository: sl()))
-    ..registerLazySingleton(() => ProgressCubit(getProgress: sl()));
+    ..registerLazySingleton(() => ProgressCubit(getProgress: sl()))
+    ..registerFactory<ProgressStatsRemoteDatasource>(
+        () => ProgressStatsRemoteDatasourceImpl(dioClient: sl()))
+    ..registerFactory<ProgressStatsRepository>(
+        () => ProgressStatsRepositoryImpl(progressStatsRemoteDatasource: sl()))
+    ..registerFactory(() => GetProgressStats(progressStatsRepository: sl()))
+    ..registerFactory(() => ProgressStatsCubit(getProgressStats: sl()));
 }
 
 Future<void> _topicInit() async {

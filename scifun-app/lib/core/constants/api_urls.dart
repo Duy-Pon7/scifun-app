@@ -87,6 +87,7 @@ class SubmissionApiUrl {
   static const String getSubmissionDetail =
       '/submission/get-submissionDetail'; //!
   static const String getUserProgress = '/user-progress'; //
+  static const String getProgressStats = '/progress-stats'; //
 }
 //? ----------------------------------------------------------
 
